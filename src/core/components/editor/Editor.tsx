@@ -31,13 +31,13 @@ const Divider = styled.div`
   margin: 20px 0;
 `;
 
-const Container = styled.div`
+export const Container = styled.div`
   display: grid;
   gap: 1rem;
   background: #222;
 `;
 
-const Heading = styled.h2`
+export const Heading = styled.h2`
   color: #fff;
   font-size: 1.5rem;
   line-height: 2.5rem;

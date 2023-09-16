@@ -213,6 +213,29 @@ export const EXP_METADATA = [
   },
 ];
 
+export const PROJECT_METADATA = [
+  {
+    label: 'Title',
+    type: 'Input',
+    value: 'title',
+  },
+  {
+    label: 'demoUrl',
+    type: 'Input',
+    value: 'demoUrl',
+  },
+  {
+    label: 'githubUrl',
+    type: 'Input',
+    value: 'githubUrl',
+  },
+  {
+    label: 'Summary',
+    type: 'MarkDownField',
+    value: 'summary',
+  },
+];
+
 export const VOLUNTEERING_METADATA = [
   {
     label: 'Organization',

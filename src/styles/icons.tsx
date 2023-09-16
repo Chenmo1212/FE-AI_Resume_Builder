@@ -20,6 +20,8 @@ import {
   MdSave,
   MdCloudUpload,
   MdPrint,
+  MdHome,
+  MdLanguage,
 } from 'react-icons/md';
 import {
   SiBehance,
@@ -40,6 +42,7 @@ import { GoVerified } from 'react-icons/go';
 import { GrDrag } from 'react-icons/gr';
 
 const icons = new Map([
+  ['portfolio', <MdHome />],
   ['mobile', <MdCall />],
   ['email', <MdMail />],
   ['location', <MdLocationOn />],
@@ -58,6 +61,7 @@ const icons = new Map([
   ['dribbble', <SiDribbble />],
   ['hashnode', <SiHashnode />],
   ['squarespace', <SiSquarespace />],
+  ['globe', <MdLanguage />],
 
   ['identity', <MdPermIdentity />],
   ['expert', <SiExpertsexchange />],

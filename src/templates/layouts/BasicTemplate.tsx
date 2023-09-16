@@ -9,6 +9,7 @@ import {
 } from 'src/templates/components/section-layout/ModernHeader';
 import { Intro } from 'src/templates/components/intro/Intro';
 import { Description } from 'src/templates/components/description/Description';
+import { Projects } from 'src/templates/components/projects/Projects';
 import { RatedBars } from 'src/templates/components/skills/RatedBars';
 import { UnratedTabs } from 'src/templates/components/skills/UnratedTabs';
 import { Exp } from 'src/templates/components/exp/Exp';
@@ -64,8 +65,8 @@ export default function ProfessionalTemplate() {
   const intro = useIntro((state: any) => state.intro);
   const education = useEducation((state: any) => state.education);
   const experience = useWork((state: any) => state);
-  const [involvements, achievements] = useActivities(
-    (state: any) => [state.involvements, state.achievements],
+  const [involvements, projects, achievements] = useActivities(
+    (state: any) => [state.involvements, state.projects, state.achievements],
     shallow
   );
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
