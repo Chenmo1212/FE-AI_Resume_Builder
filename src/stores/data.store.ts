@@ -223,11 +223,13 @@ export const useActivities = create(
     (set) => ({
       involvements: userData.activities.involvements,
       achievements: userData.activities.achievements,
+      projects: userData.activities.projects,
 
       reset: (data = userData.activities) => {
         set({
           involvements: data.involvements,
           achievements: data.achievements,
+          projects: data.projects,
         });
       },
 

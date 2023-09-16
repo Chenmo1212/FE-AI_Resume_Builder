@@ -9,6 +9,7 @@ import {
 } from 'src/templates/components/section-layout/ModernHeader';
 import { Intro } from 'src/templates/components/intro/Intro';
 import { Description } from 'src/templates/components/description/Description';
+import { Projects } from 'src/templates/components/projects/Projects';
 import { RatedBars } from 'src/templates/components/skills/RatedBars';
 import { UnratedTabs } from 'src/templates/components/skills/UnratedTabs';
 import { Exp } from 'src/templates/components/exp/Exp';
@@ -64,8 +65,8 @@ export default function ProfessionalTemplate() {
   const intro = useIntro((state: any) => state.intro);
   const education = useEducation((state: any) => state.education);
   const experience = useWork((state: any) => state);
-  const [involvements, achievements] = useActivities(
-    (state: any) => [state.involvements, state.achievements],
+  const [involvements, projects, achievements] = useActivities(
+    (state: any) => [state.involvements, state.projects, state.achievements],
     shallow
   );
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
@@ -92,7 +93,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[1],
       icon: labelsIcon[1],
-      component: <Description description={involvements} />,
+      component: <Projects projects={projects} />,
     },
     {
       title: labels[2],
@@ -106,16 +107,16 @@ export default function ProfessionalTemplate() {
       icon: labelsIcon[3],
       component: <Description photo={intro.image} description={intro.summary} />,
     },
-    {
-      title: labels[4],
-      icon: labelsIcon[4],
-      component: <Description description={intro.objective} />,
-    },
-    {
-      title: labels[5],
-      icon: labelsIcon[5],
-      component: <RatedBars items={[...languages, ...frameworks]} />,
-    },
+    // {
+    //   title: labels[4],
+    //   icon: labelsIcon[4],
+    //   component: <Description description={intro.objective} />,
+    // },
+    // {
+    //   title: labels[5],
+    //   icon: labelsIcon[5],
+    //   component: <RatedBars items={[...languages, ...frameworks]} />,
+    // },
     {
       title: labels[6],
       icon: labelsIcon[6],
@@ -126,7 +127,7 @@ export default function ProfessionalTemplate() {
       icon: labelsIcon[7],
       component: <UnratedTabs items={practices} />,
     },
-    { title: labels[8], icon: labelsIcon[8], component: <UnratedTabs items={tools} /> },
+    // { title: labels[8], icon: labelsIcon[8], component: <UnratedTabs items={tools} /> },
     {
       title: labels[9],
       icon: labelsIcon[9],
