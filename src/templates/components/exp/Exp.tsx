@@ -32,19 +32,19 @@ const TimelineItem = styled(FlexTimeline.Item)`
 `;
 
 const CompanyName = styled.div`
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 500;
 `;
 
 const CompanyRole = styled.div`
   font-weight: 500;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   line-height: inherit;
 `;
 
 const CompanyExp = styled.div`
   font-style: italic;
-  font-size: 0.6rem;
+  font-size: 0.7rem;
 `;
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
