@@ -74,7 +74,6 @@ export default function ProfessionalTemplate() {
     shallow
   );
   const labels = useLabels((state: any) => state.labels);
-  console.log(experience.companies);
   let leftSections = [
     {
       title: labels[0],
