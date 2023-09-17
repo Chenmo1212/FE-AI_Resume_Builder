@@ -218,24 +218,73 @@ export const useEducation = create(
   )
 );
 
+export const useProjects = create(
+  persist(
+    (set) => ({
+      projects: userData.projects,
+
+      reset: (data = userData.projects) => {
+        set({ projects: data });
+      },
+
+      add: () =>
+        set((state: any) => ({
+          projects: [
+            ...state.projects,
+            {
+              title: '',
+              demoUrl: '',
+              demoIcon: 'globe',
+              githubUrl: '',
+              githubIcon: 'github',
+              skills: '',
+              highlights: [],
+              summary: '',
+            },
+          ],
+        })),
+
+      update: (index, field, value) =>
+        set((state: any) => {
+          const newProject = [...state.projects];
+          newProject[index][field] = value;
+          console.log('??????', state.projects[index][field], value);
+          return {
+            projects: newProject,
+          };
+        }),
+
+      purge: (index: number) =>
+        set((state: any) => ({ project: state.project.filter((_, ind) => ind !== index) })),
+
+      changeOrder: ({ oldIndex, newIndex }) =>
+        set((state: any) => ({
+          project: arrayMoveImmutable(state.project, oldIndex, newIndex),
+        })),
+    }),
+    {
+      name: 'sprb-projects',
+    }
+  )
+);
+
 export const useActivities = create(
   persist(
     (set) => ({
       involvements: userData.activities.involvements,
       achievements: userData.activities.achievements,
-      projects: userData.activities.projects,
 
       reset: (data = userData.activities) => {
         set({
           involvements: data.involvements,
           achievements: data.achievements,
-          projects: data.projects,
         });
       },
 
       update: (type: string, value: string | number) =>
         set((state: any) => {
-          state[type] = value;
+          console.log({ type }, { value });
+          type === 'projects' ? (state[type] = value) : (state[type]['summary'] = value);
         }),
     }),
     {

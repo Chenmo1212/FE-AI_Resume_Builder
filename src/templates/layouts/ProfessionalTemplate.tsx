@@ -21,6 +21,7 @@ import {
   useActivities,
   useEducation,
   useLabels,
+  useProjects,
 } from 'src/stores/data.store';
 
 const ResumeContainer = styled(Flex)`
@@ -65,8 +66,9 @@ export default function ProfessionalTemplate() {
   const intro = useIntro((state: any) => state.intro);
   const education = useEducation((state: any) => state.education);
   const experience = useWork((state: any) => state);
-  const [involvements, projects, achievements] = useActivities(
-    (state: any) => [state.involvements, state.projects, state.achievements],
+  const projects = useProjects((state: any) => state);
+  const [involvements, achievements] = useActivities(
+    (state: any) => [state.involvements, state.achievements],
     shallow
   );
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
@@ -93,7 +95,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[1],
       icon: labelsIcon[1],
-      component: <Projects projects={projects} />,
+      component: <Projects projects={projects.projects} />,
     },
     {
       title: labels[2],

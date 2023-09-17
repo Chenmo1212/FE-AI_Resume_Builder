@@ -9,6 +9,7 @@ import {
   useSkills,
   useVolunteer,
   useWork,
+  useProjects,
 } from 'src/stores/data.store';
 import { getIcon } from 'src/styles/icons';
 import Form from 'antd/lib/form';
@@ -41,6 +42,7 @@ export function UploadSettings() {
   const resetWork = useWork((state: any) => state.reset);
   const resetEducation = useEducation((state: any) => state.reset);
   const resetActivities = useActivities((state: any) => state.reset);
+  const resetProjects = useProjects((state: any) => state.reset);
   // const volunteer = useVolunteer((state: any) => state.reset);
   // const awards = useAwards((state: any) => state.reset);
 
@@ -53,6 +55,7 @@ export function UploadSettings() {
       resetWork(userJSoN.work);
       resetEducation(userJSoN.education);
       resetActivities(userJSoN.activities);
+      resetProjects(userJSoN.projects);
     };
     reader.readAsText(file);
   }
