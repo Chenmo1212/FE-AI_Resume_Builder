@@ -248,7 +248,6 @@ export const useProjects = create(
         set((state: any) => {
           const newProject = [...state.projects];
           newProject[index][field] = value;
-          console.log('??????', state.projects[index][field], value);
           return {
             projects: newProject,
           };
