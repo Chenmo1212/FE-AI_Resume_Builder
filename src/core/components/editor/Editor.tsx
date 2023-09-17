@@ -9,6 +9,7 @@ import {
   useIntro,
   useVolunteer,
   useAwards,
+  useProjects,
 } from 'src/stores/data.store';
 import {
   INTRO_METADATA,
@@ -17,6 +18,7 @@ import {
   SOCIAL_METADATA,
   VOLUNTEERING_METADATA,
   AWARDS_METADATA,
+  PROJECT_METADATA,
 } from 'src/core/meta-data/input_metadata';
 import { SkillsEdit } from './SkillsEdit';
 import { TimelineEdit } from './TimelineEdit';
@@ -122,6 +124,26 @@ export const ExerienceEditor = () => {
         METADATA={EXP_METADATA}
         itemList={companies}
         identifier="name"
+        operations={{ update, add, purge, changeOrder }}
+      />
+    </Container>
+  );
+};
+
+export const ProjectEditor = () => {
+  const projects = useProjects((state: any) => state.projects);
+  const [add, update, purge, changeOrder] = useProjects(
+    (state: any) => [state.add, state.update, state.purge, state.changeOrder],
+    shallow
+  );
+
+  return (
+    <Container>
+      <Heading>Project</Heading>
+      <TimelineEdit
+        METADATA={PROJECT_METADATA}
+        itemList={projects}
+        identifier="title"
         operations={{ update, add, purge, changeOrder }}
       />
     </Container>
