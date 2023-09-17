@@ -15,7 +15,7 @@ const labels = [
   'Methodology / Approach',
   'Tools',
   'Education',
-  'Relevant Experience',
+  'Biography',
   'Total Experience',
 ];
 

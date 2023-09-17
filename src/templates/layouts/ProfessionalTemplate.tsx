@@ -67,10 +67,7 @@ export default function ProfessionalTemplate() {
   const education = useEducation((state: any) => state.education);
   const experience = useWork((state: any) => state);
   const projects = useProjects((state: any) => state);
-  const [involvements, achievements] = useActivities(
-    (state: any) => [state.involvements, state.achievements],
-    shallow
-  );
+  const [achievements] = useActivities((state: any) => [state.achievements], shallow);
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
     (state: any) => [
       state.languages,
@@ -97,11 +94,6 @@ export default function ProfessionalTemplate() {
       icon: labelsIcon[1],
       component: <Projects projects={projects.projects} />,
     },
-    {
-      title: labels[2],
-      icon: labelsIcon[2],
-      component: <Description description={achievements} />,
-    },
   ];
   const rightSections = [
     {
@@ -109,16 +101,6 @@ export default function ProfessionalTemplate() {
       icon: labelsIcon[3],
       component: <Description photo={intro.image} description={intro.summary} />,
     },
-    // {
-    //   title: labels[4],
-    //   icon: labelsIcon[4],
-    //   component: <Description description={intro.objective} />,
-    // },
-    // {
-    //   title: labels[5],
-    //   icon: labelsIcon[5],
-    //   component: <RatedBars items={[...languages, ...frameworks]} />,
-    // },
     {
       title: labels[6],
       icon: labelsIcon[6],
@@ -129,11 +111,15 @@ export default function ProfessionalTemplate() {
       icon: labelsIcon[7],
       component: <UnratedTabs items={practices} />,
     },
-    // { title: labels[8], icon: labelsIcon[8], component: <UnratedTabs items={tools} /> },
     {
       title: labels[9],
       icon: labelsIcon[9],
       component: <EduSection education={education} />,
+    },
+    {
+      title: labels[2],
+      icon: labelsIcon[2],
+      component: <Description description={achievements} />,
     },
   ];
 

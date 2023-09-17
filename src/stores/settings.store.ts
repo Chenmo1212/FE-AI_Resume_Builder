@@ -1,45 +1,20 @@
 import create from 'zustand';
-import { Template4 } from 'src/templates/layouts/Template4';
-import { Template5 } from 'src/templates/layouts/Template5';
-import { Template6 } from 'src/templates/layouts/Template6';
 
 import ProfessionalImg from 'public/images/professional.png';
-import BasicCv from 'public/images/cvtemplate.png';
 import LegacyImg from 'public/images/legacy.png';
-import FancyImg from 'public/images/fancy.png';
-import NewImg from 'public/images/new.png';
 import dynamic from 'next/dynamic';
 
 const ProfessionalTemplate = dynamic(() => import('src/templates/layouts/ProfessionalTemplate'), {
   ssr: false,
 });
+
 const LegacyTemplate = dynamic(() => import('src/templates/layouts/LegacyTemplate'), {
   ssr: false,
 });
-const Template3 = dynamic(() => import('src/templates/layouts/Template3'), {
-  ssr: false,
-});
-const BasicTemplate = dynamic(() => import('src/templates/layouts/BasicTemplate'));
 
-export const templates = [
-  ProfessionalTemplate,
-  LegacyTemplate,
-  BasicTemplate,
-  Template3,
-  Template4,
-  Template5,
-  Template6,
-];
-export const templatesSrc = [ProfessionalImg, LegacyImg, BasicCv, FancyImg, NewImg, NewImg, NewImg];
-export const templatesName = [
-  'Professional',
-  'legacy',
-  'basicCv',
-  'template3',
-  'template4',
-  'template5',
-  'template6',
-];
+export const templates = [ProfessionalTemplate, LegacyTemplate];
+export const templatesSrc = [ProfessionalImg, LegacyImg];
+export const templatesName = ['Professional', 'Legacy'];
 
 export const useTemplates = create((set: any) => ({
   index: 0,

@@ -15,6 +15,10 @@ const TemplateThumbnailImg = styled.img`
   border: solid 2px transparent;
 `;
 
+const TemplateName = styled.span`
+  color: #fff;
+`;
+
 const TemplateThumbnail = styled.label`
   width: 169px;
   height: 240px;
@@ -49,6 +53,7 @@ export function Templates() {
             className={templateIndex === ind ? 'selected' : ''}
             onClick={() => setTemplate(ind)}
           />
+          <TemplateName>{templatesName[ind]}</TemplateName>
         </TemplateThumbnail>
       ))}
     </TemplateWrapper>
