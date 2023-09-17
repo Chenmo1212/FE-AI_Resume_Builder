@@ -12,6 +12,8 @@ import {
   ActivitiesEditor,
 } from 'src/core/components/editor/Editor';
 import { SideMenu } from 'src/core/widgets/SideMenu';
+import { SideBackground } from 'src/core/widgets/SideBackground';
+import { useLeftDrawer } from 'src/stores/settings.store';
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -26,7 +28,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const sideBarList = [
+export const leftNavList = [
   {
     key: 0,
     title: 'Intro',
@@ -78,7 +80,7 @@ const sideBarList = [
 ];
 
 export const LeftNav = () => {
-  const [activeTab, setActiveTab] = useState(-1);
+  const [activeTab, setActiveTab] = useLeftDrawer((state: any) => [state.activeTab, state.update]);
 
   const clickHandler = useCallback(
     (event: any) => {
@@ -90,8 +92,9 @@ export const LeftNav = () => {
 
   return (
     <Wrapper>
-      <SideMenu menuList={sideBarList} onClick={clickHandler} />
-      <SideDrawer isShown={activeTab !== -1}>{sideBarList[activeTab]?.component}</SideDrawer>
+      <SideMenu menuList={leftNavList} onClick={clickHandler} />
+      <SideDrawer isShown={activeTab !== -1}>{leftNavList[activeTab]?.component}</SideDrawer>
+      <SideBackground isShown={activeTab !== -1} />
     </Wrapper>
   );
 };
