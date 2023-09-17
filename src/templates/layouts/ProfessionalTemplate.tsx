@@ -23,6 +23,8 @@ import {
   useLabels,
   useProjects,
 } from 'src/stores/data.store';
+import { useLeftDrawer } from 'src/stores/settings.store';
+import { leftNavList } from 'src/core/containers/LeftNav';
 
 const ResumeContainer = styled(Flex)`
   height: 100%;
@@ -82,44 +84,99 @@ export default function ProfessionalTemplate() {
   );
   const labels = useLabels((state: any) => state.labels);
 
+  const setLeftDrawer = useLeftDrawer((state: any) => state.update);
+
+  const clickHandler = (e: { detail: number }, type) => {
+    let navIndex = -1;
+    if (e.detail === 2) {
+      switch (type) {
+        case labels[5]:
+        case labels[6]:
+        case labels[7]:
+        case labels[8]:
+          navIndex = leftNavList.findIndex((e) => e.title === 'Skills');
+          break;
+        case labels[1]:
+        case labels[2]:
+          navIndex = leftNavList.findIndex((e) => e.title === 'Activities');
+          break;
+        case labels[3]:
+        case labels[4]:
+          navIndex = leftNavList.findIndex((e) => e.title === 'Intro');
+          break;
+        default:
+          navIndex = leftNavList.findIndex((e) => e.title === type);
+      }
+      setLeftDrawer(navIndex.toString());
+    }
+  };
+
   const leftSections = [
     {
       title: labels[0],
       icon: labelsIcon[0],
-      component: <Exp companies={experience.companies} />,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[0])}>
+          <Exp companies={experience.companies} />
+        </div>
+      ),
       styles: { flexGrow: 1 },
     },
     {
       title: labels[1],
       icon: labelsIcon[1],
-      component: <Projects projects={projects.projects} />,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[1])}>
+          <Projects projects={projects.projects} />,
+        </div>
+      ),
     },
   ];
   const rightSections = [
     {
       title: labels[3],
       icon: labelsIcon[3],
-      component: <Description photo={intro.image} description={intro.summary} />,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[3])}>
+          <Description photo={intro.image} description={intro.summary} />
+        </div>
+      ),
     },
     {
       title: labels[6],
       icon: labelsIcon[6],
-      component: <UnratedTabs items={[...technologies, ...libraries, ...databases]} />,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[6])}>
+          <UnratedTabs items={[...technologies, ...libraries, ...databases]} />
+        </div>
+      ),
     },
     {
       title: labels[7],
       icon: labelsIcon[7],
-      component: <UnratedTabs items={practices} />,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[7])}>
+          <UnratedTabs items={practices} />
+        </div>
+      ),
     },
     {
       title: labels[9],
       icon: labelsIcon[9],
-      component: <EduSection education={education} />,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[9])}>
+          <EduSection education={education} />
+        </div>
+      ),
     },
     {
       title: labels[2],
       icon: labelsIcon[2],
-      component: <Description description={achievements} />,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[2])}>
+          <Description description={achievements} />
+        </div>
+      ),
     },
   ];
 
@@ -127,7 +184,9 @@ export default function ProfessionalTemplate() {
     <ResumeContainer>
       <LeftSection>
         <ModernHeaderIntro title={intro.name} profiles={intro.profiles}>
-          <Intro intro={intro} labels={labels} />
+          <div onClick={(e) => clickHandler(e, 'Intro')}>
+            <Intro intro={intro} labels={labels} />
+          </div>
         </ModernHeaderIntro>
 
         {leftSections
