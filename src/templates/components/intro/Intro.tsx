@@ -12,8 +12,15 @@ const Role = styled.h3`
 
 const Contact = ({ icon, value }: any) => (
   <FlexVC jc="flex-end" cGap="8px">
-    {icon}
-    <span>{value}</span>
+    {icon} <span>{value}</span>
+  </FlexVC>
+);
+
+const MailContact = ({ icon, value }: any) => (
+  <FlexVC jc="flex-end" cGap="8px">
+    <a href={'mailto:' + value}>
+      {icon} &nbsp;<span>{value}</span>
+    </a>
   </FlexVC>
 );
 
@@ -25,7 +32,7 @@ export function Intro({ intro, labels }: any) {
         {labels[10] && (
           <div>
             {labels[10]}:&nbsp;
-            <strong>{intro.relExp}</strong>
+            {intro.bio}
           </div>
         )}
         {labels[11] && (
@@ -37,7 +44,7 @@ export function Intro({ intro, labels }: any) {
 
       <FlexCol jc="flex-end" rGap="5px">
         <Contact icon={getIcon('mobile')} value={intro.phone} />
-        <Contact icon={getIcon('email')} value={intro.email} />
+        <MailContact icon={getIcon('email')} value={intro.email} />
         <Contact icon={getIcon('location')} value={intro.location.address} />
       </FlexCol>
     </Flex>

@@ -21,6 +21,7 @@ import {
   useActivities,
   useEducation,
   useLabels,
+  useProjects,
 } from 'src/stores/data.store';
 
 const ResumeContainer = styled(Flex)`
@@ -49,33 +50,42 @@ const RightSection = styled(FlexCol)`
 `;
 
 const labelsIcon = [
-  'Expérience',
-  'clé',
-  'Certificat',
-  'identité',
-  'carrière',
+  'work',
+  'key',
+  'certificate',
+  'identity',
+  'career',
   'expert',
-  'compétence',
+  'skill',
   'branch',
   'tool',
-  'éducation',
+  'education',
 ];
 
 export default function ProfessionalTemplate() {
   const intro = useIntro((state: any) => state.intro);
   const education = useEducation((state: any) => state.education);
   const experience = useWork((state: any) => state);
+  const projects = useProjects((state: any) => state);
   const [involvements, achievements] = useActivities(
     (state: any) => [state.involvements, state.achievements],
     shallow
   );
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
-    (state: any) => [[], [], [], [], [], [], []],
+    (state: any) => [
+      state.languages,
+      state.frameworks,
+      state.libraries,
+      state.databases,
+      state.technologies,
+      state.practices,
+      state.tools,
+    ],
     shallow
   );
   const labels = useLabels((state: any) => state.labels);
-  console.log(experience.companies);
-  let leftSections = [
+
+  const leftSections = [
     {
       title: labels[0],
       icon: labelsIcon[0],
@@ -83,75 +93,54 @@ export default function ProfessionalTemplate() {
       styles: { flexGrow: 1 },
     },
     {
+      title: labels[1],
+      icon: labelsIcon[1],
+      component: <Projects projects={projects.projects} />,
+    },
+    {
       title: labels[2],
       icon: labelsIcon[2],
       component: <Description description={achievements} />,
     },
   ];
-  let rightSections = [
+  const rightSections = [
     {
       title: labels[3],
       icon: labelsIcon[3],
       component: <Description photo={intro.image} description={intro.summary} />,
     },
+    // {
+    //   title: labels[4],
+    //   icon: labelsIcon[4],
+    //   component: <Description description={intro.objective} />,
+    // },
+    // {
+    //   title: labels[5],
+    //   icon: labelsIcon[5],
+    //   component: <RatedBars items={[...languages, ...frameworks]} />,
+    // },
     {
-      title: labels[4],
-      icon: labelsIcon[4],
-      component: <Description description={intro.objective} />,
+      title: labels[6],
+      icon: labelsIcon[6],
+      component: <UnratedTabs items={[...technologies, ...libraries, ...databases]} />,
     },
     {
-      title: labels[5],
-      icon: labelsIcon[5],
-      component: <RatedBars items={[...languages, ...frameworks]} />,
+      title: labels[7],
+      icon: labelsIcon[7],
+      component: <UnratedTabs items={practices} />,
     },
+    // { title: labels[8], icon: labelsIcon[8], component: <UnratedTabs items={tools} /> },
     {
       title: labels[9],
       icon: labelsIcon[9],
       component: <EduSection education={education} />,
     },
   ];
-  if (experience.companies.length >= 5) {
-    leftSections = [
-      {
-        title: labels[0],
-        icon: labelsIcon[0],
-        component: <Exp companies={experience.companies} />,
-        styles: { flexGrow: 1 },
-      },
-    ];
-    rightSections = [
-      {
-        title: labels[3],
-        icon: labelsIcon[3],
-        component: <Description photo={intro.image} description={intro.summary} />,
-      },
-      {
-        title: labels[4],
-        icon: labelsIcon[4],
-        component: <Description description={intro.objective} />,
-      },
-      {
-        title: labels[5],
-        icon: labelsIcon[5],
-        component: <RatedBars items={[...languages, ...frameworks]} />,
-      },
-      {
-        title: labels[2],
-        icon: labelsIcon[2],
-        component: <Description description={achievements} />,
-      },
-      {
-        title: labels[9],
-        icon: labelsIcon[9],
-        component: <EduSection education={education} />,
-      },
-    ];
-  }
 
   return (
     <ResumeContainer>
       <LeftSection>
-        <ModernHeaderIntro displaySocial={false} title={intro.name} profiles={intro.profiles}>
+        <ModernHeaderIntro title={intro.name} profiles={intro.profiles}>
           <Intro intro={intro} labels={labels} />
         </ModernHeaderIntro>
 
