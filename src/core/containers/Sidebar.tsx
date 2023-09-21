@@ -11,6 +11,7 @@ import { getIcon } from 'src/styles/icons';
 import { SaveSettings } from '../widgets/SaveSettings';
 import { UploadSettings } from '../widgets/UploadSettings';
 import { useActivities, useEducation, useIntro, useSkills, useWork } from 'src/stores/data.store';
+import { Tooltip } from 'antd';
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -100,15 +101,21 @@ export const Sidebar = () => {
       <SideDrawer isShown={activeTab !== -1}>{sideBarList[activeTab]?.component}</SideDrawer>
       <SideMenu menuList={sideBarList} onClick={clickHandler}>
         <IconWrapper onClick={zoomout}>
-          <IconButton>{getIcon('zoomout')}</IconButton>
+          <Tooltip placement="left" title={'Zoom Out'}>
+            <IconButton>{getIcon('zoomout')}</IconButton>
+          </Tooltip>
         </IconWrapper>
 
         <IconWrapper onClick={zoomin}>
-          <IconButton>{getIcon('zoomin')}</IconButton>
+          <Tooltip placement="left" title={'Zoom In'}>
+            <IconButton>{getIcon('zoomin')}</IconButton>
+          </Tooltip>
         </IconWrapper>
 
         <IconWrapper onClick={reset}>
-          <IconButton>{getIcon('reset')}</IconButton>
+          <Tooltip placement="left" title={'Reset'}>
+            <IconButton>{getIcon('reset')}</IconButton>
+          </Tooltip>
         </IconWrapper>
 
         <UploadSettings />

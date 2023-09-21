@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useIntro } from 'src/stores/data.store';
 import { getIcon } from 'src/styles/icons';
+import { Tooltip } from 'antd';
 
 const IconWrapper = styled.div`
   outline-color: transparent;
@@ -41,7 +42,9 @@ export function PrintSettings() {
 
   return (
     <IconWrapper>
-      <IconButton onClick={globalThis?.print}>{getIcon('print')}</IconButton>
+      <Tooltip placement="left" title={'Print'}>
+        <IconButton onClick={globalThis?.print}>{getIcon('print')}</IconButton>
+      </Tooltip>
     </IconWrapper>
   );
 }
