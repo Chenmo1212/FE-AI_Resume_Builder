@@ -42,9 +42,7 @@ export function PrintSettings() {
 
   return (
     <IconWrapper>
-      <Tooltip placement="left" title={'Print'}>
-        <IconButton onClick={globalThis?.print}>{getIcon('print')}</IconButton>
-      </Tooltip>
+      <IconButton onClick={globalThis?.print}>{getIcon('print')}</IconButton>
     </IconWrapper>
   );
 }
