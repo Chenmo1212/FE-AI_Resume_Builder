@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Upload } from 'antd';
+import { Upload, Tooltip } from 'antd';
 import {
   useActivities,
   useAwards,
@@ -71,7 +71,9 @@ export function UploadSettings() {
   return (
     <IconWrapper>
       <Upload {...props}>
-        <IconButton>{getIcon('upload')}</IconButton>
+        <Tooltip placement="left" title={'Upload'}>
+          <IconButton>{getIcon('upload')}</IconButton>
+        </Tooltip>
       </Upload>
     </IconWrapper>
   );

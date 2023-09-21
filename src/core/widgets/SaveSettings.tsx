@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Tooltip } from 'antd';
 import exportFromJSON from 'export-from-json';
 import {
   useActivities,
@@ -57,7 +58,9 @@ export function SaveSettings() {
 
   return (
     <IconWrapper>
-      <IconButton onClick={save}>{getIcon('save')}</IconButton>
+      <Tooltip placement="left" title={'Save'}>
+        <IconButton onClick={save}>{getIcon('save')}</IconButton>
+      </Tooltip>
     </IconWrapper>
   );
 }
