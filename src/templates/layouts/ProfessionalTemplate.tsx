@@ -127,7 +127,7 @@ export default function ProfessionalTemplate() {
       icon: labelsIcon[1],
       component: (
         <div onClick={(e) => clickHandler(e, labels[1])}>
-          <Projects projects={projects.projects} />,
+          <Projects projects={projects.projects} />
         </div>
       ),
     },
