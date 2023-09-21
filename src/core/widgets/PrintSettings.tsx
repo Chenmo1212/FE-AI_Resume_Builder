@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useIntro } from 'src/stores/data.store';
 import { getIcon } from 'src/styles/icons';
-import { Tooltip } from 'antd';
 
 const IconWrapper = styled.div`
   outline-color: transparent;
