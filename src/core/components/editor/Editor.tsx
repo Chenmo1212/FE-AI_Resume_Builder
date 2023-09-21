@@ -110,7 +110,7 @@ export const EduEditor = () => {
   );
 };
 
-export const ExerienceEditor = () => {
+export const ExperienceEditor = () => {
   const companies = useWork((state: any) => state.companies);
   const [add, update, purge, changeOrder] = useWork(
     (state: any) => [state.add, state.update, state.purge, state.changeOrder],

@@ -4,7 +4,7 @@ import { SideDrawer } from 'src/core/widgets/SideDrawer';
 import {
   SocialEditor,
   EduEditor,
-  ExerienceEditor,
+  ExperienceEditor,
   SkillsEditor,
   IntroEditor,
   ForteEditor,
@@ -51,7 +51,7 @@ export const leftNavList = [
     key: 3,
     title: 'Experience',
     icon: 'work',
-    component: <ExerienceEditor />,
+    component: <ExperienceEditor />,
   },
   {
     key: 4,
