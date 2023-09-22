@@ -12,6 +12,7 @@ import { SaveSettings } from '../widgets/SaveSettings';
 import { UploadSettings } from '../widgets/UploadSettings';
 import { useActivities, useEducation, useIntro, useSkills, useWork } from 'src/stores/data.store';
 import { Tooltip } from 'antd';
+import { JobEditor } from '../components/jobs/Jobs';
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -37,6 +38,12 @@ const sideBarList = [
     title: 'Theme',
     icon: 'color',
     component: <Themes />,
+  },
+  {
+    key: 2,
+    title: 'Job',
+    icon: 'robot',
+    component: <JobEditor />,
   },
 ];
 
