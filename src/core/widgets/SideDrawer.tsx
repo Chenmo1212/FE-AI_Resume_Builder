@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   background: #222;
-  padding: 0.25rem;
+  padding: 0.25rem 0.25rem 0.25rem 1rem;
   height: 100%;
 `;
 
