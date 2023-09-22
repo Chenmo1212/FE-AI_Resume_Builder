@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container, Heading } from 'src/core/components/editor/Editor';
 import { Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { getIcon } from 'src/styles/icons';
 import { useJobs } from '../../stores/jobs.store';
+import shallow from 'zustand/shallow';
 
 interface Job {
-  key: React.Key;
   id?: number;
   company: string;
   job: string;
@@ -41,8 +41,14 @@ const rowSelection = {
 };
 
 const JobTable = () => {
-  let jobs = useJobs((state) => state.jobs);
-  const jobWithKeys: Job[] = jobs.map((item, index) => ({
+  let [jobs, loading] = useJobs((state) => [state.jobs, state.loading]);
+  const fetch = useJobs((state: any) => state.fetch, shallow);
+
+  useEffect(() => {
+    fetch();
+  }, []);
+
+  const jobWithKeys: any[] = jobs.map((item, index) => ({
     ...item,
     key: index.toString(),
   }));
@@ -54,7 +60,7 @@ const JobTable = () => {
           ...rowSelection,
         }}
         columns={columns}
-        dataSource={jobWithKeys}
+        dataSource={loading ? [] : jobWithKeys}
       />
     </div>
   );

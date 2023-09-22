@@ -7,7 +7,6 @@ import { JOBS_METADATA } from '../../meta-data/input_metadata';
 
 export const JobEditor = () => {
   const jobs = useJobs((state: any) => state.jobs);
-  console.log({ jobs });
   const [add, update, purge] = useJobs(
     (state: any) => [state.add, state.update, state.purge],
     shallow
