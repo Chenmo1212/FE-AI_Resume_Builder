@@ -296,3 +296,26 @@ export const AWARDS_METADATA = [
     value: 'summary',
   },
 ];
+
+export const JOBS_METADATA = [
+  {
+    label: 'Company Name',
+    type: 'Input',
+    value: 'company',
+  },
+  {
+    label: 'Job Title',
+    type: 'Input',
+    value: 'job',
+  },
+  {
+    label: 'Job Link',
+    type: 'Input',
+    value: 'link',
+  },
+  {
+    label: 'Job Description',
+    type: 'MarkDownField',
+    value: 'description',
+  },
+];
