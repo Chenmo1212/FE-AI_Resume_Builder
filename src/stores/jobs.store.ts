@@ -2,8 +2,17 @@ import create from 'zustand';
 import { arrayMoveImmutable } from 'array-move';
 import { persist } from 'zustand/middleware';
 import produce from 'immer';
+import { getJobList } from '../axios/api';
 
-const JOBS_DATA = [
+interface Job {
+  id?: string;
+  company: string;
+  job: string;
+  description: string;
+  link: string;
+}
+
+const JOBS_DATA: Job[] = [
   {
     company: 'Company Name1',
     job: 'Job Title1',
@@ -24,10 +33,34 @@ const JOBS_DATA = [
   },
 ];
 
+const handleJobs = (jobs: Job[]) => {
+  return jobs.map((job) => ({
+    id: job['_id'],
+    company: job['company'],
+    job: job['job_title'],
+    description: job['raw']['raw_job'],
+    link: job.link || '',
+  }));
+};
+
 export const useJobs = create(
   persist(
     (set) => ({
       jobs: JOBS_DATA,
+      loading: true,
+
+      fetch: async () => {
+        try {
+          const res = await getJobList();
+          const processedData = handleJobs(res.data);
+          set((state: any) => {
+            state.jobs = processedData;
+            state.loading = false;
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      },
 
       add: () =>
         set(
