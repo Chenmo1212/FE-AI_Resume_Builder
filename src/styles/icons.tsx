@@ -43,6 +43,7 @@ import {
   FaWordpressSimple,
   FaHackerrank,
   FaRobot,
+  FaPaperPlane,
 } from 'react-icons/fa';
 import { IoGitBranch, IoReload } from 'react-icons/io5';
 import { GoVerified } from 'react-icons/go';
@@ -61,7 +62,6 @@ const icons = new Map([
   ['leetcode', <SiLeetcode />],
   ['devto', <SiDevdotto />],
   ['medium', <FaMediumM />],
-  ['robot', <FaRobot />],
   ['wordpress', <FaWordpressSimple />],
   ['codechef', <SiCodechef />],
   ['codeforces', <SiCodeforces />],
@@ -70,6 +70,8 @@ const icons = new Map([
   ['hashnode', <SiHashnode />],
   ['squarespace', <SiSquarespace />],
   ['globe', <MdLanguage />],
+  ['robot', <FaRobot />],
+  ['job', <FaPaperPlane />],
 
   ['identity', <MdPermIdentity />],
   ['expert', <SiExpertsexchange />],
