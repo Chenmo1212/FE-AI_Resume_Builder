@@ -14,6 +14,7 @@ import {
 import { SideMenu } from 'src/core/widgets/SideMenu';
 import { SideBackground } from 'src/core/widgets/SideBackground';
 import { useLeftDrawer } from 'src/stores/settings.store';
+import { JobEditor } from '../components/jobs/Jobs';
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -76,6 +77,12 @@ export const leftNavList = [
     title: 'Label',
     icon: 'label',
     component: <LabelsEditor />,
+  },
+  {
+    key: 8,
+    title: 'Job',
+    icon: 'job',
+    component: <JobEditor />,
   },
 ];
 
