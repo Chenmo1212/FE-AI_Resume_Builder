@@ -44,7 +44,6 @@ export function ProjectHeader({ project }: any) {
 }
 
 export function Projects({ projects }: any) {
-  console.log({ projects });
   return (
     <>
       {projects?.map((project: any, index: number) => (

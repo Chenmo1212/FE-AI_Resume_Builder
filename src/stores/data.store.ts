@@ -282,7 +282,6 @@ export const useActivities = create(
 
       update: (type: string, value: string | number) =>
         set((state: any) => {
-          console.log({ type }, { value });
           type === 'projects' ? (state[type] = value) : (state[type]['summary'] = value);
         }),
     }),
