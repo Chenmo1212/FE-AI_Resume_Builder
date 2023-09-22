@@ -6,6 +6,7 @@ import { Templates } from 'src/core/components/templates/Templates';
 import { Themes } from 'src/core/components/themes/Themes';
 import { SideMenu } from 'src/core/widgets/SideMenu';
 import { PrintSettings } from 'src/core/widgets/PrintSettings';
+import { UpdateResume } from 'src/core/widgets/UpdateResume';
 import { useZoom } from 'src/stores/settings.store';
 import { getIcon } from 'src/styles/icons';
 import { SaveSettings } from '../widgets/SaveSettings';
@@ -37,6 +38,12 @@ const sideBarList = [
     title: 'Theme',
     icon: 'color',
     component: <Themes />,
+  },
+  {
+    key: 2,
+    title: 'Robot',
+    icon: 'robot',
+    component: <UpdateResume />,
   },
 ];
 
