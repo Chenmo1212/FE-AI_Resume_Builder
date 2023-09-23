@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'http://16.170.240.190:5001',
+  baseURL: 'http://16.170.240.190:80',
   headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Type': 'application/json',
     Accept: 'application/json',
   },
   timeout: 10 * 1000,

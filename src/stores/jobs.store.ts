@@ -1,8 +1,9 @@
 import create from 'zustand';
+import { debounce } from 'lodash';
 import { arrayMoveImmutable } from 'array-move';
 import { persist } from 'zustand/middleware';
 import produce from 'immer';
-import { getJobList } from '../axios/api';
+import { getJobList, addJob, updateJob, purgeJob } from '../axios/api';
 
 interface Job {
   id?: string;
@@ -43,6 +44,16 @@ const handleJobs = (jobs: Job[]) => {
   }));
 };
 
+const debouncedUpdateJob = debounce(async (index: string) => {
+  try {
+    const currentState = useJobs.getState();
+    const updatedJob = currentState.jobs[index];
+    await updateJob(updatedJob);
+  } catch (err) {
+    console.log(err);
+  }
+}, 3000);
+
 export const useJobs = create(
   persist(
     (set) => ({
@@ -62,31 +73,46 @@ export const useJobs = create(
         }
       },
 
-      add: () =>
-        set(
-          produce((state: any) => {
-            state.jobs.push({
-              company: '',
-              job: '',
-              link: '',
-              description: '',
-            });
-            console.log('add event');
-          })
-        ),
+      add: async () => {
+        try {
+          const res = await addJob({});
+          set(
+            produce((state: any) => {
+              state.jobs.push({
+                id: res.data['job_id'],
+                company: '',
+                title: 'job title',
+                link: '',
+                description: '',
+              });
+            })
+          );
+        } catch (err) {
+          console.error(err);
+        }
+      },
 
-      update: (index: string, key: string, value: string) =>
+      update: async (index: string, key: string, value: string) => {
         set(
           produce((state: any) => {
             state.jobs[index][key] = value;
-            console.log('update event');
-          })
-        ),
+          }),
+          debouncedUpdateJob(index)
+        );
+      },
 
-      purge: (index: number) =>
-        set((state: any) => ({
-          jobs: state.jobs.filter((_, ind) => ind !== index),
-        })),
+      purge: async (index: number) => {
+        try {
+          const currentState = useJobs.getState();
+          const delJobId = currentState.jobs[index].id;
+          await purgeJob(delJobId);
+          set((state: any) => ({
+            jobs: state.jobs.filter((_, ind) => ind !== index),
+          }));
+        } catch (err) {
+          console.log(err);
+        }
+      },
     }),
     {
       name: 'sprb-jobs',

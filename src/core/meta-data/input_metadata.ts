@@ -306,7 +306,7 @@ export const JOBS_METADATA = [
   {
     label: 'Job Title',
     type: 'Input',
-    value: 'job',
+    value: 'title',
   },
   {
     label: 'Job Link',
