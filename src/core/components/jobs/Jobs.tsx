@@ -18,7 +18,7 @@ export const JobEditor = () => {
       <TimelineEdit
         METADATA={JOBS_METADATA}
         itemList={jobs}
-        identifier="job"
+        identifier="title"
         operations={{ update, add, purge }}
       />
     </Container>
