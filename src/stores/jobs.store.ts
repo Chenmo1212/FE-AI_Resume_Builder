@@ -7,7 +7,7 @@ import { getJobList } from '../axios/api';
 interface Job {
   id?: string;
   company: string;
-  job: string;
+  title: string;
   description: string;
   link: string;
 }
@@ -15,19 +15,19 @@ interface Job {
 const JOBS_DATA: Job[] = [
   {
     company: 'Company Name1',
-    job: 'Job Title1',
+    title: 'Job Title1',
     link: 'Job Link',
     description: 'Job Description',
   },
   {
     company: 'Company Name2',
-    job: 'Job Title2',
+    title: 'Job Title2',
     link: 'Job Link',
     description: 'Job Description',
   },
   {
     company: 'Company Name3',
-    job: 'Job Title3',
+    title: 'Job Title3',
     link: 'Job Link',
     description: 'Job Description',
   },
@@ -37,8 +37,8 @@ const handleJobs = (jobs: Job[]) => {
   return jobs.map((job) => ({
     id: job['_id'],
     company: job['company'],
-    job: job['job_title'],
-    description: job['raw']['raw_job'],
+    title: job['title'],
+    description: job['raw'],
     link: job.link || '',
   }));
 };
@@ -71,6 +71,7 @@ export const useJobs = create(
               link: '',
               description: '',
             });
+            console.log('add event');
           })
         ),
 
@@ -78,6 +79,7 @@ export const useJobs = create(
         set(
           produce((state: any) => {
             state.jobs[index][key] = value;
+            console.log('update event');
           })
         ),
 

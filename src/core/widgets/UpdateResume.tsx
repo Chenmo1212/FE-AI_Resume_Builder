@@ -9,14 +9,14 @@ import shallow from 'zustand/shallow';
 interface Job {
   id?: number;
   company: string;
-  job: string;
+  title: string;
   link: string;
 }
 
 const columns: ColumnsType<Job> = [
   {
-    title: 'Job',
-    dataIndex: 'job',
+    title: 'Title',
+    dataIndex: 'title',
   },
   {
     title: 'Company',
