@@ -47,8 +47,12 @@ const handleJobs = (jobs: Job[]) => {
 const debouncedUpdateJob = debounce(async (index: string) => {
   try {
     const currentState = useJobs.getState();
-    const updatedJob = currentState.jobs[index];
-    await updateJob(updatedJob);
+    const updatedJob = { ...currentState.jobs[index] };
+    const jobId = updatedJob['id'];
+    updatedJob['raw'] = updatedJob['description'];
+    delete updatedJob['description'];
+    delete updatedJob['id'];
+    await updateJob(jobId, updatedJob);
   } catch (err) {
     console.log(err);
   }

@@ -8,8 +8,8 @@ export function addJob(data) {
   return api.post('/job', JSON.stringify(data));
 }
 
-export function updateJob(data) {
-  return api.put('/job/' + data.id, JSON.stringify(data));
+export function updateJob(id, data) {
+  return api.put('/job/' + id, JSON.stringify(data));
 }
 
 export function purgeJob(id) {
