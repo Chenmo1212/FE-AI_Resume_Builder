@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Heading } from 'src/core/components/editor/Editor';
-import { Table } from 'antd';
+import { Table, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { getIcon } from 'src/styles/icons';
 import { useJobs } from '../../stores/jobs.store';
@@ -33,14 +33,21 @@ const columns: ColumnsType<Job> = [
   },
 ];
 
-// rowSelection object indicates the need for row selection
-const rowSelection = {
-  onChange: (selectedRowKeys: React.Key[], selectedRows: Job[]) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
+const SubmitBtn = ({ selectedRows }) => {
+  const handleSubmit = () => {
+    console.log('Selected Rows in SubmitBtn:', selectedRows);
+  };
+
+  return (
+    <>
+      <Button type="primary" onClick={handleSubmit}>
+        Submit
+      </Button>
+    </>
+  );
 };
 
-const JobTable = () => {
+const JobTable = ({ onSelectedRowsChange }) => {
   let [jobs, loading] = useJobs((state) => [state.jobs, state.loading]);
   const fetch = useJobs((state: any) => state.fetch, shallow);
 
@@ -52,6 +59,14 @@ const JobTable = () => {
     ...item,
     key: index.toString(),
   }));
+
+  // rowSelection object indicates the need for row selection
+  const rowSelection = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: Job[]) => {
+      onSelectedRowsChange(selectedRows);
+    },
+  };
+
   return (
     <div>
       <Table
@@ -66,11 +81,15 @@ const JobTable = () => {
   );
 };
 
-export const UpdateResume = () => (
-  <>
-    <Container>
-      <Heading>Job Editor</Heading>
-      <JobTable />
-    </Container>
-  </>
-);
+export const UpdateResume = () => {
+  const [selectedJobs, setSelectedJobs] = useState([]);
+  return (
+    <>
+      <Container>
+        <Heading>AI Resume</Heading>
+        <JobTable onSelectedRowsChange={(selectedJobs) => setSelectedJobs(selectedJobs)} />
+        <SubmitBtn selectedRows={selectedJobs} />
+      </Container>
+    </>
+  );
+};

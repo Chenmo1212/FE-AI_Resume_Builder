@@ -68,10 +68,12 @@ export const useJobs = create(
         try {
           const res = await getJobList();
           const processedData = handleJobs(res.data);
-          set((state: any) => {
-            state.jobs = processedData;
-            state.loading = false;
-          });
+          set(
+            produce((state: any) => {
+              state.jobs = processedData;
+              state.loading = false;
+            })
+          );
         } catch (err) {
           console.error(err);
         }
@@ -110,9 +112,11 @@ export const useJobs = create(
           const currentState = useJobs.getState();
           const delJobId = currentState.jobs[index].id;
           await purgeJob(delJobId);
-          set((state: any) => ({
-            jobs: state.jobs.filter((_, ind) => ind !== index),
-          }));
+          set(
+            produce((state: any) => {
+              state.jobs = state.jobs.filter((_, ind) => ind !== index);
+            })
+          );
         } catch (err) {
           console.log(err);
         }
