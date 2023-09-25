@@ -168,10 +168,15 @@ export const useTasks = create(
               taskIdx.forEach((idx, i) => {
                 set(
                   produce((state: any) => {
-                    state.tasks[idx] = {
-                      ...state.tasks[idx],
-                      status: tasks[i].status,
-                    };
+                    if (tasks[i]) {
+                      state.tasks[idx] = {
+                        ...state.tasks[idx],
+                        status: tasks[i].status,
+                      };
+                    } else {
+                      console.log('The database does not have this id: ', taskIds[i]);
+                      state.tasks[idx]['id'] = '';
+                    }
                   })
                 );
               });
@@ -188,7 +193,7 @@ export const useTasks = create(
             state.tasks.push({
               ...data,
               jobId: data.id,
-              status: 0,
+              status: -1,
               id: '',
               key: state.tasks.length.toString(),
             });

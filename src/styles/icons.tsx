@@ -1,5 +1,14 @@
 import React from 'react';
-import { AiOutlineGithub, AiFillLinkedin, AiOutlineAim, AiFillDelete } from 'react-icons/ai';
+import {
+  AiOutlineGithub,
+  AiFillLinkedin,
+  AiOutlineAim,
+  AiFillDelete,
+  AiOutlineSync,
+  AiOutlineCheckCircle,
+  AiOutlineClockCircle,
+  AiOutlineCloud,
+} from 'react-icons/ai';
 import {
   MdVpnKey,
   MdVerifiedUser,
@@ -72,6 +81,10 @@ const icons = new Map([
   ['globe', <MdLanguage />],
   ['robot', <FaRobot />],
   ['job', <FaPaperPlane />],
+  ['sync', <AiOutlineSync />],
+  ['check', <AiOutlineCheckCircle />],
+  ['clock', <AiOutlineClockCircle />],
+  ['cloud', <AiOutlineCloud />],
 
   ['identity', <MdPermIdentity />],
   ['expert', <SiExpertsexchange />],
