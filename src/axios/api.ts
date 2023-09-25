@@ -15,3 +15,11 @@ export function updateJob(id, data) {
 export function purgeJob(id) {
   return api.delete('/job/' + id);
 }
+
+export function addTasks(data) {
+  return api.post('/tasks', JSON.stringify(data));
+}
+
+export function checkTasksResult(data) {
+  return api.post('/tasks/results', JSON.stringify(data));
+}
