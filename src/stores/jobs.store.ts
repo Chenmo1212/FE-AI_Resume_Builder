@@ -3,7 +3,7 @@ import { debounce } from 'lodash';
 import { arrayMoveImmutable } from 'array-move';
 import { persist } from 'zustand/middleware';
 import produce from 'immer';
-import { getJobList, addJob, updateJob, purgeJob } from '../axios/api';
+import { getJobs, addJob, updateJob, purgeJob, getTasks, addTasks } from '../axios/api';
 
 interface Job {
   id?: string;
@@ -11,6 +11,20 @@ interface Job {
   title: string;
   description: string;
   link: string;
+}
+
+interface Task {
+  id?: string;
+  title: string;
+  company: string;
+  link: string;
+  description: string;
+  jobId: string;
+  status: number;
+  resume: object;
+  rawResumeId: string;
+  newResumeId: string;
+  key: string;
 }
 
 const JOBS_DATA: Job[] = [
@@ -34,15 +48,7 @@ const JOBS_DATA: Job[] = [
   },
 ];
 
-const handleJobs = (jobs: Job[]) => {
-  return jobs.map((job) => ({
-    id: job['_id'],
-    company: job['company'],
-    title: job['title'],
-    description: job['raw'],
-    link: job.link || '',
-  }));
-};
+const TASK_DATA: Task[] = [];
 
 const debouncedUpdateJob = debounce(async (index: string) => {
   try {
@@ -64,19 +70,25 @@ export const useJobs = create(
       jobs: JOBS_DATA,
       loading: true,
 
-      fetch: async () => {
-        try {
-          const res = await getJobList();
-          const processedData = handleJobs(res.data);
-          set(
-            produce((state: any) => {
-              state.jobs = processedData;
-              state.loading = false;
-            })
-          );
-        } catch (err) {
-          console.error(err);
-        }
+      fetch: () => {
+        getJobs()
+          .then((res) => {
+            set(
+              produce((state: any) => {
+                state.jobs = res.data.map((job) => ({
+                  id: job.id,
+                  company: job.company,
+                  title: job.title,
+                  link: job.link,
+                  description: job.raw,
+                }));
+                state.loading = false;
+              })
+            );
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       },
 
       add: async () => {
@@ -84,13 +96,15 @@ export const useJobs = create(
           const res = await addJob({});
           set(
             produce((state: any) => {
-              state.jobs.push({
+              const job = {
                 id: res.data['job_id'],
                 company: '',
                 title: 'job title',
                 link: '',
                 description: '',
-              });
+              };
+              state.jobs.push(job);
+              useTasks.getState().add(job);
             })
           );
         } catch (err) {
@@ -98,10 +112,12 @@ export const useJobs = create(
         }
       },
 
-      update: async (index: string, key: string, value: string) => {
+      update: (index: string, key: string, value: string) => {
         set(
           produce((state: any) => {
+            state.jobs = [...state.jobs];
             state.jobs[index][key] = value;
+            useTasks.getState().update(index, key, value);
           }),
           debouncedUpdateJob(index)
         );
@@ -115,6 +131,7 @@ export const useJobs = create(
           set(
             produce((state: any) => {
               state.jobs = state.jobs.filter((_, ind) => ind !== index);
+              useTasks.getState().purge(index);
             })
           );
         } catch (err) {
@@ -124,6 +141,105 @@ export const useJobs = create(
     }),
     {
       name: 'sprb-jobs',
+    }
+  )
+);
+
+export const useTasks = create(
+  persist(
+    (set) => ({
+      tasks: TASK_DATA,
+      loading: true,
+
+      fetch: () => {
+        let taskIds: string[] = [];
+        let taskIdx: number[] = [];
+        useTasks.getState().tasks.forEach((task, idx) => {
+          if (task.id) {
+            taskIds.push(task.id);
+            taskIdx.push(idx);
+          }
+        });
+
+        if (taskIds.length) {
+          getTasks({ task_ids: taskIds })
+            .then((res) => {
+              const tasks = res.data.tasks;
+              taskIdx.forEach((idx, i) => {
+                set(
+                  produce((state: any) => {
+                    state.tasks[idx] = {
+                      ...state.tasks[idx],
+                      status: tasks[i].status,
+                    };
+                  })
+                );
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      },
+
+      add: (data: any) => {
+        set(
+          produce((state: any) => {
+            state.tasks.push({
+              ...data,
+              jobId: data.id,
+              status: 0,
+              id: '',
+              key: state.tasks.length.toString(),
+            });
+          })
+        );
+      },
+
+      create: (data: any) => {
+        addTasks(data)
+          .then((res) => {
+            const taskIds = res.data['task_ids'];
+            const jobs = data['job_list'].map((job, index) => ({
+              ...job,
+              id: taskIds[index],
+            }));
+            set(
+              produce((state: any) => {
+                for (let i = 0; i < jobs.length; i++) {
+                  const taskIndex = state.tasks.findIndex((task) => task.jobId === jobs[i].jobId);
+                  if (taskIndex >= 0) {
+                    // state.update(taskIndex, 'id', jobs[i].id)
+                    state.tasks[taskIndex]['id'] = jobs[i].id;
+                  }
+                }
+              })
+            );
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      },
+
+      update: (index: string, key: string, value: string) => {
+        set(
+          produce((state: any) => {
+            state.tasks = [...state.tasks];
+            state.tasks[index][key] = value;
+          })
+        );
+      },
+
+      purge: (index: number) => {
+        set(
+          produce((state: any) => {
+            state.tasks = state.tasks.filter((_, ind) => ind !== index);
+          })
+        );
+      },
+    }),
+    {
+      name: 'sprb-tasks',
     }
   )
 );
