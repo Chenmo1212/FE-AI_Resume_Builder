@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Heading } from 'src/core/components/editor/Editor';
-import { Table, Button, message, Space } from 'antd';
+import { Table, Button, message, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { getIcon } from 'src/styles/icons';
 import { useTasks } from '../../stores/jobs.store';
@@ -37,9 +37,10 @@ const columns: ColumnsType<Task> = [
     title: 'Status',
     dataIndex: 'status',
     render: (status: number) => {
-      if (status === 0) return <span>Not Start</span>;
-      else if (status === 1) return <span>Waiting</span>;
-      else if (status === 2) return <span>Done</span>;
+      if (status === -1) return <Tag icon={getIcon('cloud')} color="default" />;
+      else if (status === 0) return <Tag icon={getIcon('clock')} color="default" />;
+      else if (status === 1) return <Tag icon={getIcon('sync')} color="processing" />;
+      else if (status === 2) return <Tag icon={getIcon('check')} color="success" />;
     },
   },
   {
@@ -108,7 +109,7 @@ const SubmitBtn = ({ selectedRows }) => {
 };
 
 const TaskTable = ({ onSelectedRowsChange }) => {
-  const [tasks, loading] = useTasks((state) => [state.tasks, state.loading]);
+  const [tasks] = useTasks((state) => [state.tasks]);
   const fetch = useTasks((state: any) => state.fetch, shallow);
 
   useEffect(() => {
