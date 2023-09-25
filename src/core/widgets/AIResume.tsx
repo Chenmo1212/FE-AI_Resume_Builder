@@ -88,8 +88,14 @@ const SubmitBtn = ({ selectedRows }) => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async () => {
+    const jobList = selectedRows.map((task) => ({
+      id: task.jobId,
+      description: task.description,
+      link: task.link,
+      title: task.title,
+    }));
     create({
-      job_list: selectedRows,
+      job_list: jobList,
       resume: resume,
     });
     messageApi.open({
