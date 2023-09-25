@@ -167,7 +167,6 @@ export const useTasks = create(
             });
           })
         );
-
         if (taskIds.length) {
           getTasks({ task_ids: taskIds })
             .then((res) => {
@@ -179,6 +178,7 @@ export const useTasks = create(
                       state.tasks[idx] = {
                         ...state.tasks[idx],
                         status: tasks[i].status,
+                        resume: tasks[i].resume,
                       };
                     } else {
                       console.log('The database does not have this id: ', taskIds[i]);
