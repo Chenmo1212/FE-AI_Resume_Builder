@@ -28,6 +28,13 @@ const columns: ColumnsType<Task> = [
   {
     title: 'Title',
     dataIndex: 'title',
+    render: (title: string, record: Task) => (
+      <>
+        <a href={record.link} target="_blank" rel="noreferrer">
+          {title}
+        </a>
+      </>
+    ),
   },
   {
     title: 'Company',
@@ -44,15 +51,18 @@ const columns: ColumnsType<Task> = [
     },
   },
   {
-    title: 'Link',
-    dataIndex: 'link',
-    render: (url: string) => (
-      <a href={url} target="_blank" rel="noreferrer">
-        {getIcon('globe')}
-      </a>
+    title: 'Action',
+    render: (record: Task) => (
+      <>
+        <a onClick={() => useResume(record)}>{getIcon('eye')}</a>
+      </>
     ),
   },
 ];
+
+const useResume = (record: Task) => {
+  console.log('aaaa', record);
+};
 
 interface Resume {
   basics: object;
