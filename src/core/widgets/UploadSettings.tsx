@@ -43,8 +43,8 @@ export function UploadSettings() {
   const resetEducation = useEducation((state: any) => state.reset);
   const resetActivities = useActivities((state: any) => state.reset);
   const resetProjects = useProjects((state: any) => state.reset);
-  // const volunteer = useVolunteer((state: any) => state.reset);
-  // const awards = useAwards((state: any) => state.reset);
+  const resetVolunteer = useVolunteer((state: any) => state.reset);
+  const resetAwards = useAwards((state: any) => state.reset);
 
   function beforeUpload(file: File) {
     var reader = new FileReader();
@@ -56,6 +56,8 @@ export function UploadSettings() {
       resetEducation(userJSoN.education);
       resetActivities(userJSoN.activities);
       resetProjects(userJSoN.projects);
+      resetVolunteer(userJSoN.volunteer);
+      resetAwards(userJSoN.awards);
     };
     reader.readAsText(file);
   }

@@ -327,6 +327,10 @@ export const useVolunteer = create(
         set((state: any) => ({
           volunteer: arrayMoveImmutable(state.volunteer, oldIndex, newIndex),
         })),
+
+      reset: (data = userData.volunteer) => {
+        set({ volunteer: data });
+      },
     }),
     {
       name: 'sprb-volunteer',
@@ -367,6 +371,10 @@ export const useAwards = create(
         set((state: any) => ({
           awards: arrayMoveImmutable(state.awards, oldIndex, newIndex),
         })),
+
+      reset: (data = userData.awards) => {
+        set({ awards: data });
+      },
     }),
     {
       name: 'sprb-awards',

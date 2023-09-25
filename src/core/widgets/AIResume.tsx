@@ -15,6 +15,7 @@ import {
   useVolunteer,
   useWork,
 } from '../../stores/data.store';
+import { useRightDrawer } from '../../stores/settings.store';
 
 interface Task {
   id?: string;
@@ -23,46 +24,6 @@ interface Task {
   link?: string;
   status: number;
 }
-
-const columns: ColumnsType<Task> = [
-  {
-    title: 'Title',
-    dataIndex: 'title',
-    render: (title: string, record: Task) => (
-      <>
-        <a href={record.link} target="_blank" rel="noreferrer">
-          {title}
-        </a>
-      </>
-    ),
-  },
-  {
-    title: 'Company',
-    dataIndex: 'company',
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    render: (status: number) => {
-      if (status === -1) return <Tag icon={getIcon('cloud')} color="default" />;
-      else if (status === 0) return <Tag icon={getIcon('clock')} color="default" />;
-      else if (status === 1) return <Tag icon={getIcon('sync')} color="processing" />;
-      else if (status === 2) return <Tag icon={getIcon('check')} color="success" />;
-    },
-  },
-  {
-    title: 'Action',
-    render: (record: Task) => (
-      <>
-        <a onClick={() => useResume(record)}>{getIcon('eye')}</a>
-      </>
-    ),
-  },
-];
-
-const useResume = (record: Task) => {
-  console.log('aaaa', record);
-};
 
 interface Resume {
   basics: object;
@@ -143,32 +104,18 @@ const SubmitBtn = ({ selectedRows, setSelectedRowKeys, setSelectedTasks }) => {
   );
 };
 
-const TestBtn = ({ selectedRows, setSelectedTasks, setSelectedRowKeys }) => {
-  const handleSubmit = () => {
-    setSelectedRowKeys([]);
-  };
-
-  const handleStatus = () => {
-    for (const row of selectedRows) {
-      if (row.status >= 1) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  return (
-    <>
-      <Button type="primary" onClick={handleSubmit} disabled={handleStatus()}>
-        Submit
-      </Button>
-    </>
-  );
-};
-
 const TaskTable = ({ selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys }) => {
+  const [setActiveTab] = useRightDrawer((state) => [state.update]);
   const [tasks] = useTasks((state) => [state.tasks]);
   const fetch = useTasks((state: any) => state.fetch, shallow);
+  const resetBasics = useIntro((state: any) => state.reset);
+  const resetSkills = useSkills((state: any) => state.reset);
+  const resetWork = useWork((state: any) => state.reset);
+  const resetEducation = useEducation((state: any) => state.reset);
+  const resetActivities = useActivities((state: any) => state.reset);
+  const resetProjects = useProjects((state: any) => state.reset);
+  const resetVolunteer = useVolunteer((state: any) => state.reset);
+  const resetAwards = useAwards((state: any) => state.reset);
 
   useEffect(() => {
     fetch();
@@ -186,6 +133,55 @@ const TaskTable = ({ selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys }
     getCheckboxProps: (record: Task) => ({
       disabled: record.status >= 1,
     }),
+  };
+
+  const columns: ColumnsType<Task> = [
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      render: (title: string, record: Task) => (
+        <>
+          <a href={record.link} target="_blank" rel="noreferrer">
+            {title}
+          </a>
+        </>
+      ),
+    },
+    {
+      title: 'Company',
+      dataIndex: 'company',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      render: (status: number) => {
+        if (status === -1) return <Tag icon={getIcon('cloud')} color="default" />;
+        else if (status === 0) return <Tag icon={getIcon('clock')} color="default" />;
+        else if (status === 1) return <Tag icon={getIcon('sync')} color="processing" />;
+        else if (status === 2) return <Tag icon={getIcon('check')} color="success" />;
+      },
+    },
+    {
+      title: 'Action',
+      render: (record: Task) => (
+        <>
+          <a onClick={() => updateResume(record)}>{getIcon('eye')}</a>
+        </>
+      ),
+    },
+  ];
+
+  const updateResume = (record: Task) => {
+    const resume: Resume = record['resume'];
+    resetBasics(resume.basics);
+    resetSkills(resume.skills);
+    resetWork(resume.work);
+    resetEducation(resume.education);
+    resetActivities(resume.activities);
+    resetProjects(resume.projects);
+    resetVolunteer(resume.volunteer);
+    resetAwards(resume.awards);
+    setActiveTab(-1);
   };
 
   return (
