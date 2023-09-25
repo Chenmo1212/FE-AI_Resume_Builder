@@ -52,3 +52,13 @@ export const useLeftDrawer = create((set: any) => ({
     });
   },
 }));
+
+export const useRightDrawer = create((set: any) => ({
+  activeTab: -1,
+
+  update: (value: number) => {
+    set((state: any) => {
+      state.activeTab = value === state.activeTab ? -1 : value;
+    });
+  },
+}));

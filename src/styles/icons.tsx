@@ -8,6 +8,7 @@ import {
   AiOutlineCheckCircle,
   AiOutlineClockCircle,
   AiOutlineCloud,
+  AiOutlineEye,
 } from 'react-icons/ai';
 import {
   MdVpnKey,
@@ -85,6 +86,7 @@ const icons = new Map([
   ['check', <AiOutlineCheckCircle />],
   ['clock', <AiOutlineClockCircle />],
   ['cloud', <AiOutlineCloud />],
+  ['eye', <AiOutlineEye />],
 
   ['identity', <MdPermIdentity />],
   ['expert', <SiExpertsexchange />],

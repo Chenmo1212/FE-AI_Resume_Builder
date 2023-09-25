@@ -101,7 +101,7 @@ export const LeftNav = () => {
     <Wrapper>
       <SideMenu menuList={leftNavList} onClick={clickHandler} />
       <SideDrawer isShown={activeTab !== -1}>{leftNavList[activeTab]?.component}</SideDrawer>
-      <SideBackground isShown={activeTab !== -1} />
+      <SideBackground isShown={activeTab !== -1} update={setActiveTab} />
     </Wrapper>
   );
 };

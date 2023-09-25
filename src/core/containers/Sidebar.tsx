@@ -7,12 +7,13 @@ import { Themes } from 'src/core/components/themes/Themes';
 import { SideMenu } from 'src/core/widgets/SideMenu';
 import { PrintSettings } from 'src/core/widgets/PrintSettings';
 import { AIResume } from 'src/core/widgets/AIResume';
-import { useZoom } from 'src/stores/settings.store';
+import { useRightDrawer, useZoom } from 'src/stores/settings.store';
 import { getIcon } from 'src/styles/icons';
 import { SaveSettings } from '../widgets/SaveSettings';
 import { UploadSettings } from '../widgets/UploadSettings';
 import { useActivities, useEducation, useIntro, useSkills, useWork } from 'src/stores/data.store';
 import { Tooltip } from 'antd';
+import { SideBackground } from '../widgets/SideBackground';
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -20,6 +21,7 @@ const Wrapper = styled.div`
   position: fixed;
   right: 0;
   top: 0;
+  z-index: 1;
 
   @media print {
     display: none;
@@ -69,7 +71,7 @@ const IconButton = styled.button`
 `;
 
 export const Sidebar = () => {
-  const [activeTab, setActiveTab] = useState(-1);
+  const [activeTab, setActiveTab] = useRightDrawer((state: any) => [state.activeTab, state.update]);
   const zoom = useZoom((state: any) => state.zoom);
   const updateZoom = useZoom((state: any) => state.update);
 
@@ -106,7 +108,7 @@ export const Sidebar = () => {
 
   return (
     <Wrapper>
-      <SideDrawer isShown={activeTab !== -1} width={activeTab === 2 ? '880px' : ''}>
+      <SideDrawer isShown={activeTab !== -1} width={activeTab === 2 ? '600px' : ''}>
         {sideBarList[activeTab]?.component}
       </SideDrawer>
       <SideMenu menuList={sideBarList} onClick={clickHandler}>
@@ -132,6 +134,7 @@ export const Sidebar = () => {
         <SaveSettings />
         <PrintSettings />
       </SideMenu>
+      <SideBackground isShown={activeTab !== -1} update={setActiveTab} />
     </Wrapper>
   );
 };
