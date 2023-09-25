@@ -160,6 +160,13 @@ export const useTasks = create(
             taskIdx.push(idx);
           }
         });
+        set(
+          produce((state: any) => {
+            state.tasks.forEach((task) => {
+              task.status = -1;
+            });
+          })
+        );
 
         if (taskIds.length) {
           getTasks({ task_ids: taskIds })
@@ -207,19 +214,20 @@ export const useTasks = create(
             const taskIds = res.data['task_ids'];
             const jobs = data['job_list'].map((job, index) => ({
               ...job,
-              id: taskIds[index],
+              taskId: taskIds[index],
             }));
             set(
               produce((state: any) => {
                 for (let i = 0; i < jobs.length; i++) {
-                  const taskIndex = state.tasks.findIndex((task) => task.jobId === jobs[i].jobId);
+                  const taskIndex = state.tasks.findIndex((task) => task.jobId === jobs[i].id);
                   if (taskIndex >= 0) {
                     // state.update(taskIndex, 'id', jobs[i].id)
-                    state.tasks[taskIndex]['id'] = jobs[i].id;
+                    state.tasks[taskIndex]['id'] = jobs[i].taskId;
                   }
                 }
               })
             );
+            useTasks.getState().fetch();
           })
           .catch((err) => {
             console.log(err);
