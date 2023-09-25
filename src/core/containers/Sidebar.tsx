@@ -6,7 +6,7 @@ import { Templates } from 'src/core/components/templates/Templates';
 import { Themes } from 'src/core/components/themes/Themes';
 import { SideMenu } from 'src/core/widgets/SideMenu';
 import { PrintSettings } from 'src/core/widgets/PrintSettings';
-import { UpdateResume } from 'src/core/widgets/UpdateResume';
+import { AIResume } from 'src/core/widgets/AIResume';
 import { useZoom } from 'src/stores/settings.store';
 import { getIcon } from 'src/styles/icons';
 import { SaveSettings } from '../widgets/SaveSettings';
@@ -43,7 +43,7 @@ const sideBarList = [
     key: 2,
     title: 'Robot',
     icon: 'robot',
-    component: <UpdateResume />,
+    component: <AIResume />,
   },
 ];
 
@@ -81,8 +81,9 @@ export const Sidebar = () => {
 
   const clickHandler = useCallback(
     (event: any) => {
-      if (activeTab === event.currentTarget.dataset.id) setActiveTab(-1);
-      else setActiveTab(event.currentTarget.dataset.id);
+      const currId = Number(event.currentTarget.dataset.id);
+      if (activeTab === currId) setActiveTab(-1);
+      else setActiveTab(currId);
     },
     [activeTab, setActiveTab]
   );
@@ -105,7 +106,9 @@ export const Sidebar = () => {
 
   return (
     <Wrapper>
-      <SideDrawer isShown={activeTab !== -1}>{sideBarList[activeTab]?.component}</SideDrawer>
+      <SideDrawer isShown={activeTab !== -1} width={activeTab === 2 ? '880px' : ''}>
+        {sideBarList[activeTab]?.component}
+      </SideDrawer>
       <SideMenu menuList={sideBarList} onClick={clickHandler}>
         <IconWrapper onClick={zoomout}>
           <Tooltip placement="left" title={'Zoom Out'}>

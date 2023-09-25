@@ -1,6 +1,6 @@
 import { api } from './fetch';
 
-export function getJobList() {
+export function getJobs() {
   return api.get('/jobs');
 }
 
@@ -16,10 +16,10 @@ export function purgeJob(id) {
   return api.delete('/job/' + id);
 }
 
-export function addTasks(data) {
-  return api.post('/tasks', JSON.stringify(data));
+export function getTasks(data) {
+  return api.post('/tasks/results', JSON.stringify(data));
 }
 
-export function checkTasksResult(data) {
-  return api.post('/tasks/results', JSON.stringify(data));
+export function addTasks(data) {
+  return api.post('/tasks', JSON.stringify(data));
 }
