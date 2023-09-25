@@ -21,7 +21,7 @@ interface Task {
   company?: string;
   title?: string;
   link?: string;
-  status?: number;
+  status: number;
 }
 
 const columns: ColumnsType<Task> = [
@@ -65,7 +65,7 @@ interface Resume {
   awards: object;
 }
 
-const SubmitBtn = ({ selectedRows }) => {
+const SubmitBtn = ({ selectedRows, setSelectedRowKeys, setSelectedTasks }) => {
   const basics = useIntro((state: any) => state.intro);
   const skills = useSkills((state: any) => state);
   const work = useWork((state: any) => state.companies);
@@ -87,7 +87,15 @@ const SubmitBtn = ({ selectedRows }) => {
   const create = useTasks((state: any) => state.create, shallow);
   const [messageApi, contextHolder] = message.useMessage();
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
+    if (!selectedRows.length) {
+      messageApi.open({
+        type: 'error',
+        content: 'Please select the task!',
+      });
+      return;
+    }
+
     const jobList = selectedRows.map((task) => ({
       id: task.jobId,
       description: task.description,
@@ -102,19 +110,53 @@ const SubmitBtn = ({ selectedRows }) => {
       type: 'success',
       content: 'Submit task successfully!',
     });
+    setSelectedRowKeys([]);
+    setSelectedTasks([]);
+  };
+
+  const handleStatus = () => {
+    for (const row of selectedRows) {
+      if (row.status >= 1) {
+        return true;
+      }
+    }
+    return false;
   };
 
   return (
     <>
       {contextHolder}
-      <Button type="primary" onClick={handleSubmit}>
+      <Button type="primary" onClick={handleSubmit} disabled={handleStatus()}>
         Submit
       </Button>
     </>
   );
 };
 
-const TaskTable = ({ onSelectedRowsChange }) => {
+const TestBtn = ({ selectedRows, setSelectedTasks, setSelectedRowKeys }) => {
+  const handleSubmit = () => {
+    setSelectedRowKeys([]);
+  };
+
+  const handleStatus = () => {
+    for (const row of selectedRows) {
+      if (row.status >= 1) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  return (
+    <>
+      <Button type="primary" onClick={handleSubmit} disabled={handleStatus()}>
+        Submit
+      </Button>
+    </>
+  );
+};
+
+const TaskTable = ({ selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys }) => {
   const [tasks] = useTasks((state) => [state.tasks]);
   const fetch = useTasks((state: any) => state.fetch, shallow);
 
@@ -126,9 +168,14 @@ const TaskTable = ({ onSelectedRowsChange }) => {
 
   // rowSelection object indicates the need for row selection
   const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: Task[]) => {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[], selectedRows: Task[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
       onSelectedRowsChange(selectedRows);
     },
+    getCheckboxProps: (record: Task) => ({
+      disabled: record.status >= 1,
+    }),
   };
 
   return (
@@ -147,12 +194,21 @@ const TaskTable = ({ onSelectedRowsChange }) => {
 
 export const AIResume = () => {
   const [selectedTasks, setSelectedTasks] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   return (
     <>
       <Container>
         <Heading>AI Resume</Heading>
-        <TaskTable onSelectedRowsChange={(selectedTasks) => setSelectedTasks(selectedTasks)} />
-        <SubmitBtn selectedRows={selectedTasks} />
+        <TaskTable
+          selectedRowKeys={selectedRowKeys}
+          onSelectedRowsChange={(selectedTasks) => setSelectedTasks(selectedTasks)}
+          setSelectedRowKeys={setSelectedRowKeys}
+        />
+        <SubmitBtn
+          selectedRows={selectedTasks}
+          setSelectedRowKeys={setSelectedRowKeys}
+          setSelectedTasks={setSelectedTasks}
+        />
       </Container>
     </>
   );
