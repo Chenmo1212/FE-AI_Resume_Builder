@@ -1,6 +1,11 @@
 name: AI Resume Deployment
 run-name: ${{ github.actor }} is deploying ${{ github.repository }} 🚀
-on: [push]
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,8 +31,8 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
-            # Use the lsof command to find the process occupying port 3000
-            PID=$(lsof -t -i :3000)
+            # Use the lsof command to find the process occupying port 9000
+            PID=$(lsof -t -i :9000)
             
             # If the process is found, kill it
             if [ -n "$PID" ]; then
