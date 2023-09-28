@@ -24,6 +24,10 @@ export function checkTasksStatus(data) {
   return api.post('/tasks/results', JSON.stringify(data));
 }
 
+export function addTask(data) {
+  return api.post('/task', JSON.stringify(data));
+}
+
 export function addTasks(data) {
   return api.post('/tasks', JSON.stringify(data));
 }

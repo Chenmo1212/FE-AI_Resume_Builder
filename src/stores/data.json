@@ -1,148 +1,331 @@
 {
   "basics": {
-    "name": "Jane Doe",
+    "name": "Long Pan",
     "label": "Frontend Developer",
+    "bio": "Master in Computer Science",
     "image": "",
-    "email": "janedoe@email.com",
-    "phone": "+91 9876543210",
-    "url": "www.github.com/sadanandpai/",
+    "email": "panlo@tcd.ie",
+    "phone": "(+353) 087-4615379",
+    "url": "",
     "summary": "I am a web developer having expertise in frontend development and exposure to back- end development. I design and develop web applications using the latest technologies to deliver the product with quality code.",
     "location": {
-      "address": "",
+      "address": "Dublin, Ireland",
       "postalCode": "",
-      "city": "Benglauru",
+      "city": "Dublin",
       "countryCode": "",
       "region": ""
     },
-    "relExp": "4 years",
-    "biography": "Master's Student in Computer Science",
-    "totalExp": "6 Years",
-    "objective": "Eager to expand my skill set through external trainings to help boost all major front desk KPIs. Hoping to leverage organizational skills to help ABC Corp introduce time-saving schemes for all executives.",
+    "relExp": "",
+    "totalExp": "2 Years",
+    "objective": "",
     "profiles": [
       {
+        "network": "globe",
+        "username": "chenmo1212.cn",
+        "url": "https://www.chenmo1212.cn?f=cv"
+      },
+      {
         "network": "linkedin",
-        "username": "sadanandpai",
-        "url": "https://www.linkedin.com/in/sadanandpai/"
+        "username": "Long Pan",
+        "url": "https://www.linkedin.com/in/long-pan-chandler/"
       },
       {
         "network": "github",
-        "username": "sadanandpai",
-        "url": "https://github.com/sadanandpai/"
-      },
-      {
-        "network": "hackerrank",
-        "username": "paicube",
-        "url": "https://www.hackerrank.com/paicube/"
-      },
-      {
-        "network": "leetcode",
-        "username": "paicube",
-        "url": "https://leetcode.com/paicube/"
+        "username": "Chenmo1212",
+        "url": "https://github.com/Chenmo1212?f=cv"
       }
     ]
   },
-
   "skills": {
-    "languages": [
-      { "name": "JavaScript", "level": 5 },
-      { "name": "HTML5", "level": 5 },
-      { "name": "CSS", "level": 5 }
-    ],
-    "frameworks": [
-      { "name": "React", "level": 4 },
-      { "name": "Angular", "level": 4 }
-    ],
+    "languages": [],
+    "frameworks": [],
+    "libraries": [],
+    "databases": [],
     "technologies": [
-      { "name": "Algorithms", "level": 3 },
-      { "name": "Progressive Web Apps", "level": 3 },
-      { "name": "SQL", "level": 3 },
-      { "name": "Data Structures", "level": 3 }
+      {
+        "name": "React",
+        "level": 3
+      },
+      {
+        "name": "CI / CD",
+        "level": 3
+      },
+      {
+        "name": "ReactJS",
+        "level": 3
+      },
+      {
+        "name": "VueJS",
+        "level": 3
+      },
+      {
+        "name": "JavaScript",
+        "level": 3
+      },
+      {
+        "name": "CSS",
+        "level": 3
+      },
+      {
+        "name": "HTML5",
+        "level": 3
+      },
+      {
+        "name": "Webpack",
+        "level": 3
+      },
+      {
+        "name": "Babel",
+        "level": 3
+      },
+      {
+        "name": "npm",
+        "level": 3
+      },
+      {
+        "name": "Redux",
+        "level": 3
+      },
+      {
+        "name": "Vuex",
+        "level": 3
+      },
+      {
+        "name": "Git",
+        "level": 3
+      },
+      {
+        "name": "Vue",
+        "level": 3
+      },
+      {
+        "name": "Node.js",
+        "level": 3
+      },
+      {
+        "name": "Python",
+        "level": 3
+      },
+      {
+        "name": "Flask",
+        "level": 3
+      },
+      {
+        "name": "Github Action",
+        "level": 3
+      },
+      {
+        "name": "C++",
+        "level": 3
+      },
+      {
+        "name": "OpenGL",
+        "level": 3
+      },
+      {
+        "name": "Blender",
+        "level": 3
+      },
+      {
+        "name": "Unity",
+        "level": 3
+      },
+      {
+        "name": "UE5",
+        "level": 3
+      },
+      {
+        "name": "Photoshop",
+        "level": 3
+      },
+      {
+        "name": "Premiere",
+        "level": 3
+      },
+      {
+        "name": "Adobe XD",
+        "level": 3
+      },
+      {
+        "name": "Figma",
+        "level": 3
+      }
     ],
-    "libraries": [
-      { "name": "jQuery", "level": 3 },
-      { "name": "Redux", "level": 3 }
-    ],
-    "databases": [{ "name": "Firebase", "level": 3 }],
     "practices": [
-      { "name": "Component based architecture", "level": 3 },
-      { "name": "Agile methodology", "level": 3 },
-      { "name": "Design Patterns", "level": 3 },
-      { "name": "Test Driven Development", "level": 3 },
-      { "name": "MVC", "level": 3 }
+      {
+        "name": "Communication",
+        "level": 3
+      },
+      {
+        "name": "Problem solving",
+        "level": 3
+      },
+      {
+        "name": "Adaptability",
+        "level": 3
+      },
+      {
+        "name": "Problem-solving",
+        "level": 3
+      },
+      {
+        "name": "Autonomy",
+        "level": 3
+      },
+      {
+        "name": "Attention to detail",
+        "level": 3
+      },
+      {
+        "name": "Teamwork",
+        "level": 3
+      },
+      {
+        "name": "Memory and Recall",
+        "level": 3
+      },
+      {
+        "name": "Written Communication",
+        "level": 3
+      },
+      {
+        "name": "Collaboration",
+        "level": 3
+      },
+      {
+        "name": "Verbal Communication",
+        "level": 3
+      },
+      {
+        "name": "Time Management",
+        "level": 3
+      },
+      {
+        "name": "Diversity and Inclusion",
+        "level": 3
+      }
     ],
-    "tools": [
-      { "name": "Git", "level": 3 },
-      { "name": "VS Code", "level": 3 },
-      { "name": "Jira", "level": 3 },
-      { "name": "Webpack", "level": 3 },
-      { "name": "Eclipse", "level": 3 },
-      { "name": "Bitbucket", "level": 3 }
-    ]
+    "tools": []
   },
-
   "work": [
     {
-      "name": "Company 1",
-      "position": "Senior Software Developer",
+      "id": "1",
+      "name": "SHANGHAI FRIENDESS ELECTRONICS TECHNOLOGY.",
+      "position": "Web Front-end Development Engineer",
       "url": "",
-      "startDate": "Apr 2021",
-      "endDate": "present",
-      "years": "2.5 years",
-      "highlights": [],
-      "summary": "* Use my extensive experience with front end development to define the structure and components for the project, making sure they are reusable\n* Keep the code quality high reviewing code from other developers and suggesting improvements\n* Interact with the designer to suggest changes and to make sure the view he has about the design is translated into actual functionality\n* E-commerce maintenance **with Fastcommerce**, a Brazilian e-commerce platform"
+      "isWorkingHere": false,
+      "unedited": true,
+      "startDate": "7/2021",
+      "endDate": "8/2022",
+      "years": "1.1 years",
+      "highlights": [
+        "Cloudnest. Contributed to the development of a web-based nesting software for plate laser cutting systems, where I implemented key features such as Report Generation, Label Printing, and Rule Identification. I designed and built the Report generation feature, enabling users to generate over 500 customized PDF and Excel reports using various editing tools. This resulted in a 30% increase in user productivity. I also developed the Label Printing feature, which streamlined production by allowing manufacturers to quickly print labels for each part of the nesting result.",
+        "MetalVerse. Played a critical role in the development of an automatic 3D model and CAD drawing generation system used for kitchen production. I developed key features such as Cabinet Generation, Board Hole Digging, and House Type Generation using Babylon.js and my knowledge of graphics and JavaScript to ensure the system was user-friendly and efficient.",
+        "WebCAD. Designed and implemented the UI and some of the shape drawing functions for this webbased CAD software. As a key member of the development team, I leveraged my expertise in graphics and UX design to improve user satisfaction scores by 15% and reduced user support requests by 30%.",
+        "Material Calculation System. Led the UI design, front-end, and back-end development of this project, which involved sending data from the user's ERP system to the server to calculate layout results. I used Vue2.0 and Element-UI for the front-end and Flask and Celery for the back-end, significantly reduced production time, resulting in a 40% decrease in project delivery timelines and a cost reduction of €50,000 annually."
+      ],
+      "summary": "* Cloudnest. Contributed to the development of a web-based nesting software for plate laser cutting systems, where I implemented key features such as Report Generation, Label Printing, and Rule Identification. I designed and built the Report generation feature, enabling users to generate over 500 customized PDF and Excel reports using various editing tools. This resulted in a 30% increase in user productivity. I also developed the Label Printing feature, which streamlined production by allowing manufacturers to quickly print labels for each part of the nesting result.\n* MetalVerse. Played a critical role in the development of an automatic 3D model and CAD drawing generation system used for kitchen production. I developed key features such as Cabinet Generation, Board Hole Digging, and House Type Generation using Babylon.js and my knowledge of graphics and JavaScript to ensure the system was user-friendly and efficient.\n* WebCAD. Designed and implemented the UI and some of the shape drawing functions for this webbased CAD software. As a key member of the development team, I leveraged my expertise in graphics and UX design to improve user satisfaction scores by 15% and reduced user support requests by 30%.\n* Material Calculation System. Led the UI design, front-end, and back-end development of this project, which involved sending data from the user's ERP system to the server to calculate layout results. I used Vue2.0 and Element-UI for the front-end and Flask and Celery for the back-end, significantly reduced production time, resulting in a 40% decrease in project delivery timelines and a cost reduction of €50,000 annually.\n"
     },
     {
-      "name": "Company 2",
-      "position": "Software Developer",
+      "id": "1",
+      "name": "TUQI CONSTRUCTION TECHONOLOGY.",
+      "position": "Web Front-end Engineer",
       "url": "",
-      "startDate": "Jun 2015",
-      "endDate": "Dec 2017",
-      "years": "2.5 years",
-      "highlights": [],
-      "summary": "* Develop web applications based on Sharepoint, Drupal 8 and Episerver\n* Lead a team of 10 front end developers, giving support to the client's multi-cultural team, providing feedback, clarifying requirements and helping with technical questions\n* Keep the Project Manager and the IT Leads updated on the overall progress of the projects and manage the tasks distributed to the team\n* Keep the code and the features implemented by the other developers in accordance to the requirements"
+      "isWorkingHere": false,
+      "unedited": true,
+      "startDate": "3/2021",
+      "endDate": "5/2021",
+      "years": "2 months",
+      "highlights": [
+        "Data Collection System. Automated the verification, collection, and cleaning of offline data, saving it to the enterprise data center, and supporting data submission to other systems. Utilized Node.js, jQuery, and LayUI in development. Employed libraries such as Excel.js and Ztree.js, and stored data in a MySQL database. Key contributions include developing batch row and cell merging, dictionary key-value copy features, and identifying data dictionaries in Excel files and displaying them in the form of a directory tree.",
+        "Three-dimensional Monitoring WEB Program for Trailing Suction Dredger Construction. Developed a 3D display page of the trailing suction dredger in the DTPM system that could display the real-time state of the dredger and its environment in three dimensions on the web. Used the React framework, along with WebGL and Three.js, for development. Responsible for obtaining real-time data such as hull attitude, displacement, and rake arm angle from the server and modifying the seabed terrain in real-time based on real point cloud data and the position of the rake head to simulate dredging effects through three-dimensional display."
+      ],
+      "summary": "* Data Collection System. Automated the verification, collection, and cleaning of offline data, saving it to the enterprise data center, and supporting data submission to other systems. Utilized Node.js, jQuery, and LayUI in development. Employed libraries such as Excel.js and Ztree.js, and stored data in a MySQL database. Key contributions include developing batch row and cell merging, dictionary key-value copy features, and identifying data dictionaries in Excel files and displaying them in the form of a directory tree.\n* Three-dimensional Monitoring WEB Program for Trailing Suction Dredger Construction. Developed a 3D display page of the trailing suction dredger in the DTPM system that could display the real-time state of the dredger and its environment in three dimensions on the web. Used the React framework, along with WebGL and Three.js, for development. Responsible for obtaining real-time data such as hull attitude, displacement, and rake arm angle from the server and modifying the seabed terrain in real-time based on real point cloud data and the position of the rake head to simulate dredging effects through three-dimensional display.\n"
     },
     {
-      "name": "Company 3",
-      "position": "Trainee Developer",
+      "id": "1",
+      "name": "Jinhua Toast Network Technology.",
+      "position": "Graphic designer, UI designer | Front-end engineer",
       "url": "",
-      "startDate": "Aug 2011",
-      "endDate": "May 2015",
-      "years": "1 year",
-      "highlights": [],
-      "summary": "* Design easy user interfaces and great user experiences for the digital platforms of small companies\n* Wordpress development, including themes creation or customization, custom plugins development and training\n* E-commerce maintenance with Fastcommerce, a Brazilian e-commerce platform\n* E-commerce development with Magento, customizing preexisting themes \n* Integrate external services such as payment services, delivery, etc into Magento solutions\n* VPS configuration and optimization (Apache & Nginx)"
+      "isWorkingHere": false,
+      "unedited": true,
+      "startDate": "5/2018",
+      "endDate": "12/2019",
+      "years": "1.6 years",
+      "highlights": [
+        "Independently designed and developed a registration page for the 3rd All-in-One Card Contest, which attracted over 200 participants and received about 5,000 visits. Implemented the lost and found function using Adobe Xd and the Vue framework in combination with Element-UI.",
+        "Improved the college schedule app Custed by adding four new features and resolving over 20 issues. Contributed to approximately 15,000 lines of code.",
+        "Designed 13 posters, 15 banner images, 2 group portraits, and 1 logo for the studio. Proud of how they effectively promoted the studio's events and activities."
+      ],
+      "summary": "* Independently designed and developed a registration page for the 3rd All-in-One Card Contest, which attracted over 200 participants and received about 5,000 visits. Implemented the lost and found function using Adobe Xd and the Vue framework in combination with Element-UI.\n* Improved the college schedule app Custed by adding four new features and resolving over 20 issues. Contributed to approximately 15,000 lines of code.\n* Designed 13 posters, 15 banner images, 2 group portraits, and 1 logo for the studio. Proud of how they effectively promoted the studio's events and activities.\n"
     }
   ],
-
   "education": [
     {
-      "institution": "MIT, University",
-      "url": "https://www.mit.edu/",
-      "studyType": "MS",
-      "area": "Cloud technology",
-      "startDate": "2014",
-      "endDate": "2016",
-      "score": "68%",
+      "institution": "Trinity College Dublin, The University Of Dublin",
+      "url": "",
+      "studyType": "Master",
+      "area": "Computer Science",
+      "branch": "Augment and Virtual Reality",
+      "startDate": "9/2022",
+      "endDate": "8/2023",
+      "score": "",
       "courses": []
     },
     {
-      "institution": "NMAMIT, Nitte",
-      "url": "https://www.mit.edu/",
-      "studyType": "B.Tech (VTU)",
+      "institution": "Changchun University of Science and Technology, China",
+      "url": "",
+      "studyType": "Bachelor",
       "area": "Computer Science",
-      "startDate": "2010",
-      "endDate": "2014",
-      "score": "8.3 CGPA",
+      "branch": "Information management and information system",
+      "startDate": "8/2017",
+      "endDate": "7/2021",
+      "score": "",
       "courses": []
     }
   ],
-
+  "projects": [
+    {
+      "title": "Portfolio",
+      "demoUrl": "https://www.chenmo1212.cn?f=cv",
+      "demoIcon": "globe",
+      "githubUrl": "https://github.com/Chenmo1212/homePage",
+      "githubIcon": "github",
+      "skills": "TweenLiteJS, ScrollMagicJS, Python, FLask,  REST API, pytest, Github Action",
+      "highlights": [
+        "Developed a personal portfolio using native Web front-end technology and Python back-end, showcasing expertise in both front-end and back-end development."
+      ],
+      "summary": "* **Skills**: TweenLiteJS, ScrollMagicJS, Python, FLask,  REST API, pytest, Github Action \n* Developed a personal portfolio using native Web front-end technology and Python back-end, showcasing expertise in both front-end and back-end development.\n"
+    },
+    {
+      "title": "Sonder Notebook",
+      "demoUrl": "https://note.chenmo1212.cn?f=cv",
+      "demoIcon": "globe",
+      "githubUrl": "",
+      "githubIcon": "github",
+      "skills": "Shell, Python, Git, Docsify, Github Action",
+      "highlights": [
+        "An online note-taking application developed based on Docsify and Markdown, using Github as warehouse storage and Github Action as an automated deployment tool."
+      ],
+      "summary": "* **Skills**: Shell, Python, Git, Docsify, Github Action \n* An online note-taking application developed based on Docsify and Markdown, using Github as warehouse storage and Github Action as an automated deployment tool.\n"
+    },
+    {
+      "title": "Virtual Library Homepage",
+      "demoUrl": "https://virtual-library-ase.github.io/Front-end/#/home?f=cv",
+      "demoIcon": "globe",
+      "githubUrl": "https://github.com/Virtual-Library-ASE/Front-end",
+      "githubIcon": "github",
+      "skills": "React, React-redux, Firebase, Antd, tailwindcss, Jest, enzyme",
+      "highlights": [
+        "Developed a ReactJS library management system for the web-side of a Unity project, demonstrating familiarity with various web development technologies."
+      ],
+      "summary": "* **Skills**: React, React-redux, Firebase, Antd, tailwindcss, Jest, enzyme \n* Developed a ReactJS library management system for the web-side of a Unity project, demonstrating familiarity with various web development technologies.\n"
+    }
+  ],
   "activities": {
-    "involvements": "* Prevented millions of dollars in state sales tax undercharges by initiating tests that revealed a bug in a new release of shopping cart software.\n * Isolated previously undiscovered flaw in price checking tool resulting in more competitive pricing and a 20 percent increase in revenue.\n * Implemented automated testing tools spawning more diligent levels of regression testing, negative testing, error/bug retests and usability.\n * Prevented millions of dollars in state sales tax undercharges by initiating tests that revealed a bug in a new release of shopping cart software.",
-
-    "achievements": "* React and redux - A complete guide 2020 from Udemy'\n * Agile and Scrum Master Certificate from Udacity\n  * Best performer award for consistently exceeding the performance\n  * Certificate of exceptional bug finder by XYZ client\n  * Recognition zero defect delivery\n  * Best performer award for consistently exceeding the performance"
+    "involvements": "",
+    "achievements": "* 2022: E3 Excellence Postgraduate Scholarships (5000 Euros)\n* 2021: Excellent Documentation Writing Award for outstanding documentation (1000 CNY)\n * 2021: Principal Scholarship for Excellence (3000 CNY)\n* 2017 - 2020: Class Scholarship for Excellence (1000 CNY)\n"
   },
-
-  "projects": [],
   "volunteer": [],
   "awards": []
 }

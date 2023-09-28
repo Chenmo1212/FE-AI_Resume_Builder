@@ -18,16 +18,15 @@ jobs:
           REMOTE_USER: 'root'
           TARGET: ${{ vars.TARGET }}
 
-      - name: Step 3 - Install Node.js and npm
-        uses: actions/setup-node@v2
+      - name: SSH into Server and Start Next.js App
+        uses: appleboy/ssh-action@master
         with:
-          node-version: '14'
-
-      - name: Step 4 - Install Dependencies
-        run: npm install
-
-      - name: Step 5 - Build AI Resume Application
-        run: npm run build
-
-      - name: Step 6 - Start AI Resume Application
-        run: npm start
+          host: ${{ vars.REMOTE_HOST }}
+          username: root
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ${{ vars.TARGET }}
+            npm install
+            npm run build
+            npm start
