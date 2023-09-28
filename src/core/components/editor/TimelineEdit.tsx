@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import { Input as AntInput, Collapse, Switch } from 'antd';
-import { MarkDownField } from 'src/core/widgets/MarkdownField';
-import { getIcon } from 'src/styles/icons';
-import { AiFillDelete } from 'react-icons/ai';
+import {Input as AntInput, Collapse, Switch} from 'antd';
+import {MarkDownField} from 'src/core/widgets/MarkdownField';
+import {getIcon} from 'src/styles/icons';
+import {AiFillDelete} from 'react-icons/ai';
 
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import { FlexVC } from 'src/styles/styles';
+import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
+import {FlexVC} from 'src/styles/styles';
 
-const { Panel } = Collapse;
+const {Panel} = Collapse;
 
 const UL = styled.div`
   margin: 0;
@@ -48,22 +48,28 @@ const Handle = styled.span`
 
 const DragHandle = SortableHandle(() => <Handle>{getIcon('drag')}</Handle>);
 
-const SortableItem = SortableElement(({ item, identifier }) => (
+const SortableItem = SortableElement(({item, identifier}) => (
   <Wrapper>
-    <DragHandle />
+    <DragHandle/>
     <p>{item?.[identifier]}</p>
   </Wrapper>
 ));
 
-const SortableList = SortableContainer(({ items, identifier }) => (
+const SortableList = SortableContainer(({items, identifier}) => (
   <UL>
     {items.map((item, index) => (
-      <SortableItem key={index} index={index} item={item} identifier={identifier} />
+      <SortableItem key={index} index={index} item={item} identifier={identifier}/>
     ))}
   </UL>
 ));
 
-export function TimelineEdit({ METADATA, identifier, itemList, operations }: any) {
+const ExtraIcon = ({operations, index}) =>
+  <AiFillDelete onClick={(e) => {
+    e.stopPropagation();
+    operations.purge(index)
+  }}/>
+
+export function TimelineEdit({METADATA, identifier, itemList, operations}: any) {
   const [isReorder, setIsReorder] = useState(false);
 
   const onChange = () => {
@@ -76,7 +82,7 @@ export function TimelineEdit({ METADATA, identifier, itemList, operations }: any
         <Panel
           header={item[identifier]}
           key={index}
-          extra={<AiFillDelete onClick={(e) => {e.stopPropagation(); operations.purge(index)}} />}
+          extra={<ExtraIcon operations={operations} index={index}/>}
         >
           {METADATA.map((metadata) =>
             metadata.type === 'Input' ? (
@@ -110,9 +116,9 @@ export function TimelineEdit({ METADATA, identifier, itemList, operations }: any
 
   return (
     <>
-      <Switch checked={isReorder} onChange={onChange} />
+      <Switch checked={isReorder} onChange={onChange}/>
       {isReorder ? sortableList : panelList}
-      <button type="button" style={{ fontSize: '2rem' }} onClick={operations.add}>
+      <button type="button" style={{fontSize: '2rem'}} onClick={operations.add}>
         {getIcon('add')}
       </button>
     </>
