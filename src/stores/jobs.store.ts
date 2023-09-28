@@ -13,7 +13,18 @@ interface Job {
   link: string;
 }
 
-interface Task {
+export interface Resume {
+  basics: object;
+  skills: object;
+  work: object;
+  education: object;
+  projects: object;
+  activities: object;
+  volunteer: object;
+  awards: object;
+}
+
+export interface Task {
   id?: string;
   title: string;
   company: string;
@@ -21,7 +32,7 @@ interface Task {
   description: string;
   jobId: string;
   status: number;
-  resume: object;
+  resume: Resume;
   rawResumeId: string;
   newResumeId: string;
   key: string;
@@ -92,16 +103,14 @@ export const useJobs = create(
         })
       },
 
-      update: (index: string, key: string, value: string) => {
+      update: (index: string, key: string, value: string) =>
         set(
           produce((state: any) => {
-            state.jobs = [...state.jobs];
             state.jobs[index][key] = value;
             useTasks.getState().update(index, key, value);
-          }),
-          debouncedUpdateJob(index)
-        );
-      },
+            debouncedUpdateJob(index)
+          })
+        ),
 
       purge: async (index: number) => {
         try {
@@ -148,31 +157,33 @@ export const useTasks = create(
             });
           })
         );
-        if (taskIds.length) {
-          checkTasksStatus({task_ids: taskIds})
-            .then((res) => {
-              const tasks = res.data.tasks;
-              taskIdx.forEach((idx, i) => {
-                set(
-                  produce((state: any) => {
-                    if (tasks[i]) {
-                      state.tasks[idx] = {
-                        ...state.tasks[idx],
-                        status: tasks[i].status,
-                        resume: tasks[i].resume,
-                      };
-                    } else {
-                      console.log('The database does not have this id: ', taskIds[i]);
-                      state.tasks[idx]['id'] = '';
-                    }
-                  })
-                );
-              });
-            })
-            .catch((err) => {
-              console.log(err);
+        // if (taskIds.length) {
+        checkTasksStatus({task_ids: taskIds})
+          .then((res) => {
+            const tasks = res.data.tasks;
+            console.log(tasks)
+            taskIdx.forEach((idx, i) => {
+              set(
+                produce((state: any) => {
+                  if (tasks[i]) {
+                    state.tasks[idx] = {
+                      ...state.tasks[idx],
+                      status: tasks[i].status,
+                      resume: tasks[i].resume,
+                      newResumeId: tasks[i].new_resume_id,
+                    };
+                  } else {
+                    console.log('The database does not have this id: ', taskIds[i]);
+                    state.tasks[idx]['id'] = '';
+                  }
+                })
+              );
             });
-        }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        // }
       },
 
       add: (data: any) => {
@@ -215,14 +226,12 @@ export const useTasks = create(
           });
       },
 
-      update: (index: string, key: string, value: string) => {
+      update: (index: string, key: string, value: string) =>
         set(
           produce((state: any) => {
-            state.tasks = [...state.tasks];
             state.tasks[index][key] = value;
           })
-        );
-      },
+        ),
 
       purge: (index: number) => {
         set(
