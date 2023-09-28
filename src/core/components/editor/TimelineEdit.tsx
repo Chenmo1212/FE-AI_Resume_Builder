@@ -76,7 +76,7 @@ export function TimelineEdit({ METADATA, identifier, itemList, operations }: any
         <Panel
           header={item[identifier]}
           key={index}
-          extra={<AiFillDelete onClick={() => operations.purge(index)} />}
+          extra={<AiFillDelete onClick={(e) => {e.stopPropagation(); operations.purge(index)}} />}
         >
           {METADATA.map((metadata) =>
             metadata.type === 'Input' ? (
