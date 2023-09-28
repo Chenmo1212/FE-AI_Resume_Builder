@@ -87,7 +87,7 @@ const SubmitBtn = ({ selectedRows, setSelectedRowKeys, setSelectedTasks }) => {
 
   const handleStatus = () => {
     for (const row of selectedRows) {
-      if (row.status >= 1) {
+      if (row.status >= 0) {
         return true;
       }
     }
@@ -131,7 +131,7 @@ const TaskTable = ({ selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys }
       onSelectedRowsChange(selectedRows);
     },
     getCheckboxProps: (record: Task) => ({
-      disabled: record.status >= 1,
+      disabled: record.status >= 0,
     }),
   };
 
