@@ -3,7 +3,7 @@ import { Container, Heading } from 'src/core/components/editor/Editor';
 import { Table, Button, message, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { getIcon } from 'src/styles/icons';
-import { useTasks } from '../../stores/jobs.store';
+import { useTasks, Task, Resume } from '../../stores/jobs.store';
 import shallow from 'zustand/shallow';
 import {
   useActivities,
@@ -16,45 +16,9 @@ import {
   useWork,
 } from '../../stores/data.store';
 import { useRightDrawer } from '../../stores/settings.store';
+import {updateResume} from "../../axios/api";
 
-interface Task {
-  id?: string;
-  company?: string;
-  title?: string;
-  link?: string;
-  status: number;
-}
-
-interface Resume {
-  basics: object;
-  skills: object;
-  work: object;
-  education: object;
-  projects: object;
-  activities: object;
-  volunteer: object;
-  awards: object;
-}
-
-const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks}) => {
-  const basics = useIntro((state: any) => state.intro);
-  const skills = useSkills((state: any) => state);
-  const work = useWork((state: any) => state.companies);
-  const education = useEducation((state: any) => state.education);
-  const activities = useActivities((state: any) => state);
-  const projects = useProjects((state: any) => state.projects);
-  const volunteer = useVolunteer((state: any) => state.volunteer);
-  const awards = useAwards((state: any) => state.awards);
-  const resume: Resume = {
-    basics,
-    skills,
-    work,
-    education,
-    projects,
-    activities,
-    volunteer,
-    awards,
-  };
+const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume}) => {
   const create = useTasks((state: any) => state.create, shallow);
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -104,7 +68,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks}) => {
   );
 };
 
-const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) => {
+const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, resume}) => {
   const [setActiveTab] = useRightDrawer((state) => [state.update]);
   const [tasks] = useTasks((state) => [state.tasks]);
   const fetch = useTasks((state: any) => state.fetch, shallow);
@@ -116,6 +80,7 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) 
   const resetProjects = useProjects((state: any) => state.reset);
   const resetVolunteer = useVolunteer((state: any) => state.reset);
   const resetAwards = useAwards((state: any) => state.reset);
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     fetch();
@@ -165,13 +130,14 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) 
       title: 'Action',
       render: (record: Task) => (
         <>
-          <a onClick={ () => updateResume(record) }>{ getIcon('eye') }</a>
+          <a onClick={ () => displayResume(record) }>{ getIcon('eye') }</a>
+          <a onClick={ () => uploadResume(record) }>{ getIcon('eye') }</a>
         </>
       ),
     },
   ];
 
-  const updateResume = (record: Task) => {
+  const displayResume = (record: Task) => {
     const resume: Resume = {...record['resume']};
     resetBasics(resume.basics);
     resetSkills(resume.skills);
@@ -184,8 +150,20 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) 
     setActiveTab(-1);
   };
 
+  const uploadResume = (record: Task) => {
+    updateResume(record.newResumeId, resume).then(res => {
+      if (res.status === 200) {
+        messageApi.open({
+          type: 'success',
+          content: 'Resume update successfully!',
+        });
+      }
+    })
+  };
+
   return (
     <div>
+      { contextHolder }
       <Table
         rowSelection={ {
           type: 'checkbox',
@@ -201,6 +179,25 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) 
 export const AIResume = () => {
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const basics = useIntro((state: any) => state.intro);
+  const skills = useSkills((state: any) => state);
+  const work = useWork((state: any) => state.companies);
+  const education = useEducation((state: any) => state.education);
+  const activities = useActivities((state: any) => state);
+  const projects = useProjects((state: any) => state.projects);
+  const volunteer = useVolunteer((state: any) => state.volunteer);
+  const awards = useAwards((state: any) => state.awards);
+  const resume: Resume = {
+    basics,
+    skills,
+    work,
+    education,
+    projects,
+    activities,
+    volunteer,
+    awards,
+  };
+
   return (
     <>
       <Container>
@@ -209,11 +206,13 @@ export const AIResume = () => {
           selectedRowKeys={ selectedRowKeys }
           onSelectedRowsChange={ (selectedTasks) => setSelectedTasks(selectedTasks) }
           setSelectedRowKeys={ setSelectedRowKeys }
+          resume={resume}
         />
         <SubmitBtn
           selectedRows={ selectedTasks }
           setSelectedRowKeys={ setSelectedRowKeys }
           setSelectedTasks={ setSelectedTasks }
+          resume={resume}
         />
       </Container>
     </>
