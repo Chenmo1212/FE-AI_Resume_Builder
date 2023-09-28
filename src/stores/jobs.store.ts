@@ -27,33 +27,14 @@ interface Task {
   key: string;
 }
 
-const JOBS_DATA: Job[] = [
-  {
-    company: 'Company Name1',
-    title: 'Job Title1',
-    link: 'Job Link',
-    description: 'Job Description',
-  },
-  {
-    company: 'Company Name2',
-    title: 'Job Title2',
-    link: 'Job Link',
-    description: 'Job Description',
-  },
-  {
-    company: 'Company Name3',
-    title: 'Job Title3',
-    link: 'Job Link',
-    description: 'Job Description',
-  },
-];
+const JOBS_DATA: Job[] = [];
 
 const TASK_DATA: Task[] = [];
 
 const debouncedUpdateJob = debounce(async (index: string) => {
   try {
     const currentState = useJobs.getState();
-    const updatedJob = { ...currentState.jobs[index] };
+    const updatedJob = {...currentState.jobs[index]};
     const jobId = updatedJob['id'];
     updatedJob['raw'] = updatedJob['description'];
     delete updatedJob['description'];
@@ -91,9 +72,8 @@ export const useJobs = create(
           });
       },
 
-      add: async () => {
-        try {
-          const res = await addJob({});
+      add: () => {
+        addJob({}).then(res => {
           set(
             produce((state: any) => {
               const job = {
@@ -107,9 +87,9 @@ export const useJobs = create(
               useTasks.getState().add(job);
             })
           );
-        } catch (err) {
+        }).catch(err => {
           console.error(err);
-        }
+        })
       },
 
       update: (index: string, key: string, value: string) => {
@@ -168,7 +148,7 @@ export const useTasks = create(
           })
         );
         if (taskIds.length) {
-          getTasks({ task_ids: taskIds })
+          getTasks({task_ids: taskIds})
             .then((res) => {
               const tasks = res.data.tasks;
               taskIdx.forEach((idx, i) => {
