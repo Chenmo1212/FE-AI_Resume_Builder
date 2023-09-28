@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Container, Heading} from 'src/core/components/editor/Editor';
-import {Table, Button, message, Tag, Space} from 'antd';
+import {Table, Button, message, Tag, Space, Spin} from 'antd';
 import type {ColumnsType} from 'antd/es/table';
 import {getIcon} from 'src/styles/icons';
 import {useTasks, Task, Resume} from '../../stores/jobs.store';
@@ -194,6 +194,7 @@ export const AIResume = () => {
   const projects = useProjects((state: any) => state.projects);
   const volunteer = useVolunteer((state: any) => state.volunteer);
   const awards = useAwards((state: any) => state.awards);
+  const [loading] = useTasks((state: any) => [state.loading]);
   const resume: Resume = {
     basics,
     skills,
@@ -207,24 +208,26 @@ export const AIResume = () => {
 
   return (
     <>
-      <Container>
-        {contextHolder}
-        <Heading>AI Resume</Heading>
-        <TaskTable
-          selectedRowKeys={selectedRowKeys}
-          onSelectedRowsChange={(selectedTasks) => setSelectedTasks(selectedTasks)}
-          setSelectedRowKeys={setSelectedRowKeys}
-          resume={resume}
-          messageApi={messageApi}
-        />
-        <SubmitBtn
-          selectedRows={selectedTasks}
-          setSelectedRowKeys={setSelectedRowKeys}
-          setSelectedTasks={setSelectedTasks}
-          resume={resume}
-          messageApi={messageApi}
-        />
-      </Container>
+      <Spin spinning={loading} tip="Loading...">
+        <Container>
+          {contextHolder}
+          <Heading>AI Resume</Heading>
+          <TaskTable
+            selectedRowKeys={selectedRowKeys}
+            onSelectedRowsChange={(selectedTasks) => setSelectedTasks(selectedTasks)}
+            setSelectedRowKeys={setSelectedRowKeys}
+            resume={resume}
+            messageApi={messageApi}
+          />
+          <SubmitBtn
+            selectedRows={selectedTasks}
+            setSelectedRowKeys={setSelectedRowKeys}
+            setSelectedTasks={setSelectedTasks}
+            resume={resume}
+            messageApi={messageApi}
+          />
+        </Container>
+      </Spin>
     </>
   );
 };

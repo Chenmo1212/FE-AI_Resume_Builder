@@ -63,6 +63,7 @@ export const useJobs = create(
       loading: true,
 
       fetch: () => {
+        useJobs.getState().updateLoading(true);
         getJobs()
           .then((res) => {
             set(
@@ -152,6 +153,7 @@ export const useTasks = create(
       loading: true,
 
       fetch: () => {
+        useTasks.getState().updateLoading(true);
         let taskIds: string[] = [];
         let taskIdx: number[] = [];
         useTasks.getState().tasks.forEach((task, idx) => {
@@ -187,6 +189,7 @@ export const useTasks = create(
                     console.log('The database does not have this id: ', taskIds[i]);
                     state.tasks[idx]['id'] = '';
                   }
+                  state.loading = false;
                 })
               );
             });
@@ -212,6 +215,7 @@ export const useTasks = create(
       },
 
       create: (data: any) => {
+        useTasks.getState().updateLoading(true);
         addTasks(data)
           .then((res) => {
             const taskIds = res.data['task_ids'];
@@ -228,6 +232,7 @@ export const useTasks = create(
                     state.tasks[taskIndex]['id'] = jobs[i].taskId;
                   }
                 }
+                state.loading = false;
               })
             );
             useTasks.getState().fetch();
@@ -251,6 +256,12 @@ export const useTasks = create(
           })
         );
       },
+
+      updateLoading: (bool) => {
+        set(produce((state: any) => {
+          state.loading = bool;
+        }));
+      }
     }),
     {
       name: 'sprb-tasks',

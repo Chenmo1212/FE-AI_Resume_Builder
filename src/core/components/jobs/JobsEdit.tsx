@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Container, Heading} from '../editor/Editor';
 import {useJobs} from 'src/stores/jobs.store';
 import shallow from 'zustand/shallow';
