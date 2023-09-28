@@ -1,5 +1,9 @@
 import { api } from './fetch';
 
+export function updateResume(id, data) {
+  return api.put('/resume/' + id, JSON.stringify(data));
+}
+
 export function getJobs() {
   return api.get('/jobs');
 }
