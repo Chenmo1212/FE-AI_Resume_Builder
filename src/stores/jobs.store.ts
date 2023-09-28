@@ -3,7 +3,7 @@ import { debounce } from 'lodash';
 import { arrayMoveImmutable } from 'array-move';
 import { persist } from 'zustand/middleware';
 import produce from 'immer';
-import { getJobs, addJob, updateJob, purgeJob, getTasks, addTasks } from '../axios/api';
+import { getJobs, addJob, updateJob, purgeJob, checkTasksStatus, addTasks } from '../axios/api';
 
 interface Job {
   id?: string;
@@ -56,7 +56,7 @@ export const useJobs = create(
           .then((res) => {
             set(
               produce((state: any) => {
-                state.jobs = res.data.map((job) => ({
+                state.jobs = res.data.jobs.map((job) => ({
                   id: job.id,
                   company: job.company,
                   title: job.title,
@@ -142,13 +142,14 @@ export const useTasks = create(
         });
         set(
           produce((state: any) => {
-            state.tasks.forEach((task) => {
+            state.tasks.forEach((task, index) => {
               task.status = -1;
+              task.key = index.toString();
             });
           })
         );
         if (taskIds.length) {
-          getTasks({task_ids: taskIds})
+          checkTasksStatus({task_ids: taskIds})
             .then((res) => {
               const tasks = res.data.tasks;
               taskIdx.forEach((idx, i) => {

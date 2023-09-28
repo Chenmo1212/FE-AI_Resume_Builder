@@ -17,6 +17,10 @@ export function purgeJob(id) {
 }
 
 export function getTasks(data) {
+  return api.post('/tasks', JSON.stringify(data));
+}
+
+export function checkTasksStatus(data) {
   return api.post('/tasks/results', JSON.stringify(data));
 }
 
