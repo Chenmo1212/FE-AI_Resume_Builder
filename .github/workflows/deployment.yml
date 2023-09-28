@@ -26,7 +26,15 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
+            # Use the lsof command to find the process occupying port 3000
+            PID=$(lsof -t -i :3000)
+            
+            # If the process is found, kill it
+            if [ -n "$PID" ]; then
+              kill -9 $PID
+            fi
+            
             cd ${{ vars.TARGET }}
             npm install
             npm run build
-            npm start
+            nohup npm start > ai_resume.log 2>&1 &
