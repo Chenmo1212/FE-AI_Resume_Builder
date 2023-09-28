@@ -9,6 +9,7 @@ import {
   AiOutlineClockCircle,
   AiOutlineCloud,
   AiOutlineEye,
+  AiOutlineCloudUpload,
 } from 'react-icons/ai';
 import {
   MdVpnKey,
@@ -87,6 +88,7 @@ const icons = new Map([
   ['clock', <AiOutlineClockCircle />],
   ['cloud', <AiOutlineCloud />],
   ['eye', <AiOutlineEye />],
+  ['load', <AiOutlineCloudUpload />],
 
   ['identity', <MdPermIdentity />],
   ['expert', <SiExpertsexchange />],
