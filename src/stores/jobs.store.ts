@@ -1,9 +1,9 @@
 import create from 'zustand';
-import { debounce } from 'lodash';
-import { arrayMoveImmutable } from 'array-move';
-import { persist } from 'zustand/middleware';
+import {debounce} from 'lodash';
+import {arrayMoveImmutable} from 'array-move';
+import {persist} from 'zustand/middleware';
 import produce from 'immer';
-import { getJobs, addJob, updateJob, purgeJob, checkTasksStatus, addTasks } from '../axios/api';
+import {getJobs, addJob, updateJob, purgeJob, checkTasksStatus, addTasks} from '../axios/api';
 
 interface Job {
   id?: string;
@@ -84,6 +84,7 @@ export const useJobs = create(
       },
 
       add: () => {
+        useJobs.getState().updateLoading(true);
         addJob({}).then(res => {
           set(
             produce((state: any) => {
@@ -96,10 +97,12 @@ export const useJobs = create(
               };
               state.jobs.push(job);
               useTasks.getState().add(job);
+              state.loading = false;
             })
           );
         }).catch(err => {
           console.error(err);
+          set((state: any) => state.loading = false);
         })
       },
 
@@ -114,6 +117,7 @@ export const useJobs = create(
 
       purge: async (index: number) => {
         try {
+          set((state: any) => state.loading = true);
           const currentState = useJobs.getState();
           const delJobId = currentState.jobs[index].id;
           await purgeJob(delJobId);
@@ -121,12 +125,19 @@ export const useJobs = create(
             produce((state: any) => {
               state.jobs = state.jobs.filter((_, ind) => ind !== index);
               useTasks.getState().purge(index);
+              state.loading = false;
             })
           );
         } catch (err) {
           console.log(err);
         }
       },
+
+      updateLoading: (bool) => {
+        set(produce((state: any) => {
+          state.loading = bool;
+        }));
+      }
     }),
     {
       name: 'sprb-jobs',

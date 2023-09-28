@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Heading } from 'src/core/components/editor/Editor';
-import { Table, Button, message, Tag } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { getIcon } from 'src/styles/icons';
-import { useTasks, Task, Resume } from '../../stores/jobs.store';
+import React, {useEffect, useState} from 'react';
+import {Container, Heading} from 'src/core/components/editor/Editor';
+import {Table, Button, message, Tag, Space} from 'antd';
+import type {ColumnsType} from 'antd/es/table';
+import {getIcon} from 'src/styles/icons';
+import {useTasks, Task, Resume} from '../../stores/jobs.store';
 import shallow from 'zustand/shallow';
 import {
   useActivities,
@@ -15,19 +15,20 @@ import {
   useVolunteer,
   useWork,
 } from '../../stores/data.store';
-import { useRightDrawer } from '../../stores/settings.store';
 import {updateResume} from "../../axios/api";
 
-const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume}) => {
+const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
   const create = useTasks((state: any) => state.create, shallow);
-  const [messageApi, contextHolder] = message.useMessage();
+  const [isLoading, setLoading] = useState(false);
 
   const handleSubmit = () => {
+    setLoading(true)
     if (!selectedRows.length) {
       messageApi.open({
         type: 'error',
         content: 'Please select the task!',
       });
+      setLoading(false)
       return;
     }
 
@@ -60,17 +61,16 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume})
 
   return (
     <>
-      { contextHolder }
-      <Button type="primary" onClick={ handleSubmit } disabled={ handleStatus() }>
+      <Button type="primary" onClick={handleSubmit} disabled={handleStatus()} loading={isLoading}>
         Submit
       </Button>
     </>
   );
 };
 
-const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, resume}) => {
-  const [setActiveTab] = useRightDrawer((state) => [state.update]);
+const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, resume, messageApi}) => {
   const [tasks] = useTasks((state) => [state.tasks]);
+  const [isLoading, setLoading] = useState(false);
   const fetch = useTasks((state: any) => state.fetch, shallow);
   const resetBasics = useIntro((state: any) => state.reset);
   const resetSkills = useSkills((state: any) => state.reset);
@@ -80,7 +80,6 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
   const resetProjects = useProjects((state: any) => state.reset);
   const resetVolunteer = useVolunteer((state: any) => state.reset);
   const resetAwards = useAwards((state: any) => state.reset);
-  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     fetch();
@@ -106,8 +105,8 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       dataIndex: 'title',
       render: (title: string, record: Task) => (
         <>
-          <a href={ record.link } target="_blank" rel="noreferrer">
-            { title }
+          <a href={record.link} target="_blank" rel="noreferrer">
+            {title}
           </a>
         </>
       ),
@@ -120,18 +119,20 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       title: 'Status',
       dataIndex: 'status',
       render: (status: number) => {
-        if (status === -1) return <Tag icon={ getIcon('cloud') } color="default"/>;
-        else if (status === 0) return <Tag icon={ getIcon('clock') } color="default"/>;
-        else if (status === 1) return <Tag icon={ getIcon('sync') } color="processing"/>;
-        else if (status === 2) return <Tag icon={ getIcon('check') } color="success"/>;
+        if (status === -1) return <Tag icon={getIcon('cloud')} color="default"/>;
+        else if (status === 0) return <Tag icon={getIcon('clock')} color="default"/>;
+        else if (status === 1) return <Tag icon={getIcon('sync')} color="processing"/>;
+        else if (status === 2) return <Tag icon={getIcon('check')} color="success"/>;
       },
     },
     {
       title: 'Action',
       render: (record: Task) => (
         <>
-          <a onClick={ () => displayResume(record) }>{ getIcon('eye') }</a>
-          <a onClick={ () => uploadResume(record) }>{ getIcon('eye') }</a>
+          <Space>
+            <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
+            <a onClick={() => uploadResume(record)}>{getIcon('upload')}</a>
+          </Space>
         </>
       ),
     },
@@ -147,36 +148,42 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
     resetProjects(resume.projects);
     resetVolunteer(resume.volunteer);
     resetAwards(resume.awards);
-    setActiveTab(-1);
+    messageApi.open({
+      type: 'success',
+      content: 'Resume checkout successfully!',
+    });
   };
 
   const uploadResume = (record: Task) => {
+    setLoading(true)
     updateResume(record.newResumeId, resume).then(res => {
       if (res.status === 200) {
         messageApi.open({
           type: 'success',
           content: 'Resume update successfully!',
         });
+        setLoading(false)
       }
     })
   };
 
   return (
     <div>
-      { contextHolder }
       <Table
-        rowSelection={ {
+        rowSelection={{
           type: 'checkbox',
           ...rowSelection,
-        } }
-        columns={ columns }
-        dataSource={ tasks }
+        }}
+        columns={columns}
+        dataSource={tasks}
+        loading={isLoading}
       />
     </div>
   );
 };
 
 export const AIResume = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const basics = useIntro((state: any) => state.intro);
@@ -201,18 +208,21 @@ export const AIResume = () => {
   return (
     <>
       <Container>
+        {contextHolder}
         <Heading>AI Resume</Heading>
         <TaskTable
-          selectedRowKeys={ selectedRowKeys }
-          onSelectedRowsChange={ (selectedTasks) => setSelectedTasks(selectedTasks) }
-          setSelectedRowKeys={ setSelectedRowKeys }
+          selectedRowKeys={selectedRowKeys}
+          onSelectedRowsChange={(selectedTasks) => setSelectedTasks(selectedTasks)}
+          setSelectedRowKeys={setSelectedRowKeys}
           resume={resume}
+          messageApi={messageApi}
         />
         <SubmitBtn
-          selectedRows={ selectedTasks }
-          setSelectedRowKeys={ setSelectedRowKeys }
-          setSelectedTasks={ setSelectedTasks }
+          selectedRows={selectedTasks}
+          setSelectedRowKeys={setSelectedRowKeys}
+          setSelectedTasks={setSelectedTasks}
           resume={resume}
+          messageApi={messageApi}
         />
       </Container>
     </>
