@@ -299,14 +299,14 @@ export const AWARDS_METADATA = [
 
 export const JOBS_METADATA = [
   {
-    label: 'Company Name',
-    type: 'Input',
-    value: 'company',
-  },
-  {
     label: 'Job Title',
     type: 'Input',
     value: 'title',
+  },
+  {
+    label: 'Company Name',
+    type: 'Input',
+    value: 'company',
   },
   {
     label: 'Job Link',

@@ -14,7 +14,7 @@ import {
 import { SideMenu } from 'src/core/widgets/SideMenu';
 import { SideBackground } from 'src/core/widgets/SideBackground';
 import { useLeftDrawer } from 'src/stores/settings.store';
-import { JobEditor } from '../components/jobs/Jobs';
+import { JobEditor } from '../components/jobs/JobsEdit';
 
 const Wrapper = styled.div`
   height: 100vh;

@@ -1,6 +1,6 @@
 import create from 'zustand';
-import { arrayMoveImmutable } from 'array-move';
-import { persist } from 'zustand/middleware';
+import {arrayMoveImmutable} from 'array-move';
+import {persist} from 'zustand/middleware';
 import produce from 'immer';
 import userData from 'src/stores/data.json';
 
@@ -25,7 +25,7 @@ export const useIntro = create(
       intro: userData.basics,
 
       reset: (data = userData.basics) => {
-        set({ intro: data });
+        set({intro: data});
       },
 
       update: (type: string, value: string) =>
@@ -48,7 +48,7 @@ export const useIntro = create(
               return;
             }
 
-            state.intro.profiles.push({ network: type, [field]: value });
+            state.intro.profiles.push({network: type, [field]: value});
           })
         ),
     }),
@@ -86,13 +86,14 @@ export const useSkills = create(
           if (state[type].some((skill) => skill.name === '')) return;
 
           state[type] = [...state[type]];
-          state[type].push({ name, level });
+          state[type].push({name, level});
         }),
 
       update: (type: string, index: number, key: 'name' | 'level', value: string | number) =>
         set((state: any) => {
-          state[type] = [...state[type]];
-          state[type][index][key] = value;
+          state[type] = produce(state[type], (draftType) => {
+            draftType[index][key] = value;
+          });
         }),
 
       purge: (type: string, index: number) =>
@@ -118,7 +119,7 @@ export const useWork = create(
       companies: userData.work,
 
       reset: (data = userData.work) => {
-        set({ companies: data });
+        set({companies: data});
       },
 
       setField: (event: InputEvent) =>
@@ -145,20 +146,17 @@ export const useWork = create(
         })),
 
       update: (index, field, value) =>
-        set((state: any) => {
-          const newCompnaies = [...state.companies];
-          newCompnaies[index][field] = value;
-          return {
-            companies: newCompnaies,
-          };
-        }),
+        set((state: any) =>
+          produce(state, (draftState) => {
+            draftState.companies[index][field] = value;
+          })),
 
       purge: (index: number) =>
         set((state: any) => ({
           companies: state.companies.filter((_, ind) => ind !== index),
         })),
 
-      changeOrder: ({ oldIndex, newIndex }) =>
+      changeOrder: ({oldIndex, newIndex}) =>
         set((state: any) => ({
           companies: arrayMoveImmutable(state.companies, oldIndex, newIndex),
         })),
@@ -175,7 +173,7 @@ export const useEducation = create(
       education: userData.education,
 
       reset: (data = userData.education) => {
-        set({ education: data });
+        set({education: data});
       },
 
       add: () =>
@@ -196,18 +194,15 @@ export const useEducation = create(
         })),
 
       update: (index, field, value) =>
-        set((state: any) => {
-          const newEducation = [...state.education];
-          newEducation[index][field] = value;
-          return {
-            education: newEducation,
-          };
-        }),
+        set((state: any) =>
+          produce(state, (draftState) => {
+            draftState.education[index][field] = value;
+          })),
 
       purge: (index: number) =>
-        set((state: any) => ({ education: state.education.filter((_, ind) => ind !== index) })),
+        set((state: any) => ({education: state.education.filter((_, ind) => ind !== index)})),
 
-      changeOrder: ({ oldIndex, newIndex }) =>
+      changeOrder: ({oldIndex, newIndex}) =>
         set((state: any) => ({
           education: arrayMoveImmutable(state.education, oldIndex, newIndex),
         })),
@@ -224,7 +219,7 @@ export const useProjects = create(
       projects: userData.projects,
 
       reset: (data = userData.projects) => {
-        set({ projects: data });
+        set({projects: data});
       },
 
       add: () =>
@@ -245,18 +240,15 @@ export const useProjects = create(
         })),
 
       update: (index, field, value) =>
-        set((state: any) => {
-          const newProject = [...state.projects];
-          newProject[index][field] = value;
-          return {
-            projects: newProject,
-          };
-        }),
+        set((state: any) =>
+          produce(state, (draftState) => {
+            draftState.projects[index][field] = value;
+          })),
 
       purge: (index: number) =>
-        set((state: any) => ({ project: state.project.filter((_, ind) => ind !== index) })),
+        set((state: any) => ({project: state.project.filter((_, ind) => ind !== index)})),
 
-      changeOrder: ({ oldIndex, newIndex }) =>
+      changeOrder: ({oldIndex, newIndex}) =>
         set((state: any) => ({
           project: arrayMoveImmutable(state.project, oldIndex, newIndex),
         })),
@@ -282,7 +274,13 @@ export const useActivities = create(
 
       update: (type: string, value: string | number) =>
         set((state: any) => {
-          type === 'projects' ? (state[type] = value) : (state[type]['summary'] = value);
+          produce(state, (draftState) => {
+            if (type === 'projects') {
+              draftState[type] = value;
+            } else {
+              state[type]['summary'] = value
+            }
+          });
         }),
     }),
     {
@@ -323,13 +321,13 @@ export const useVolunteer = create(
           volunteer: state.volunteer.filter((_, ind) => ind !== index),
         })),
 
-      changeOrder: ({ oldIndex, newIndex }) =>
+      changeOrder: ({oldIndex, newIndex}) =>
         set((state: any) => ({
           volunteer: arrayMoveImmutable(state.volunteer, oldIndex, newIndex),
         })),
 
       reset: (data = userData.volunteer) => {
-        set({ volunteer: data });
+        set({volunteer: data});
       },
     }),
     {
@@ -367,13 +365,13 @@ export const useAwards = create(
           awards: state.awards.filter((_, ind) => ind !== index),
         })),
 
-      changeOrder: ({ oldIndex, newIndex }) =>
+      changeOrder: ({oldIndex, newIndex}) =>
         set((state: any) => ({
           awards: arrayMoveImmutable(state.awards, oldIndex, newIndex),
         })),
 
       reset: (data = userData.awards) => {
-        set({ awards: data });
+        set({awards: data});
       },
     }),
     {
@@ -388,13 +386,13 @@ export const useLabels = create(
       labels,
 
       update: (index: number, value: string) =>
-        set((state: any) => {
+        set(produce((state: any) => {
           const newlabels = [...state.labels];
           newlabels[index] = value;
           return {
             labels: newlabels,
           };
-        }),
+        })),
     }),
     {
       name: 'sprb-labels',

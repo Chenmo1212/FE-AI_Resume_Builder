@@ -36,7 +36,7 @@ interface Resume {
   awards: object;
 }
 
-const SubmitBtn = ({ selectedRows, setSelectedRowKeys, setSelectedTasks }) => {
+const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks}) => {
   const basics = useIntro((state: any) => state.intro);
   const skills = useSkills((state: any) => state);
   const work = useWork((state: any) => state.companies);
@@ -96,15 +96,15 @@ const SubmitBtn = ({ selectedRows, setSelectedRowKeys, setSelectedTasks }) => {
 
   return (
     <>
-      {contextHolder}
-      <Button type="primary" onClick={handleSubmit} disabled={handleStatus()}>
+      { contextHolder }
+      <Button type="primary" onClick={ handleSubmit } disabled={ handleStatus() }>
         Submit
       </Button>
     </>
   );
 };
 
-const TaskTable = ({ selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys }) => {
+const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) => {
   const [setActiveTab] = useRightDrawer((state) => [state.update]);
   const [tasks] = useTasks((state) => [state.tasks]);
   const fetch = useTasks((state: any) => state.fetch, shallow);
@@ -141,8 +141,8 @@ const TaskTable = ({ selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys }
       dataIndex: 'title',
       render: (title: string, record: Task) => (
         <>
-          <a href={record.link} target="_blank" rel="noreferrer">
-            {title}
+          <a href={ record.link } target="_blank" rel="noreferrer">
+            { title }
           </a>
         </>
       ),
@@ -155,24 +155,24 @@ const TaskTable = ({ selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys }
       title: 'Status',
       dataIndex: 'status',
       render: (status: number) => {
-        if (status === -1) return <Tag icon={getIcon('cloud')} color="default" />;
-        else if (status === 0) return <Tag icon={getIcon('clock')} color="default" />;
-        else if (status === 1) return <Tag icon={getIcon('sync')} color="processing" />;
-        else if (status === 2) return <Tag icon={getIcon('check')} color="success" />;
+        if (status === -1) return <Tag icon={ getIcon('cloud') } color="default"/>;
+        else if (status === 0) return <Tag icon={ getIcon('clock') } color="default"/>;
+        else if (status === 1) return <Tag icon={ getIcon('sync') } color="processing"/>;
+        else if (status === 2) return <Tag icon={ getIcon('check') } color="success"/>;
       },
     },
     {
       title: 'Action',
       render: (record: Task) => (
         <>
-          <a onClick={() => updateResume(record)}>{getIcon('eye')}</a>
+          <a onClick={ () => updateResume(record) }>{ getIcon('eye') }</a>
         </>
       ),
     },
   ];
 
   const updateResume = (record: Task) => {
-    const resume: Resume = record['resume'];
+    const resume: Resume = {...record['resume']};
     resetBasics(resume.basics);
     resetSkills(resume.skills);
     resetWork(resume.work);
@@ -187,12 +187,12 @@ const TaskTable = ({ selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys }
   return (
     <div>
       <Table
-        rowSelection={{
+        rowSelection={ {
           type: 'checkbox',
           ...rowSelection,
-        }}
-        columns={columns}
-        dataSource={tasks}
+        } }
+        columns={ columns }
+        dataSource={ tasks }
       />
     </div>
   );
@@ -206,14 +206,14 @@ export const AIResume = () => {
       <Container>
         <Heading>AI Resume</Heading>
         <TaskTable
-          selectedRowKeys={selectedRowKeys}
-          onSelectedRowsChange={(selectedTasks) => setSelectedTasks(selectedTasks)}
-          setSelectedRowKeys={setSelectedRowKeys}
+          selectedRowKeys={ selectedRowKeys }
+          onSelectedRowsChange={ (selectedTasks) => setSelectedTasks(selectedTasks) }
+          setSelectedRowKeys={ setSelectedRowKeys }
         />
         <SubmitBtn
-          selectedRows={selectedTasks}
-          setSelectedRowKeys={setSelectedRowKeys}
-          setSelectedTasks={setSelectedTasks}
+          selectedRows={ selectedTasks }
+          setSelectedRowKeys={ setSelectedRowKeys }
+          setSelectedTasks={ setSelectedTasks }
         />
       </Container>
     </>
