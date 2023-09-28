@@ -3,6 +3,7 @@ import {arrayMoveImmutable} from 'array-move';
 import {persist} from 'zustand/middleware';
 import produce from 'immer';
 import userData from 'src/stores/data.json';
+import preferUserData from 'src/stores/prefer.data.json';
 
 const labels = [
   'Experience',
@@ -18,6 +19,24 @@ const labels = [
   'Biography',
   'Total Experience',
 ];
+
+export const usePreferData = create(
+  persist(
+    (set) => ({
+      basics: preferUserData.basics,
+      education: preferUserData.education,
+      awards: preferUserData.awards,
+      volunteer: preferUserData.volunteer,
+      skills: preferUserData.skills,
+      activities: preferUserData.activities,
+      projects: preferUserData.projects,
+      work: preferUserData.work,
+    }),
+    {
+      name: 'sprb-prefer',
+    }
+  )
+);
 
 export const useIntro = create(
   persist(
