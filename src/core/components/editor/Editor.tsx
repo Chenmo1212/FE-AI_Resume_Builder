@@ -26,6 +26,7 @@ import { ActivitiesEdit } from './ActivitiesEdit';
 import { LabelsEdit } from './LabelsEdit';
 import { IntroEdit } from './IntroEdit';
 import { SocialEdit } from './SocialEdit';
+import { PreferDataBtn } from "./PreferEdit";
 
 const Divider = styled.div`
   height: 2px;
@@ -52,7 +53,7 @@ export const IntroEditor = () => {
 
   return (
     <Container>
-      <Heading>Intro</Heading>
+      <Heading>Intro <PreferDataBtn content='basics'/></Heading>
       <IntroEdit state={introState} METADATA={INTRO_METADATA} update={update} />
       <Divider />
     </Container>
@@ -73,7 +74,7 @@ export const SocialEditor = () => {
 
 export const ActivitiesEditor = () => (
   <Container>
-    <Heading>Activities</Heading>
+    <Heading>Activities<PreferDataBtn content='activities'/></Heading>
     <ActivitiesEdit />
   </Container>
 );
@@ -99,7 +100,7 @@ export const EduEditor = () => {
 
   return (
     <Container>
-      <Heading>Education</Heading>
+      <Heading>Education<PreferDataBtn content='education'/></Heading>
       <TimelineEdit
         METADATA={EDU_METADATA}
         itemList={education}
@@ -119,7 +120,7 @@ export const ExperienceEditor = () => {
 
   return (
     <Container>
-      <Heading>Experience</Heading>
+      <Heading>Experience<PreferDataBtn content='work'/></Heading>
       <TimelineEdit
         METADATA={EXP_METADATA}
         itemList={companies}
@@ -139,7 +140,7 @@ export const ProjectEditor = () => {
 
   return (
     <Container>
-      <Heading>Project</Heading>
+      <Heading>Project<PreferDataBtn content='projects'/></Heading>
       <TimelineEdit
         METADATA={PROJECT_METADATA}
         itemList={projects}
@@ -159,7 +160,7 @@ const VolunteerEditor = () => {
 
   return (
     <Container>
-      <Heading>Volunteering</Heading>
+      <Heading>Volunteering<PreferDataBtn content='volunteer'/></Heading>
       <TimelineEdit
         METADATA={VOLUNTEERING_METADATA}
         itemList={volunteer}
@@ -179,7 +180,7 @@ const AwardsEditor = () => {
 
   return (
     <Container>
-      <Heading>Awards</Heading>
+      <Heading>Awards<PreferDataBtn content='awards'/></Heading>
       <TimelineEdit
         METADATA={AWARDS_METADATA}
         itemList={awards}
@@ -205,7 +206,7 @@ export const SkillEditor = ({ type, hasRating = false }: { type: string; hasRati
 
   return (
     <Container>
-      <Heading>{type.toUpperCase()}</Heading>
+      <Heading>{type.toUpperCase()} {type === "languages" ? <PreferDataBtn content='skills'/> : ""}</Heading>
       <SkillsEdit
         type={type}
         hasRating={hasRating}
