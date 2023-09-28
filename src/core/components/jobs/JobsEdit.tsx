@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
-import { Container, Heading } from '../editor/Editor';
-import { useJobs } from 'src/stores/jobs.store';
+import React, {useEffect} from 'react';
+import {Container, Heading} from '../editor/Editor';
+import {useJobs} from 'src/stores/jobs.store';
 import shallow from 'zustand/shallow';
-import { TimelineEdit } from '../editor/TimelineEdit';
-import { JOBS_METADATA } from '../../meta-data/input_metadata';
+import {TimelineEdit} from '../editor/TimelineEdit';
+import {JOBS_METADATA} from '../../meta-data/input_metadata';
+import {Spin} from "antd";
 
 export const JobEditor = () => {
   const [jobs, loading] = useJobs((state) => [state.jobs, state.loading]);
@@ -17,14 +18,16 @@ export const JobEditor = () => {
   }, []);
 
   return (
-    <Container>
-      <Heading>Jobs</Heading>
-      <TimelineEdit
-        METADATA={JOBS_METADATA}
-        itemList={loading ? [] : jobs}
-        identifier="title"
-        operations={{ update, add, purge }}
-      />
-    </Container>
+    <Spin spinning={loading} tip="Loading...">
+      <Container>
+        <Heading>Jobs</Heading>
+        <TimelineEdit
+          METADATA={JOBS_METADATA}
+          itemList={jobs}
+          identifier="title"
+          operations={{update, add, purge}}
+        />
+      </Container>
+    </Spin>
   );
 };

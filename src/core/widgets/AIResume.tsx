@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Heading } from 'src/core/components/editor/Editor';
-import { Table, Button, message, Tag } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { getIcon } from 'src/styles/icons';
-import { useTasks } from '../../stores/jobs.store';
+import React, {useEffect, useState} from 'react';
+import {Container, Heading} from 'src/core/components/editor/Editor';
+import {Table, Button, message, Tag, Space} from 'antd';
+import type {ColumnsType} from 'antd/es/table';
+import {getIcon} from 'src/styles/icons';
+import {useTasks, Task, Resume} from '../../stores/jobs.store';
 import shallow from 'zustand/shallow';
 import {
   useActivities,
@@ -15,55 +15,20 @@ import {
   useVolunteer,
   useWork,
 } from '../../stores/data.store';
-import { useRightDrawer } from '../../stores/settings.store';
+import {updateResume} from "../../axios/api";
 
-interface Task {
-  id?: string;
-  company?: string;
-  title?: string;
-  link?: string;
-  status: number;
-}
-
-interface Resume {
-  basics: object;
-  skills: object;
-  work: object;
-  education: object;
-  projects: object;
-  activities: object;
-  volunteer: object;
-  awards: object;
-}
-
-const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks}) => {
-  const basics = useIntro((state: any) => state.intro);
-  const skills = useSkills((state: any) => state);
-  const work = useWork((state: any) => state.companies);
-  const education = useEducation((state: any) => state.education);
-  const activities = useActivities((state: any) => state);
-  const projects = useProjects((state: any) => state.projects);
-  const volunteer = useVolunteer((state: any) => state.volunteer);
-  const awards = useAwards((state: any) => state.awards);
-  const resume: Resume = {
-    basics,
-    skills,
-    work,
-    education,
-    projects,
-    activities,
-    volunteer,
-    awards,
-  };
+const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
   const create = useTasks((state: any) => state.create, shallow);
-  const [messageApi, contextHolder] = message.useMessage();
+  const [isLoading, setLoading] = useState(false);
 
   const handleSubmit = () => {
+    setLoading(true)
     if (!selectedRows.length) {
       messageApi.open({
         type: 'error',
         content: 'Please select the task!',
       });
+      setLoading(false)
       return;
     }
 
@@ -96,17 +61,16 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks}) => {
 
   return (
     <>
-      { contextHolder }
-      <Button type="primary" onClick={ handleSubmit } disabled={ handleStatus() }>
+      <Button type="primary" onClick={handleSubmit} disabled={handleStatus()} loading={isLoading}>
         Submit
       </Button>
     </>
   );
 };
 
-const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) => {
-  const [setActiveTab] = useRightDrawer((state) => [state.update]);
+const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, resume, messageApi}) => {
   const [tasks] = useTasks((state) => [state.tasks]);
+  const [isLoading, setLoading] = useState(false);
   const fetch = useTasks((state: any) => state.fetch, shallow);
   const resetBasics = useIntro((state: any) => state.reset);
   const resetSkills = useSkills((state: any) => state.reset);
@@ -141,8 +105,8 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) 
       dataIndex: 'title',
       render: (title: string, record: Task) => (
         <>
-          <a href={ record.link } target="_blank" rel="noreferrer">
-            { title }
+          <a href={record.link} target="_blank" rel="noreferrer">
+            {title}
           </a>
         </>
       ),
@@ -155,23 +119,26 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) 
       title: 'Status',
       dataIndex: 'status',
       render: (status: number) => {
-        if (status === -1) return <Tag icon={ getIcon('cloud') } color="default"/>;
-        else if (status === 0) return <Tag icon={ getIcon('clock') } color="default"/>;
-        else if (status === 1) return <Tag icon={ getIcon('sync') } color="processing"/>;
-        else if (status === 2) return <Tag icon={ getIcon('check') } color="success"/>;
+        if (status === -1) return <Tag icon={getIcon('cloud')} color="default"/>;
+        else if (status === 0) return <Tag icon={getIcon('clock')} color="default"/>;
+        else if (status === 1) return <Tag icon={getIcon('sync')} color="processing"/>;
+        else if (status === 2) return <Tag icon={getIcon('check')} color="success"/>;
       },
     },
     {
       title: 'Action',
       render: (record: Task) => (
         <>
-          <a onClick={ () => updateResume(record) }>{ getIcon('eye') }</a>
+          <Space>
+            <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
+            <a onClick={() => uploadResume(record)}>{getIcon('upload')}</a>
+          </Space>
         </>
       ),
     },
   ];
 
-  const updateResume = (record: Task) => {
+  const displayResume = (record: Task) => {
     const resume: Resume = {...record['resume']};
     resetBasics(resume.basics);
     resetSkills(resume.skills);
@@ -181,39 +148,81 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys}) 
     resetProjects(resume.projects);
     resetVolunteer(resume.volunteer);
     resetAwards(resume.awards);
-    setActiveTab(-1);
+    messageApi.open({
+      type: 'success',
+      content: 'Resume checkout successfully!',
+    });
+  };
+
+  const uploadResume = (record: Task) => {
+    setLoading(true)
+    updateResume(record.newResumeId, resume).then(res => {
+      if (res.status === 200) {
+        messageApi.open({
+          type: 'success',
+          content: 'Resume update successfully!',
+        });
+        setLoading(false)
+      }
+    })
   };
 
   return (
     <div>
       <Table
-        rowSelection={ {
+        rowSelection={{
           type: 'checkbox',
           ...rowSelection,
-        } }
-        columns={ columns }
-        dataSource={ tasks }
+        }}
+        columns={columns}
+        dataSource={tasks}
+        loading={isLoading}
       />
     </div>
   );
 };
 
 export const AIResume = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const basics = useIntro((state: any) => state.intro);
+  const skills = useSkills((state: any) => state);
+  const work = useWork((state: any) => state.companies);
+  const education = useEducation((state: any) => state.education);
+  const activities = useActivities((state: any) => state);
+  const projects = useProjects((state: any) => state.projects);
+  const volunteer = useVolunteer((state: any) => state.volunteer);
+  const awards = useAwards((state: any) => state.awards);
+  const resume: Resume = {
+    basics,
+    skills,
+    work,
+    education,
+    projects,
+    activities,
+    volunteer,
+    awards,
+  };
+
   return (
     <>
       <Container>
+        {contextHolder}
         <Heading>AI Resume</Heading>
         <TaskTable
-          selectedRowKeys={ selectedRowKeys }
-          onSelectedRowsChange={ (selectedTasks) => setSelectedTasks(selectedTasks) }
-          setSelectedRowKeys={ setSelectedRowKeys }
+          selectedRowKeys={selectedRowKeys}
+          onSelectedRowsChange={(selectedTasks) => setSelectedTasks(selectedTasks)}
+          setSelectedRowKeys={setSelectedRowKeys}
+          resume={resume}
+          messageApi={messageApi}
         />
         <SubmitBtn
-          selectedRows={ selectedTasks }
-          setSelectedRowKeys={ setSelectedRowKeys }
-          setSelectedTasks={ setSelectedTasks }
+          selectedRows={selectedTasks}
+          setSelectedRowKeys={setSelectedRowKeys}
+          setSelectedTasks={setSelectedTasks}
+          resume={resume}
+          messageApi={messageApi}
         />
       </Container>
     </>
