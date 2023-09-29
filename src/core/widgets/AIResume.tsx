@@ -124,6 +124,25 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
         else if (status === 1) return <Tag icon={getIcon('sync')} color="processing"/>;
         else if (status === 2) return <Tag icon={getIcon('check')} color="success"/>;
       },
+      filters: [
+        {
+          text: 'Default',
+          value: -1,
+        },
+        {
+          text: 'Waiting',
+          value: 0,
+        },
+        {
+          text: 'Processing',
+          value: 1,
+        },
+        {
+          text: 'Success',
+          value: 2,
+        },
+      ],
+      onFilter: (value: any, record: Task) => record.status === value,
     },
     {
       title: 'Action',
