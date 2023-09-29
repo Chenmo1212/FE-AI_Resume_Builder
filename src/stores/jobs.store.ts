@@ -189,13 +189,14 @@ export const useTasks = create(
                     console.log('The database does not have this id: ', taskIds[i]);
                     state.tasks[idx]['id'] = '';
                   }
-                  state.loading = false;
                 })
               );
             });
+            useTasks.getState().updateLoading(false);
           })
           .catch((err) => {
             console.log(err);
+            useTasks.getState().updateLoading(false);
           });
         // }
       },
