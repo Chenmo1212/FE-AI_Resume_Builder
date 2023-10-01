@@ -15,7 +15,7 @@ import {
   useVolunteer,
   useWork,
 } from '../../stores/data.store';
-import {updateResume} from "../../axios/api";
+import {updateResume, updateTask} from "../../axios/api";
 
 const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
   const create = useTasks((state: any) => state.create, shallow);
@@ -85,8 +85,6 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
     fetch();
   }, []);
 
-  console.log('tasks', tasks);
-
   // rowSelection object indicates the need for row selection
   const rowSelection = {
     selectedRowKeys,
@@ -151,6 +149,7 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
           <Space>
             <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
             <a onClick={() => uploadResume(record)}>{getIcon('upload')}</a>
+            <a onClick={() => applyStatusHandle(record)} style={{ color: record.isApply ? '#52c41a' : '' }}>{getIcon('apply')}</a>
           </Space>
         </>
       ),
@@ -181,10 +180,30 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
           type: 'success',
           content: 'Resume update successfully!',
         });
-        setLoading(false)
+        setLoading(false);
       }
+    }).catch(err=> {
+      console.log(err)
+      setLoading(false);
     })
   };
+
+  const applyStatusHandle = (record) => {
+    setLoading(true);
+    updateTask(record.id, {is_apply: !record.isApply}).then(res => {
+      if (res.status === 201) {
+        messageApi.open({
+          type: 'success',
+          content: !record.isApply ? 'Successfully applied!' : "Waiting to apply!",
+        });
+        fetch();
+        setLoading(false);
+      }
+    }).catch(err=>{
+      console.log(err)
+      setLoading(false);
+    })
+  }
 
   return (
     <div>

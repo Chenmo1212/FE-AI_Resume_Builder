@@ -33,6 +33,7 @@ import {
   MdPrint,
   MdHome,
   MdLanguage,
+  MdPets,
 } from 'react-icons/md';
 import {
   SiBehance,
@@ -89,6 +90,7 @@ const icons = new Map([
   ['cloud', <AiOutlineCloud />],
   ['eye', <AiOutlineEye />],
   ['load', <AiOutlineCloudUpload />],
+  ['apply', <MdPets />],
 
   ['identity', <MdPermIdentity />],
   ['expert', <SiExpertsexchange />],
