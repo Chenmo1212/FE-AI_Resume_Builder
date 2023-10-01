@@ -32,6 +32,10 @@ export function addTask(data) {
   return api.post('/task', JSON.stringify(data));
 }
 
+export function updateTask(id, data) {
+  return api.put('/task/' + id, JSON.stringify(data));
+}
+
 export function addTasks(data) {
   return api.post('/tasks', JSON.stringify(data));
 }

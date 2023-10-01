@@ -36,6 +36,7 @@ export interface Task {
   rawResumeId: string;
   newResumeId: string;
   key: string;
+  isApply: boolean;
 }
 
 const JOBS_DATA: Job[] = [];
@@ -167,6 +168,7 @@ export const useTasks = create(
             state.tasks.forEach((task, index) => {
               task.status = -1;
               task.key = index.toString();
+              task.isApply = false;
             });
           })
         );
@@ -174,7 +176,6 @@ export const useTasks = create(
         checkTasksStatus({task_ids: taskIds})
           .then((res) => {
             const tasks = res.data.tasks;
-            console.log(tasks)
             taskIdx.forEach((idx, i) => {
               set(
                 produce((state: any) => {
@@ -184,6 +185,7 @@ export const useTasks = create(
                       status: tasks[i].status,
                       resume: tasks[i].resume,
                       newResumeId: tasks[i].new_resume_id,
+                      isApply: tasks[i]['is_apply']
                     };
                   } else {
                     console.log('The database does not have this id: ', taskIds[i]);
