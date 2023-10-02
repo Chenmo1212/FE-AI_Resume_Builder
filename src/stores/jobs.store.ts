@@ -3,7 +3,15 @@ import {debounce} from 'lodash';
 import {arrayMoveImmutable} from 'array-move';
 import {persist} from 'zustand/middleware';
 import produce from 'immer';
-import {getJobs, addJob, updateJob, purgeJob, checkTasksStatus, addTasks} from '../axios/api';
+import {
+  getJobs,
+  addJob,
+  updateJob,
+  purgeJob,
+  addTasks,
+  addTask,
+  getTasks
+} from '../axios/api';
 
 interface Job {
   id?: string;
@@ -87,7 +95,7 @@ export const useJobs = create(
 
       add: () => {
         useJobs.getState().updateLoading(true);
-        addJob({}).then(res => {
+        addJob({title: 'job title'}).then(res => {
           set(
             produce((state: any) => {
               const job = {
@@ -98,7 +106,7 @@ export const useJobs = create(
                 description: '',
               };
               state.jobs.push(job);
-              useTasks.getState().add(job);
+              useTasks.getState().add({job_id: job.id});
               state.loading = false;
             })
           );
@@ -109,13 +117,10 @@ export const useJobs = create(
       },
 
       update: (index: string, key: string, value: string) =>
-        set(
-          produce((state: any) => {
-            state.jobs[index][key] = value;
-            useTasks.getState().update(index, key, value);
-            debouncedUpdateJob(index)
-          })
-        ),
+        set((state: any) => produce(state, (draftState) => {
+          draftState.jobs[index][key] = value;
+          debouncedUpdateJob(index);
+        })),
 
       purge: async (index: number) => {
         try {
@@ -147,6 +152,23 @@ export const useJobs = create(
   )
 );
 
+const underscoreToCamel = (obj) => {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(item => underscoreToCamel(item));
+  }
+  const camelCaseObj = {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+      camelCaseObj[camelKey] = underscoreToCamel(obj[key]);
+    }
+  }
+  return camelCaseObj;
+}
+
 export const useTasks = create(
   persist(
     (set) => ({
@@ -155,66 +177,30 @@ export const useTasks = create(
 
       fetch: () => {
         useTasks.getState().updateLoading(true);
-        let taskIds: string[] = [];
-        let taskIdx: number[] = [];
-        useTasks.getState().tasks.forEach((task, idx) => {
-          if (task.id) {
-            taskIds.push(task.id);
-            taskIdx.push(idx);
-          }
+        let jobIds: string[] = [];
+        useJobs.getState().jobs.forEach((job, idx) => {
+          if (job.id) jobIds.push(job.id);
         });
-        set(
-          produce((state: any) => {
-            state.tasks.forEach((task, index) => {
-              task.status = -1;
-              task.key = index.toString();
-              task.isApply = false;
-            });
-          })
-        );
-        // if (taskIds.length) {
-        checkTasksStatus({task_ids: taskIds})
+        getTasks({job_ids: jobIds})
           .then((res) => {
-            const tasks = res.data.tasks;
-            taskIdx.forEach((idx, i) => {
-              set(
-                produce((state: any) => {
-                  if (tasks[i]) {
-                    state.tasks[idx] = {
-                      ...state.tasks[idx],
-                      status: tasks[i].status,
-                      resume: tasks[i].resume,
-                      newResumeId: tasks[i].new_resume_id,
-                      isApply: tasks[i]['is_apply']
-                    };
-                  } else {
-                    console.log('The database does not have this id: ', taskIds[i]);
-                    state.tasks[idx]['id'] = '';
-                  }
-                })
-              );
-            });
-            useTasks.getState().updateLoading(false);
+            const tasks = res.data.data;
+            set(produce((state: any) => {
+              state.tasks = tasks.map(e => underscoreToCamel(e))
+              state.loading = false
+            }));
           })
           .catch((err) => {
             console.log(err);
             useTasks.getState().updateLoading(false);
           });
-        // }
       },
 
       add: (data: any) => {
-        set(
-          produce((state: any) => {
-            state.tasks.push({
-              ...data,
-              jobId: data.id,
-              status: -1,
-              id: '',
-              key: state.tasks.length.toString(),
-            });
-          })
-        );
+        addTask(data).then(res => {
+          console.log(res)
+        }).catch(err => {
+          console.error(err)
+        })
       },
 
       create: (data: any) => {
