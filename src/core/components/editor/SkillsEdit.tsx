@@ -65,7 +65,7 @@ const SortableList = SortableContainer(
     <div>
       {skills?.map(({ name, level }, index) => (
         <SortableItem
-          key={name}
+          key={name + index}
           index={index}
           ind={index}
           type={type}

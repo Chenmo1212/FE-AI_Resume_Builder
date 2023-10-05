@@ -185,7 +185,9 @@ export const useTasks = create(
           .then((res) => {
             const tasks = res.data.data;
             set(produce((state: any) => {
-              state.tasks = tasks.map(e => underscoreToCamel(e))
+              let camelTasks = tasks.map(e => underscoreToCamel(e))
+              camelTasks.forEach(task => task.key = task.id)
+              state.tasks = camelTasks
               state.loading = false
             }));
           })
@@ -207,23 +209,8 @@ export const useTasks = create(
         useTasks.getState().updateLoading(true);
         addTasks(data)
           .then((res) => {
-            const taskIds = res.data['task_ids'];
-            const jobs = data['job_list'].map((job, index) => ({
-              ...job,
-              taskId: taskIds[index],
-            }));
-            set(
-              produce((state: any) => {
-                for (let i = 0; i < jobs.length; i++) {
-                  const taskIndex = state.tasks.findIndex((task) => task.jobId === jobs[i].id);
-                  if (taskIndex >= 0) {
-                    // state.update(taskIndex, 'id', jobs[i].id)
-                    state.tasks[taskIndex]['id'] = jobs[i].taskId;
-                  }
-                }
-                state.loading = false;
-              })
-            );
+            console.log(res)
+            useTasks.getState().updateLoading(false);
             useTasks.getState().fetch();
           })
           .catch((err) => {

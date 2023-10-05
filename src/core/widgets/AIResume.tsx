@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Container, Heading} from 'src/core/components/editor/Editor';
-import {Table, Button, message, Tag, Space, Spin} from 'antd';
+import {Table, Button, message, Tag, Space, Spin, Checkbox} from 'antd';
 import type {ColumnsType} from 'antd/es/table';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import {getIcon} from 'src/styles/icons';
 import {useTasks, Task, Resume} from '../../stores/jobs.store';
 import shallow from 'zustand/shallow';
@@ -9,7 +10,7 @@ import {
   useActivities,
   useAwards,
   useEducation,
-  useIntro,
+  useIntro, usePreferData,
   useProjects,
   useSkills,
   useVolunteer,
@@ -20,6 +21,8 @@ import {updateResume, updateTask} from "../../axios/api";
 const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
   const create = useTasks((state: any) => state.create, shallow);
   const [isLoading, setLoading] = useState(false);
+  const [isPrefer, setIsPrefer] = useState(true);
+  const preferResume = usePreferData((state: any) => state.getResume(), shallow);
 
   const handleSubmit = () => {
     setLoading(true)
@@ -32,15 +35,9 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
       return;
     }
 
-    const jobList = selectedRows.map((task) => ({
-      id: task.jobId,
-      description: task.description,
-      link: task.link,
-      title: task.title,
-    }));
     create({
-      job_list: jobList,
-      resume: resume,
+      task_list: selectedRows,
+      resume: isPrefer ? preferResume : resume,
     });
     messageApi.open({
       type: 'success',
@@ -48,6 +45,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
     });
     setSelectedRowKeys([]);
     setSelectedTasks([]);
+    setLoading(false);
   };
 
   const handleStatus = () => {
@@ -59,8 +57,13 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
     return false;
   };
 
+  const onPreferChange = (e: CheckboxChangeEvent) => {
+    setIsPrefer(e.target.checked)
+  };
+
   return (
     <>
+      <Checkbox onChange={onPreferChange} style={{color: "#fff"}} checked={isPrefer}>Use Prefer Resume</Checkbox>
       <Button type="primary" onClick={handleSubmit} disabled={handleStatus()} loading={isLoading}>
         Submit
       </Button>
@@ -190,7 +193,7 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
 
   const applyStatusHandle = (record) => {
     setLoading(true);
-    updateTask(record.id, {is_apply: !record.isApply}).then(res => {
+    updateTask(record.id, {is_apply: !record.isApply, apply_time: new Date().toISOString()}).then(res => {
       if (res.status === 201) {
         messageApi.open({
           type: 'success',
