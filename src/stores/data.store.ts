@@ -31,7 +31,19 @@ export const usePreferData = create(
       activities: preferUserData.activities,
       projects: preferUserData.projects,
       work: preferUserData.work,
+
+      getResume: () => ({
+        basics: preferUserData.basics,
+        education: preferUserData.education,
+        awards: preferUserData.awards,
+        volunteer: preferUserData.volunteer,
+        skills: preferUserData.skills,
+        activities: preferUserData.activities,
+        projects: preferUserData.projects,
+        work: preferUserData.work,
+      })
     }),
+
     {
       name: 'sprb-prefer',
     }
