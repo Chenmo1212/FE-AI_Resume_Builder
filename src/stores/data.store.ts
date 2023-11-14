@@ -7,7 +7,7 @@ import preferUserData from 'src/stores/prefer.data.json';
 
 const labels = [
   'Experience',
-  'Key Projects / Involvements',
+  'Key Projects',
   'Certificates and Awards',
   'About me',
   'Career Objective',
@@ -18,6 +18,8 @@ const labels = [
   'Education',
   'Biography',
   'Total Experience',
+  'Involvements',
+  'Referral',
 ];
 
 export const usePreferData = create(
@@ -219,6 +221,7 @@ export const useEducation = create(
               startDate: '',
               endDate: '',
               score: '',
+              dissertation: '',
               courses: [],
             },
           ],
@@ -304,15 +307,14 @@ export const useActivities = create(
       },
 
       update: (type: string, value: string | number) =>
-        set((state: any) => {
+        set((state: any) =>
           produce(state, (draftState) => {
             if (type === 'projects') {
               draftState[type] = value;
             } else {
-              state[type]['summary'] = value
+              draftState[type] = value
             }
-          });
-        }),
+          })),
     }),
     {
       name: 'sprb-activities',
