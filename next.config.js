@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  assetPrefix: '/.next',
+  distDir: '_next',
+
   reactStrictMode: false,
   images: {
     domains: ['img.icons8.com'],
