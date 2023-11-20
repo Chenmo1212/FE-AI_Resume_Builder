@@ -34,6 +34,7 @@ import {
   MdHome,
   MdLanguage,
   MdPets,
+  MdOutlinePersonPin,
 } from 'react-icons/md';
 import {
   SiBehance,
@@ -106,6 +107,7 @@ const icons = new Map([
   ['color', <MdColorLens />],
   ['print', <MdPrint />],
   ['template', <MdLibraryBooks />],
+  ['referral', <MdOutlinePersonPin />],
 
   ['drag', <GrDrag />],
   ['delete', <AiFillDelete />],
