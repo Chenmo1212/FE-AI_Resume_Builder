@@ -1,11 +1,6 @@
 name: AI Resume Deployment
 run-name: ${{ github.actor }} is deploying ${{ github.repository }} 🚀
-on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
