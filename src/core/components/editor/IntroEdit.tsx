@@ -66,7 +66,7 @@ export function IntroEdit({METADATA, state, update}: any) {
       <Wrapper style={referralStyles}>
         <Topic>Referral</Topic>
         <FormControlLabel
-          control={<Switch defaultChecked checked={isDisplayRef} onChange={handleReferral}/>}
+          control={<Switch checked={isDisplayRef} onChange={handleReferral}/>}
           label="Display Referral"/>
       </Wrapper>
     </>
