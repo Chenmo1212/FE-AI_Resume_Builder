@@ -16,9 +16,13 @@ const GraduateTemplate = dynamic(() => import('src/templates/layouts/GraduateTem
   ssr: false,
 })
 
-export const templates = [ProfessionalTemplate, LegacyTemplate, GraduateTemplate];
-export const templatesSrc = [ProfessionalImg, LegacyImg, ProfessionalImg];
-export const templatesName = ['Professional', 'Legacy', 'Graduate'];
+const OneColumnTemplate = dynamic(() => import('src/templates/layouts/OneColumnTemplate'), {
+  ssr: false,
+})
+
+export const templates = [ProfessionalTemplate, LegacyTemplate, GraduateTemplate, OneColumnTemplate];
+export const templatesSrc = [ProfessionalImg, LegacyImg, ProfessionalImg, LegacyImg];
+export const templatesName = ['Professional', 'Legacy', 'Graduate', 'OneColumn'];
 
 export const useTemplates = create((set: any) => ({
   index: 0,
