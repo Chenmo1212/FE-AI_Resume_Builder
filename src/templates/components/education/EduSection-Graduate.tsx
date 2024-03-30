@@ -45,7 +45,7 @@ export function EduSection({ education }: any) {
         <em>{data.score}</em>
       </Flex>
 
-      {/*<Dissertation>{data.dissertation && <b>Dissertation:</b>} {data.dissertation}</Dissertation>*/}
+      <Dissertation>{data.dissertation && <b>Dissertation:</b>} {data.dissertation}</Dissertation>
       <Courses>{data.courses && <b>Main Modules:</b>} {data.courses.join(', ')}</Courses>
     </Education>
   ));

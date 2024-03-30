@@ -24,7 +24,7 @@ const labels = [
 
 export const usePreferData = create(
   persist(
-    (set) => ({
+    () => ({
       basics: preferUserData.basics,
       education: preferUserData.education,
       awards: preferUserData.awards,
@@ -280,11 +280,11 @@ export const useProjects = create(
           })),
 
       purge: (index: number) =>
-        set((state: any) => ({project: state.project.filter((_, ind) => ind !== index)})),
+        set((state: any) => ({projects: state.projects.filter((_, ind) => ind !== index)})),
 
       changeOrder: ({oldIndex, newIndex}) =>
         set((state: any) => ({
-          project: arrayMoveImmutable(state.project, oldIndex, newIndex),
+          project: arrayMoveImmutable(state.projects, oldIndex, newIndex),
         })),
     }),
     {
