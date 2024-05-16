@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'https://api.chenmo1212.cn/cv/',
+  baseURL: 'https://www.chenmo1212.cn/api/resume/',
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
