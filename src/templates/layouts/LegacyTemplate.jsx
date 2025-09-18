@@ -9,7 +9,7 @@ import { RatedPill } from '../components/skills/RatedPills';
 import { UnratedTabs } from '../components/skills/UnratedTabs';
 import { Exp } from '../components/exp/Exp';
 import { Projects } from '../components/projects/Projects';
-import { EduSection } from '../components/education/EduSection';
+import { EduSection } from '../components/education/SideEduSection';
 import { LineSeparator } from '../components/separator/LineSeparator';
 import { LegacyHeader } from '../components/section-layout/LegacyHeader';
 import { SocialBar } from '../components/social/SocialBar';
