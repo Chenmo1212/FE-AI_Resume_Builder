@@ -18,7 +18,7 @@ import { Flex, FlexCol } from '../../styles/styles';
 import { getIcon } from '../../styles/icons';
 import { leftNavList } from '../../core/containers/LeftNav';
 import { useLeftDrawer } from '../../stores/settings.store';
-import { Intro } from '../components/template3';
+import { Intro } from '../components/intro/Intro-Graduate';
 import { Projects } from '../components/projects/Projects';
 import { Exp } from '../components/exp/Exp';
 import { EduSection } from '../components/education/EduSection';
