@@ -68,7 +68,7 @@ const labelsIcon = [
 
 export default function ProfessionalTemplate() {
   const intro = useIntro((state) => state.intro);
-  const education = useEducation((state) => state.education);
+  const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
   const experience = useWork((state) => state);
   const projects = useProjects((state) => state);
   const [achievements, involvements] = useActivities((state) => [state.achievements, state.involvements], shallow);
@@ -167,7 +167,7 @@ export default function ProfessionalTemplate() {
       icon: labelsIcon[9],
       component: (
         <div onClick={(e) => clickHandler(e, labels[9])}>
-          <EduSection education={education}/>
+          <EduSection education={education} config={eduConfig}/>
         </div>
       ),
     },

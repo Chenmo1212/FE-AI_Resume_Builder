@@ -204,9 +204,21 @@ export const useEducation = create(
   persist(
     (set) => ({
       education: userData.education,
+      eduConfig: {
+        isShowDissertation: true,
+        isShowCourses: true,
+        isShowHighlights: true
+      },
 
       reset: (data = userData.education) => {
-        set({education: data});
+        set({
+          education: data,
+          eduConfig: {
+            isShowDissertation: true,
+            isShowCourses: true,
+            isShowHighlights: true
+          }
+        });
       },
 
       add: () =>
@@ -223,14 +235,27 @@ export const useEducation = create(
               score: '',
               dissertation: '',
               courses: [],
+              highlights: '',
             },
           ],
+          config: {
+            ...state.config,
+            isShowDissertation: true,
+            isShowCourses: true,
+            isShowHighlights: true,
+          }
         })),
 
       update: (index, field, value) =>
         set((state) =>
           produce(state, (draftState) => {
             draftState.education[index][field] = value;
+          })),
+
+      updateConfig: (field, value) =>
+        set((state) =>
+          produce(state, (draftState) => {
+            draftState.eduConfig[field] = value;
           })),
 
       purge: (index) =>
