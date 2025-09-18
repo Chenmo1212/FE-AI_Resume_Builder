@@ -11,7 +11,7 @@ const Wrapper = styled.div`
 `;
 
 const Topic = styled.p`
-  font-size: 0.875rem;../../../
+  font-size: 0.875rem;
   font-weight: 600;
   color: #fff;
   margin-bottom: 7px;
@@ -28,12 +28,12 @@ export function ActivitiesEdit() {
         <MarkDownField value={involvements} setValue={(text) => update('involvements', text)} />
       </Wrapper>
 
-      <ProjectEditor />
-
       <Wrapper>
         <Topic>Achievements</Topic>
         <MarkDownField value={achievements} setValue={(text) => update('achievements', text)} />
       </Wrapper>
+
+      <ProjectEditor />
     </>
   );
 }

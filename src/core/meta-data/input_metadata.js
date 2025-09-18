@@ -15,6 +15,11 @@ export const INTRO_METADATA = [
     value: 'label',
   },
   {
+    label: 'Bio',
+    type: 'Input',
+    value: 'bio',
+  },
+  {
     label: 'Email',
     type: 'Input',
     value: 'email',
