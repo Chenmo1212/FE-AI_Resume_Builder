@@ -76,7 +76,7 @@ const labelsIcon = [
 export default function ProfessionalTemplate() {
   const intro = useIntro((state) => state.intro);
   const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
-  const experience = useWork((state) => state);
+  const [companies, workConfig] = useWork((state) => [state.companies, state.workConfig], shallow);
   const projects = useProjects((state) => state);
   const [achievements, involvements] = useActivities((state) => [state.achievements, state.involvements], shallow);
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
@@ -154,7 +154,7 @@ export default function ProfessionalTemplate() {
       icon: labelsIcon[0],
       component: (
         <div onClick={(e) => clickHandler(e, labels[0])}>
-          <Exp companies={experience.companies}/>
+          <Exp companies={companies} workConfig={workConfig}/>
         </div>
       ),
       styles: {flexGrow: 1},

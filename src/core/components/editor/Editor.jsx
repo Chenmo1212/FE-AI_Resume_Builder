@@ -160,10 +160,15 @@ export const EduEditor = () => {
 
 export const ExperienceEditor = () => {
   const companies = useWork((state) => state.companies);
-  const [add, update, purge, changeOrder] = useWork(
-    (state) => [state.add, state.update, state.purge, state.changeOrder],
+  const workConfig = useWork((state) => state.workConfig);
+  const [add, update, purge, changeOrder, updateConfig] = useWork(
+    (state) => [state.add, state.update, state.purge, state.changeOrder, state.updateConfig],
     shallow
   );
+  const WORK_CONFIGS = [{
+    key: "isShowLocation",
+    label: "Display Location (instead of Years)"
+  }];
 
   return (
     <Container>
@@ -174,6 +179,18 @@ export const ExperienceEditor = () => {
         identifier="name"
         operations={{ update, add, purge, changeOrder }}
       />
+
+      {/* Configure */}
+      <Wrapper style={configStyles}>
+        <Topic>Configure</Topic>
+        {WORK_CONFIGS.map(({key, label}) => (
+          <FormControlLabel
+            control={<Switch checked={workConfig[key]} onChange={() => updateConfig(key, !workConfig[key])} />}
+            label={label}
+            key={key}
+          />
+        ))}
+      </Wrapper>
     </Container>
   );
 };
