@@ -27,7 +27,7 @@ export const INTRO_METADATA = [
   {
     label: 'Location',
     type: 'Input',
-    value: 'location.city',
+    value: 'location.address',
   },
   {
     label: 'Relevant Experience',
