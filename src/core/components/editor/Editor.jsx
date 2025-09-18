@@ -27,6 +27,8 @@ import { LabelsEdit } from './LabelsEdit';
 import { IntroEdit } from './IntroEdit';
 import { SocialEdit } from './SocialEdit';
 import { PreferDataBtn } from "./PreferEdit";
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 const Divider = styled.div`
   height: 2px;
@@ -46,6 +48,23 @@ export const Heading = styled.h2`
   line-height: 2.5rem;
   margin-bottom: 0;
 `;
+
+const Wrapper = styled.div`
+  margin: 8px 0;
+`;
+
+const Topic = styled.p`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 7px;
+`;
+
+const configStyles = {
+  color: "#fff",
+  fontSize: "0.7rem"
+}
+
 
 export const IntroEditor = () => {
   const introState = useIntro((state) => state.intro);
@@ -92,21 +111,49 @@ export const LabelsEditor = () => {
 };
 
 export const EduEditor = () => {
-  const education = useEducation((state) => state.education);
-  const [add, update, purge, changeOrder] = useEducation(
-    (state) => [state.add, state.update, state.purge, state.changeOrder],
+  const [education, eduConfig] = useEducation(
+    (state) => [state.education, state.eduConfig],
     shallow
   );
+  const [add, update, purge, changeOrder, updateConfig] = useEducation(
+    (state) => [state.add, state.update, state.purge, state.changeOrder, state.updateConfig],
+    shallow
+  );
+  const CONFIGS = [{
+    key: "isShowDissertation",
+    label: "Display Dissertation"
+  }, {
+    key: "isShowCourses",
+    label: "Display Courses"
+  }, {
+    key: "isShowHighlights",
+    label: "Display Highlights"
+  }]
 
   return (
     <Container>
-      <Heading>Education<PreferDataBtn content='education'/></Heading>
+      <Heading>
+        Education
+        <PreferDataBtn content="education" />
+      </Heading>
       <TimelineEdit
         METADATA={EDU_METADATA}
         itemList={education}
         identifier="studyType"
         operations={{ update, add, purge, changeOrder }}
       />
+
+      {/* Configure */}
+      <Wrapper style={configStyles}>
+        <Topic>Configure</Topic>
+        {CONFIGS.map(({key, label}) => (
+          <FormControlLabel
+            control={<Switch checked={eduConfig[key]} onChange={() => updateConfig(key, !eduConfig[key])} />}
+            label={label}
+            key={key}
+          />
+        ))}
+      </Wrapper>
     </Container>
   );
 };

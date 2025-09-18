@@ -12,7 +12,7 @@ export function Template6() {
   // Uncomment below lines to access data
 
   // const intro = useIntro((state) => state.intro);
-  // const education = useEducation((state) => state.education);
+  // const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
   // const experience = useWork((state) => state);
   // const [keyProjects, certificates] = useAchievements(
   //   (state) => [state.keyProjects, state.certificates],

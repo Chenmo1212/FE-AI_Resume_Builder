@@ -54,7 +54,7 @@ const EmployeName = styled.div`
 
 export default function LegacyTemplate() {
   const intro = useIntro((state) => state.intro);
-  const education = useEducation((state) => state.education);
+  const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
   const experience = useWork((state) => state);
   const [involvements, achievements] = useActivities(
     (state) => [state.involvements, state.achievements],
@@ -116,7 +116,7 @@ export default function LegacyTemplate() {
         <UnratedTabs items={tools} />
         <LineSeparator />
         <LegacyHeader Icon={getIcon('education')} title={labels[9]} />
-        <EduSection education={education} />
+        <EduSection education={education} config={eduConfig}/>
       </GridColumn>
     </GridContainer>
   );

@@ -178,6 +178,21 @@ export const EDU_METADATA = [
     type: 'Input',
     value: 'score',
   },
+  {
+    label: 'Courses',
+    type: 'Input',
+    value: 'courses',
+  },
+  {
+    label: 'Dissertation',
+    type: 'Input',
+    value: 'dissertation',
+  },
+  {
+    label: 'Highlights',
+    type: 'MarkDownField',
+    value: 'highlights',
+  },
 ];
 
 export const EXP_METADATA = [

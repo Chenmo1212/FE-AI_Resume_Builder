@@ -5,7 +5,7 @@ import 'react-markdown-editor-lite/lib/index.css';
 
 const mdParser = new MarkdownIt();
 
-export function MarkDownField({ value, setValue }) {
+export function MarkDownField({ value, setValue, placeholder }) {
   const handleEditorChange = useCallback(
     ({ text }) => {
       setValue(text);
@@ -30,6 +30,7 @@ export function MarkDownField({ value, setValue }) {
         value={value}
         renderHTML={(text) => mdParser.render(text)}
         onChange={handleEditorChange}
+        placeholder={placeholder}
       />
     </>
   );

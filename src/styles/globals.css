@@ -28,6 +28,7 @@ a {
 ul,
 li {
   font-size: 0.65rem;
+  margin: 0;
 }
 
 p {

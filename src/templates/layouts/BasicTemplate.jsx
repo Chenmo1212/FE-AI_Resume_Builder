@@ -63,7 +63,7 @@ const labelsIcon = [
 
 export default function ProfessionalTemplate() {
   const intro = useIntro((state) => state.intro);
-  const education = useEducation((state) => state.education);
+  const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
   const experience = useWork((state) => state);
   const [involvements, achievements] = useActivities(
     (state) => [state.involvements, state.achievements],
@@ -106,7 +106,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[9],
       icon: labelsIcon[9],
-      component: <EduSection education={education} />,
+      component: <EduSection education={education} config={eduConfig}/>,
     },
   ];
   if (experience.companies.length >= 5) {
@@ -142,7 +142,7 @@ export default function ProfessionalTemplate() {
       {
         title: labels[9],
         icon: labelsIcon[9],
-        component: <EduSection education={education} />,
+        component: <EduSection education={education} config={eduConfig}/>,
       },
     ];
   }
