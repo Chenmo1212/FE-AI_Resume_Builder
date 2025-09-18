@@ -82,6 +82,7 @@ export const leftNavList = [
     key: 8,
     title: 'Job',
     icon: 'job',
+    disabled: true,
     component: <JobEditor />,
   },
 ];

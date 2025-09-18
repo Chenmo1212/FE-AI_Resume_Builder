@@ -29,6 +29,11 @@ const IconButton = styled.button`
   border-radius: 2px;
   padding: 0;
   color: rgb(230, 230, 230);
+  
+  &:disabled {
+    color: rgb(128, 128, 128);
+    cursor: not-allowed;
+  }
 `;
 
 export const SideMenu = ({ children, menuList, onClick }) => (
@@ -36,7 +41,7 @@ export const SideMenu = ({ children, menuList, onClick }) => (
     {menuList.map((item) => (
       <IconWrapper key={item.key} data-id={item.key} onClick={onClick}>
         <Tooltip placement="left" title={item.title}>
-          <IconButton>{getIcon(`${item.icon}`)}</IconButton>
+          <IconButton disabled={item.disabled}>{getIcon(`${item.icon}`)}</IconButton>
         </Tooltip>
       </IconWrapper>
     ))}
