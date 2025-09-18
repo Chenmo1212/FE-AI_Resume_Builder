@@ -156,8 +156,8 @@ export default function LegacyTemplate() {
           <div onClick={(e) => clickHandler(e, labels[5])}>
             <LegacyHeader Icon={getIcon('expert')} title={labels[5]} />
             <RatedPill items={[...languages, ...frameworks]} />
-            <LineSeparator />
           </div>
+          <LineSeparator />
           </>
         ) : ""}
 
