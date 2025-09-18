@@ -8,6 +8,7 @@ import { Description } from '../components/description/Description';
 import { RatedPill } from '../components/skills/RatedPills';
 import { UnratedTabs } from '../components/skills/UnratedTabs';
 import { Exp } from '../components/exp/Exp';
+import { Projects } from '../components/projects/Projects';
 import { EduSection } from '../components/education/EduSection';
 import { LineSeparator } from '../components/separator/LineSeparator';
 import { LegacyHeader } from '../components/section-layout/LegacyHeader';
@@ -18,7 +19,7 @@ import {
   useSkills,
   useActivities,
   useEducation,
-  useLabels,
+  useLabels, useProjects,
 } from '../../stores/data.store';
 
 const GridContainer = styled.div`
@@ -56,10 +57,8 @@ export default function LegacyTemplate() {
   const intro = useIntro((state) => state.intro);
   const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
   const [companies, workConfig] = useWork((state) => [state.companies, state.workConfig], shallow);
-  const [involvements, achievements] = useActivities(
-    (state) => [state.involvements, state.achievements],
-    shallow
-  );
+  const [projects] = useProjects((state) => [state.projects], shallow);
+  const [achievements] = useActivities((state) => [state.achievements], shallow);
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
     (state) => [
       state.languages,
@@ -86,7 +85,7 @@ export default function LegacyTemplate() {
         <Exp companies={companies} workConfig={workConfig} />
         <LineSeparator />
         <LegacyHeader Icon={getIcon('key')} title={labels[1]} />
-        <Description description={involvements} />
+        <Projects projects={projects} />
 
         <LineSeparator />
         <LegacyHeader Icon={getIcon('certificate')} title={labels[2]} />
@@ -98,9 +97,6 @@ export default function LegacyTemplate() {
       <GridColumn>
         <LegacyHeader Icon={getIcon('identity')} title={labels[3]} />
         <Description description={intro.summary} />
-        <LineSeparator />
-        <LegacyHeader Icon={getIcon('career')} title={labels[4]} />
-        <Description description={intro.objective} />
         <LineSeparator />
         <LegacyHeader Icon={getIcon('expert')} title={labels[5]} />
         <RatedPill items={[...languages, ...frameworks]} />

@@ -12,8 +12,8 @@ const Education = styled.div`
 `;
 
 const Institution = styled.div`
-    font-weight: 500;
-    font-size: 0.8rem;
+    font-weight: 700;
+    font-size: 0.7rem;
 `;
 
 const Specialization = styled.div`
@@ -29,6 +29,10 @@ const Topic = styled.div`
     font-size: 0.65rem;
 `;
 
+const Year = styled.div`
+    min-width: 3.8rem;
+`;
+
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 export function EduSection({ education, config }) {
@@ -38,9 +42,9 @@ export function EduSection({ education, config }) {
     <Education key={data.studyType}>
       <Flex jc="space-between">
         <Institution>{data.institution}</Institution>
-        <em>
-          {data.startDate} - {data.endDate}
-        </em>
+        <Year>
+          {data.startDate}-{data.endDate}
+        </Year>
       </Flex>
 
       <Flex jc="space-between">
