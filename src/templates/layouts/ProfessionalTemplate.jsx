@@ -10,7 +10,7 @@ import { Description } from '../components/description/Description';
 import { Projects } from '../components/projects/Projects';
 import { UnratedTabs } from '../components/skills/UnratedTabs';
 import { Exp } from '../components/exp/Exp';
-import { EduSection } from '../components/education/EduSection';
+import { EduSection } from '../components/education/SideEduSection';
 import {
   useIntro,
   useWork,
