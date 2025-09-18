@@ -150,9 +150,17 @@ export const useWork = create(
   persist(
     (set) => ({
       companies: userData.work,
+      workConfig: {
+        isShowLocation: false,
+      },
 
       reset: (data = userData.work) => {
-        set({companies: data});
+        set({
+          companies: data,
+          workConfig: {
+            isShowLocation: false,
+          }
+        });
       },
 
       setField: (event) =>
@@ -193,6 +201,12 @@ export const useWork = create(
         set((state) => ({
           companies: arrayMoveImmutable(state.companies, oldIndex, newIndex),
         })),
+        
+      updateConfig: (field, value) =>
+        set((state) =>
+          produce(state, (draftState) => {
+            draftState.workConfig[field] = value;
+          })),
     }),
     {
       name: 'sprb-work',

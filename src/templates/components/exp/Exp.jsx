@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Timeline } from 'antd';
 import { Flex } from '../../../styles/styles';
 import MarkdownIt from 'markdown-it';
+import { useWork } from '../../../stores/data.store';
 
 const FlexTimeline = styled(Timeline)`
   display: flex;
@@ -49,7 +50,7 @@ const CompanyExp = styled.div`
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-export function CompanyHeader({ company }) {
+export function CompanyHeader({ company, workConfig }) {
   return (
     <>
       <Flex jc="space-between" ai="flex-end" style={{ lineHeight: 'initial' }}>
@@ -60,18 +61,22 @@ export function CompanyHeader({ company }) {
       </Flex>
       <Flex jc="space-between" ai="flex-end">
         <CompanyRole>{company.position}</CompanyRole>
-        <CompanyExp>{company.years}</CompanyExp>
+        <CompanyExp>
+          {workConfig.isShowLocation ? company.location : company.years}
+        </CompanyExp>
       </Flex>
     </>
   );
 }
 
 export function Exp({ companies, styles }) {
+  const workConfig = useWork((state) => state.workConfig);
+  
   return (
     <FlexTimeline style={styles}>
       {companies.map((company, index) => (
         <TimelineItem key={`${company.name}-${index}`}>
-          <CompanyHeader company={company} />
+          <CompanyHeader company={company} workConfig={workConfig} />
           <div dangerouslySetInnerHTML={{ __html: mdParser.render(company.summary ?? '') }} />
         </TimelineItem>
       ))}

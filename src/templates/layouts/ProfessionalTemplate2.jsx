@@ -65,7 +65,7 @@ const labelsIcon = [
 export default function ProfessionalTemplate() {
   const intro = useIntro((state) => state.intro);
   const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
-  const experience = useWork((state) => state);
+  const [companies, workConfig] = useWork((state) => [state.companies, state.workConfig], shallow);
   const projects = useProjects((state) => state);
   const [involvements, achievements] = useActivities(
     (state) => [state.involvements, state.achievements],
@@ -89,7 +89,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[0],
       icon: labelsIcon[0],
-      component: <Exp companies={experience.companies} />,
+      component: <Exp companies={companies} workConfig={workConfig} />,
       styles: { flexGrow: 1 },
     },
     {

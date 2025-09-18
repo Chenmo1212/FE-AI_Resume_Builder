@@ -55,7 +55,7 @@ const EmployeName = styled.div`
 export default function LegacyTemplate() {
   const intro = useIntro((state) => state.intro);
   const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
-  const experience = useWork((state) => state);
+  const [companies, workConfig] = useWork((state) => [state.companies, state.workConfig], shallow);
   const [involvements, achievements] = useActivities(
     (state) => [state.involvements, state.achievements],
     shallow
@@ -83,7 +83,7 @@ export default function LegacyTemplate() {
         <SocialBar profiles={intro.profiles} />
 
         <LegacyHeader Icon={getIcon('work')} title={labels[0]} />
-        <Exp companies={experience.companies} />
+        <Exp companies={companies} workConfig={workConfig} />
         <LineSeparator />
         <LegacyHeader Icon={getIcon('key')} title={labels[1]} />
         <Description description={involvements} />

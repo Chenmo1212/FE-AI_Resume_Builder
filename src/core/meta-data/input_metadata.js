@@ -222,6 +222,11 @@ export const EXP_METADATA = [
     value: 'years',
   },
   {
+    label: 'Location',
+    type: 'Input',
+    value: 'location',
+  },
+  {
     label: 'Summary',
     type: 'MarkDownField',
     value: 'summary',
