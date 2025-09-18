@@ -10,7 +10,6 @@ const FlexTimeline = styled(Timeline)`
   flex-direction: column;
   flex-grow: 1;
   justify-content: space-between;
-  height: 100%;
   padding-top: 15px;
   color: ${(props) => props.theme.fontColor};
 

@@ -228,9 +228,9 @@ export const useEducation = create(
         set({
           education: data,
           eduConfig: {
-            isShowDissertation: true,
-            isShowCourses: true,
-            isShowHighlights: true
+            isShowDissertation: false,
+            isShowCourses: false,
+            isShowHighlights: false
           }
         });
       },

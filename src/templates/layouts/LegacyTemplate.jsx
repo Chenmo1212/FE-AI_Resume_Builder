@@ -21,6 +21,8 @@ import {
   useEducation,
   useLabels, useProjects,
 } from '../../stores/data.store';
+import { useLeftDrawer } from '../../stores/settings.store';
+import { leftNavList } from '../../core/containers/LeftNav';
 
 const GridContainer = styled.div`
   margin: auto;
@@ -74,45 +76,123 @@ export default function LegacyTemplate() {
 
   const labels = useLabels((state) => state.labels);
 
+  const setLeftDrawer = useLeftDrawer((state) => state.update);
+
+  const clickHandler = (e, type) => {
+    let navIndex = -1;
+    if (e.detail === 2) {
+      switch (type) {
+        case labels[5]:
+        case labels[6]:
+        case labels[7]:
+        case labels[8]:
+          navIndex = leftNavList.findIndex((e) => e.title === 'Skills');
+          break;
+        case labels[1]:
+        case labels[2]:
+          navIndex = leftNavList.findIndex((e) => e.title === 'Activities');
+          break;
+        case labels[3]:
+        case labels[4]:
+          navIndex = leftNavList.findIndex((e) => e.title === 'Intro');
+          break;
+        default:
+          navIndex = leftNavList.findIndex((e) => e.title === type);
+      }
+      setLeftDrawer(navIndex.toString());
+    }
+  };
+
   return (
     <GridContainer>
       <GridColumn>
-        <EmployeName>{intro.name}</EmployeName>
-        <Intro intro={intro} labels={labels} />
-        <SocialBar profiles={intro.profiles} />
+        <div onClick={(e) => clickHandler(e,'Intro')}>
+          <EmployeName>{intro.name}</EmployeName>
+          <Intro intro={intro} labels={labels} />
+          <SocialBar profiles={intro.profiles} />
+        </div>
 
-        <LegacyHeader Icon={getIcon('work')} title={labels[0]} />
-        <Exp companies={companies} workConfig={workConfig} />
-        <LineSeparator />
-        <LegacyHeader Icon={getIcon('key')} title={labels[1]} />
-        <Projects projects={projects} />
+        <div onClick={(e) => clickHandler(e, labels[0])}>
+          <LegacyHeader Icon={getIcon('work')} title={labels[0]} />
+          <Exp companies={companies} workConfig={workConfig} />
+        </div>
 
-        <LineSeparator />
-        <LegacyHeader Icon={getIcon('certificate')} title={labels[2]} />
-        <Description description={achievements} />
+        {/* Projects */}
+        {projects.length > 0 ? (
+          <div onClick={(e) => clickHandler(e, labels[1])}>
+            <LineSeparator />
+            <LegacyHeader Icon={getIcon('key')} title={labels[1]} />
+            <Projects projects={projects} />
+          </div>
+        ) : ""}
+
+        {/* Achievements */}
+        {achievements ? (
+          <div onClick={(e) => clickHandler(e, labels[2])}>
+            <LineSeparator />
+            <LegacyHeader Icon={getIcon('certificate')} title={labels[2]} />
+            <Description description={achievements} />
+          </div>
+        ) : ""}
       </GridColumn>
 
       <Divider />
 
       <GridColumn>
-        <LegacyHeader Icon={getIcon('identity')} title={labels[3]} />
-        <Description description={intro.summary} />
-        <LineSeparator />
-        <LegacyHeader Icon={getIcon('expert')} title={labels[5]} />
-        <RatedPill items={[...languages, ...frameworks]} />
-        <LineSeparator />
-        <LegacyHeader Icon={getIcon('skill')} title={labels[6]} />
-        <UnratedTabs items={[...technologies, ...libraries, ...databases]} />
+        {/* Summary */}
+        {intro.summary ? (
+          <>
+            <div onClick={(e) => clickHandler(e, labels[3])}>
+              <LegacyHeader Icon={getIcon('identity')} title={labels[3]} />
+              <Description description={intro.summary} />
+            </div>
+            <LineSeparator />
+          </>
+        ) : ""}
 
-        <LineSeparator />
-        <LegacyHeader Icon={getIcon('branch')} title={labels[7]} />
-        <UnratedTabs items={practices} />
-        <LineSeparator />
-        <LegacyHeader Icon={getIcon('tool')} title={labels[8]} />
-        <UnratedTabs items={tools} />
-        <LineSeparator />
-        <LegacyHeader Icon={getIcon('education')} title={labels[9]} />
-        <EduSection education={education} config={eduConfig}/>
+        {/* Expert */}
+        {[...languages, ...frameworks].length > 0 ? (
+          <>
+          <div onClick={(e) => clickHandler(e, labels[5])}>
+            <LegacyHeader Icon={getIcon('expert')} title={labels[5]} />
+            <RatedPill items={[...languages, ...frameworks]} />
+            <LineSeparator />
+          </div>
+          </>
+        ) : ""}
+
+        <>
+          <div onClick={(e) => clickHandler(e, labels[6])}>
+            <LegacyHeader Icon={getIcon('skill')} title={labels[6]} />
+            <UnratedTabs items={[...technologies, ...libraries, ...databases]} />
+          </div>
+          <LineSeparator />
+        </>
+
+        {/* Practices */}
+        <>
+          <div onClick={(e) => clickHandler(e, labels[7])}>
+            <LegacyHeader Icon={getIcon('branch')} title={labels[7]} />
+            <UnratedTabs items={practices} />
+          </div>
+          <LineSeparator />
+        </>
+
+        {/* Tool */}
+        {tools.length > 0 ? (
+          <>
+          <div onClick={(e) => clickHandler(e, labels[7])}>
+            <LegacyHeader Icon={getIcon('tool')} title={labels[8]} />
+            <UnratedTabs items={tools} />
+            <LineSeparator />
+          </div>
+          </>
+        ) : ""}
+
+        <div onClick={(e) => clickHandler(e, labels[9])}>
+          <LegacyHeader Icon={getIcon('education')} title={labels[9]} />
+          <EduSection education={education} config={eduConfig}/>
+        </div>
       </GridColumn>
     </GridContainer>
   );

@@ -8,7 +8,6 @@ import {
 import { Intro } from '../components/intro/Intro';
 import { Description } from '../components/description/Description';
 import { Projects } from '../components/projects/Projects';
-import { RatedBars } from '../components/skills/RatedBars';
 import { UnratedTabs } from '../components/skills/UnratedTabs';
 import { Exp } from '../components/exp/Exp';
 import { EduSection } from '../components/education/EduSection';
