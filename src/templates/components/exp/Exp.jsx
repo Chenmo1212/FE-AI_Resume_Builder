@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Timeline } from 'antd';
-import { Flex } from '../../../styles/styles';
+import { Flex, FlexCol } from '../../../styles/styles';
 import MarkdownIt from 'markdown-it';
 import { useWork } from '../../../stores/data.store';
 
@@ -21,23 +21,22 @@ const FlexTimeline = styled(Timeline)`
 `;
 
 const TimelineItem = styled(FlexTimeline.Item)`
-  padding-bottom: 0;
-  flex-grow: 1;
-  padding-bottom: 20px;
+    flex-grow: 1;
+    padding-bottom: 20px;
 
-  :last-child {
-    flex-grow: 0;
-    padding-bottom: 0;
-  }
+    :last-child {
+        flex-grow: 0;
+        padding-bottom: 0;
+    }
 `;
 
 const CompanyName = styled.div`
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
 `;
 
 const CompanyRole = styled.div`
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.7rem;
   line-height: inherit;
 `;
@@ -68,17 +67,30 @@ export function CompanyHeader({ company, workConfig }) {
   );
 }
 
-export function Exp({ companies, styles }) {
+export function Exp({ companies, styles, isShowTimeline=true }) {
   const workConfig = useWork((state) => state.workConfig);
-  
+
+  if (isShowTimeline) {
+    return (
+      <FlexTimeline style={styles}>
+        {companies.map((company, index) => (
+          <TimelineItem key={`${company.name}-${index}`}>
+            <CompanyHeader company={company} workConfig={workConfig} />
+            <div dangerouslySetInnerHTML={{ __html: mdParser.render(company.summary ?? '') }} />
+          </TimelineItem>
+        ))}
+      </FlexTimeline>
+    );
+  }
+
   return (
-    <FlexTimeline style={styles}>
+    <FlexCol style={styles} rGap="0.6rem">
       {companies.map((company, index) => (
-        <TimelineItem key={`${company.name}-${index}`}>
+        <div key={`${company.name}-${index}`}>
           <CompanyHeader company={company} workConfig={workConfig} />
           <div dangerouslySetInnerHTML={{ __html: mdParser.render(company.summary ?? '') }} />
-        </TimelineItem>
+        </div>
       ))}
-    </FlexTimeline>
+    </FlexCol>
   );
 }

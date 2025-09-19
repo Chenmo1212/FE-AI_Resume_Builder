@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Flex } from '../../../styles/styles';
+import { Flex, FlexCol } from '../../../styles/styles';
 import { getIcon } from '../../../styles/icons';
 import MarkdownIt from 'markdown-it';
 
@@ -45,13 +45,13 @@ export function ProjectHeader({ project }) {
 
 export function Projects({ projects }) {
   return (
-    <>
+    <FlexCol rGap="0.2rem">
       {projects?.map((project, index) => (
         <div key={`${project.title}-${index}`}>
           <ProjectHeader project={project} />
           <div dangerouslySetInnerHTML={{ __html: mdParser.render(project.summary ?? '') }} />
         </div>
       ))}
-    </>
+    </FlexCol>
   );
 }
