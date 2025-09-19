@@ -70,7 +70,7 @@ export default function ProfessionalTemplate() {
   const intro = useIntro((state) => state.intro);
   const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
   const [companies, workConfig] = useWork((state) => [state.companies, state.workConfig], shallow);
-  const projects = useProjects((state) => state);
+  const projects = useProjects((state) => state.projects);
   const [achievements, involvements] = useActivities((state) => [state.achievements, state.involvements], shallow);
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
     (state) => [
@@ -118,6 +118,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[6],
       icon: labelsIcon[6],
+      isShow: [...technologies, ...libraries, ...databases].length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[6])}>
           <UnratedTabs items={[...technologies, ...libraries, ...databases]}/>
@@ -127,6 +128,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[7],
       icon: labelsIcon[7],
+      isShow: practices.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[7])}>
           <UnratedTabs items={practices}/>
@@ -136,6 +138,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[2],
       icon: labelsIcon[2],
+      isShow: achievements,
       component: (
         <div onClick={(e) => clickHandler(e, labels[2])}>
           <Description description={achievements}/>
@@ -145,9 +148,20 @@ export default function ProfessionalTemplate() {
     {
       title: labels[12],
       icon: labelsIcon[10],
+      isShow: involvements,
       component: (
         <div onClick={(e) => clickHandler(e, labels[2])}>
           <Description description={involvements}/>
+        </div>
+      ),
+    },
+    {
+      title: labels[13],
+      icon: labelsIcon[13],
+      isShow: intro.referral,
+      component: (
+        <div onClick={(e) => clickHandler(e, 'Intro')}>
+          <Description description={intro?.referral}/>
         </div>
       ),
     },
@@ -156,6 +170,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[3],
       icon: labelsIcon[3],
+      isShow: intro.summary,
       component: (
         <div onClick={(e) => clickHandler(e, labels[3])}>
           <Description photo={intro.image} description={intro.summary}/>
@@ -174,6 +189,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[0],
       icon: labelsIcon[0],
+      isShow: companies.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[0])}>
           <Exp companies={companies} workConfig={workConfig}/>
@@ -184,9 +200,10 @@ export default function ProfessionalTemplate() {
     {
       title: labels[1],
       icon: labelsIcon[1],
+      isShow: projects.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[1])}>
-          <Projects projects={projects.projects}/>
+          <Projects projects={projects}/>
         </div>
       ),
     },
@@ -202,23 +219,17 @@ export default function ProfessionalTemplate() {
         </ModernHeaderIntro>
 
         {leftSections
-          .filter(({title}) => !!title)
+          .filter(({ title, isShow }) => !!title && isShow)
           .map(({title, icon, component}) => (
             <ModernHeader icon={getIcon(icon)} title={title} key={title}>
               {component}
             </ModernHeader>
           ))}
-
-        {intro.referral && <ModernHeader icon={getIcon(labelsIcon[11])} title={labels[13]} key={labels[13]}>
-            <div onClick={(e) => clickHandler(e, 'Intro')}>
-                <Description description={referral}/>
-            </div>
-        </ModernHeader>}
       </LeftSection>
 
       <RightSection>
         {rightSections
-          .filter(({title}) => !!title)
+          .filter(({ title, isShow }) => !!title && isShow)
           .map(({title, icon, component, styles}) => (
             <ModernHeader icon={getIcon(icon)} title={title} styles={styles} key={title}>
               {component}

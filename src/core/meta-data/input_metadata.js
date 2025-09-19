@@ -50,9 +50,9 @@ export const INTRO_METADATA = [
     value: 'summary',
   },
   {
-    label: 'Objective',
-    type: 'MarkDownField',
-    value: 'objective',
+    label: 'Referral',
+    type: 'Input',
+    value: 'referral',
   },
 ];
 
