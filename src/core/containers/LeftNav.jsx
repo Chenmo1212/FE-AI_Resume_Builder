@@ -44,9 +44,9 @@ export const leftNavList = [
   },
   {
     key: 2,
-    title: 'Skills',
-    icon: 'tool',
-    component: <SkillsEditor />,
+    title: 'Education',
+    icon: 'education',
+    component: <EduEditor />,
   },
   {
     key: 3,
@@ -56,27 +56,27 @@ export const leftNavList = [
   },
   {
     key: 4,
-    title: 'Education',
-    icon: 'education',
-    component: <EduEditor />,
-  },
-  {
-    key: 5,
     title: 'Awards',
     icon: 'awards',
     component: <ForteEditor />,
   },
   {
-    key: 6,
+    key: 5,
     title: 'Activities',
     icon: 'certificate',
     component: <ActivitiesEditor />,
   },
   {
-    key: 7,
+    key: 6,
     title: 'Label',
     icon: 'label',
     component: <LabelsEditor />,
+  },
+  {
+    key: 7,
+    title: 'Skills',
+    icon: 'tool',
+    component: <SkillsEditor />,
   },
   {
     key: 8,

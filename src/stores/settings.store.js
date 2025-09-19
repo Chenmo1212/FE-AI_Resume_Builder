@@ -3,7 +3,7 @@ import create from 'zustand';
 import ProfessionalImg from '../../public/images/professional.png';
 import LegacyImg from '../../public/images/legacy.png';
 import OneColumnImg from '../../public/images/onecolumn.png';
-import CvTemplateImg from '../../public/images/cvtemplate.png';
+import ClassicImg from '../../public/images/classic.png';
 import dynamic from 'next/dynamic';
 
 const ProfessionalTemplate = dynamic(() => import('../templates/layouts/ProfessionalTemplate'), {
@@ -27,7 +27,7 @@ const ClassicTemplate = dynamic(() => import('../templates/layouts/ClassicTempla
 })
 
 export const templates = [ProfessionalTemplate, LegacyTemplate, GraduateTemplate, OneColumnTemplate, ClassicTemplate];
-export const templatesSrc = [ProfessionalImg, LegacyImg, ProfessionalImg, OneColumnImg, CvTemplateImg];
+export const templatesSrc = [ProfessionalImg, LegacyImg, ProfessionalImg, OneColumnImg, ClassicImg];
 export const templatesName = ['Professional', 'Legacy', 'Graduate', 'OneColumn', 'Classic'];
 
 export const useTemplates = create((set) => ({
