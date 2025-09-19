@@ -74,7 +74,6 @@ export const IntroEditor = () => {
     <Container>
       <Heading>Intro <PreferDataBtn content='basics'/></Heading>
       <IntroEdit state={introState} METADATA={INTRO_METADATA} update={update} />
-      <Divider />
     </Container>
   );
 };
@@ -143,6 +142,7 @@ export const EduEditor = () => {
         operations={{ update, add, purge, changeOrder }}
       />
 
+      <Divider />
       {/* Configure */}
       <Wrapper style={configStyles}>
         <Topic>Configure</Topic>
@@ -180,6 +180,7 @@ export const ExperienceEditor = () => {
         operations={{ update, add, purge, changeOrder }}
       />
 
+      <Divider />
       {/* Configure */}
       <Wrapper style={configStyles}>
         <Topic>Configure</Topic>
