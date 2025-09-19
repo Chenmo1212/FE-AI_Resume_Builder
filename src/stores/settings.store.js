@@ -3,6 +3,7 @@ import create from 'zustand';
 import ProfessionalImg from '../../public/images/professional.png';
 import LegacyImg from '../../public/images/legacy.png';
 import OneColumnImg from '../../public/images/onecolumn.png';
+import CvTemplateImg from '../../public/images/cvtemplate.png';
 import dynamic from 'next/dynamic';
 
 const ProfessionalTemplate = dynamic(() => import('../templates/layouts/ProfessionalTemplate'), {
@@ -21,9 +22,13 @@ const OneColumnTemplate = dynamic(() => import('../templates/layouts/OneColumnTe
   ssr: false,
 })
 
-export const templates = [ProfessionalTemplate, LegacyTemplate, GraduateTemplate, OneColumnTemplate];
-export const templatesSrc = [ProfessionalImg, LegacyImg, ProfessionalImg, OneColumnImg];
-export const templatesName = ['Professional', 'Legacy', 'Graduate', 'OneColumn'];
+const ClassicTemplate = dynamic(() => import('../templates/layouts/ClassicTemplate'), {
+  ssr: false,
+})
+
+export const templates = [ProfessionalTemplate, LegacyTemplate, GraduateTemplate, OneColumnTemplate, ClassicTemplate];
+export const templatesSrc = [ProfessionalImg, LegacyImg, ProfessionalImg, OneColumnImg, CvTemplateImg];
+export const templatesName = ['Professional', 'Legacy', 'Graduate', 'OneColumn', 'Classic'];
 
 export const useTemplates = create((set) => ({
   index: 0,

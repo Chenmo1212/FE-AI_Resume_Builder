@@ -1,13 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Flex } from '../../../styles/styles';
+import { FlexCol, Flex } from '../../../styles/styles';
 import MarkdownIt from 'markdown-it';
 
 const Education = styled.div`
     &:not(:last-child) {
-        border-bottom: 1px solid ${(props) => props.theme.secondaryColor};
-        padding-bottom: 10px;
-        margin-bottom: 10px;
+        ${props => !props.noBorder && `
+          border-bottom: 1px solid ${props.theme.secondaryColor};
+          padding-bottom: 10px;
+          margin-bottom: 10px;
+        `}
+        gap: 1rem;
     }
 `;
 
@@ -35,31 +38,35 @@ const Year = styled.div`
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-export function EduSection({ education, config }) {
+export function EduSection({ education, config, noBorder = false }) {
   if (!education) return null;
 
-  return education.map((data) => (
-    <Education key={data.studyType}>
-      <Flex jc="space-between">
-        <Institution>{data.institution}</Institution>
-        <Year>
-          {data.startDate}-{data.endDate}
-        </Year>
-      </Flex>
+  return (
+    <FlexCol rGap="0.3rem">
+      {education.map((data) => (
+        <Education key={data.studyType} noBorder={noBorder}>
+          <Flex jc="space-between">
+            <Institution>{data.institution}</Institution>
+            <Year>
+              {data.startDate}-{data.endDate}
+            </Year>
+          </Flex>
 
-      <Flex jc="space-between">
-        <Specialization>{data.studyType} - {data.area}</Specialization>
-        <em>{data.score}</em>
-      </Flex>
+          <Flex jc="space-between">
+            <Specialization>{data.studyType} - {data.area}</Specialization>
+            <em>{data.score}</em>
+          </Flex>
 
-      {/* Config */}
-      {config.isShowCourses && (data.courses && data.courses.length) ? <Topic><b>Main Modules:</b> {data.courses}</Topic> : ""}
-      {config.isShowDissertation && data.dissertation ? <Topic><b>Dissertation:</b> {data.dissertation}</Topic> : ""}
-      {config.isShowHighlights && data.highlights && <Highlights>
-        <b>Highlights:</b>
-        <div dangerouslySetInnerHTML={{ __html: mdParser.render(data.highlights ?? '') }} />
-      </Highlights>
-      }
-    </Education>
-  ));
+          {/* Config */}
+          {config.isShowCourses && (data.courses && data.courses.length) ? <Topic><b>Main Modules:</b> {data.courses}</Topic> : ""}
+          {config.isShowDissertation && data.dissertation ? <Topic><b>Dissertation:</b> {data.dissertation}</Topic> : ""}
+          {config.isShowHighlights && data.highlights && <Highlights>
+            <b>Highlights:</b>
+            <div dangerouslySetInnerHTML={{ __html: mdParser.render(data.highlights ?? '') }} />
+          </Highlights>
+          }
+        </Education>
+      ))}
+    </FlexCol>
+  )
 }
