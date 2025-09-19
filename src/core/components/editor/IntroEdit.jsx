@@ -2,13 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import {Input as AntInput} from 'antd';
 import {MarkDownField} from '../../widgets/MarkdownField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-
-const referralStyles = {
-  color: "#fff",
-  fontSize: "0.7rem"
-}
 
 const Wrapper = styled.div`
   margin: 8px 0;
@@ -33,12 +26,6 @@ const Input = styled(AntInput)`
 `;
 
 export function IntroEdit({METADATA, state, update}) {
-  const [isDisplayRef, setDisplayRef] = React.useState(state.referral);
-
-  const handleReferral = (e) => {
-    setDisplayRef(e.target.checked);
-    update('referral', e.target.checked);
-  }
   return (
     <>
       {METADATA.map((metadata) => (
@@ -62,13 +49,6 @@ export function IntroEdit({METADATA, state, update}) {
           )}
         </Wrapper>
       ))}
-
-      <Wrapper style={referralStyles}>
-        <Topic>Referral</Topic>
-        <FormControlLabel
-          control={<Switch checked={isDisplayRef} onChange={handleReferral}/>}
-          label="Display Referral"/>
-      </Wrapper>
     </>
   );
 }

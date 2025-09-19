@@ -19,7 +19,7 @@ const labels = [
   'Biography',
   'Total Experience',
   'Involvements',
-  'Referral',
+  'References',
 ];
 
 export const usePreferData = create(

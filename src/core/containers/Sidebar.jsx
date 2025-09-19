@@ -9,7 +9,7 @@ import { Templates } from '../components/templates/Templates';
 import { Themes } from '../components/themes/Themes';
 import { AIResume } from '../widgets/AIResume';
 import { useRightDrawer, useZoom } from '../../stores/settings.store';
-import { useActivities, useEducation, useIntro, useSkills, useWork } from '../../stores/data.store';
+import { useActivities, useEducation, useIntro, useProjects, useSkills, useWork } from '../../stores/data.store';
 import { SideDrawer } from '../widgets/SideDrawer';
 import { SideMenu } from '../widgets/SideMenu';
 import { PrintSettings } from '../widgets/PrintSettings';
@@ -80,6 +80,7 @@ export const Sidebar = () => {
   const resetWork = useWork((state) => state.reset);
   const resetEducation = useEducation((state) => state.reset);
   const resetActivities = useActivities((state) => state.reset);
+  const resetProjects = useProjects((state) => state.reset);
 
   const clickHandler = useCallback(
     (event) => {
@@ -104,6 +105,7 @@ export const Sidebar = () => {
     resetWork();
     resetEducation();
     resetActivities();
+    resetProjects();
   };
 
   return (

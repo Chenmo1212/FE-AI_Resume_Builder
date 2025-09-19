@@ -92,7 +92,6 @@ export default function ProfessionalTemplate() {
     shallow
   );
   const labels = useLabels((state) => state.labels);
-  const referral = "* Shall be provided upon request.";
 
   const setLeftDrawer = useLeftDrawer((state) => state.update);
 
@@ -168,8 +167,6 @@ export default function ProfessionalTemplate() {
         </div>
       ),
     },
-  ];
-  const rightSections = [
   ];
 
   return (
