@@ -48,8 +48,8 @@ export function Templates() {
       {templates.map((_, ind) => (
         <TemplateThumbnail key={templatesName[ind]}>
           <TemplateThumbnailImg
-            src={templatesSrc[ind].src}
-            alt="Professional"
+            src={templatesSrc[ind]}
+            alt={templatesName[ind]}
             className={templateIndex === ind ? 'selected' : ''}
             onClick={() => setTemplate(ind)}
           />
