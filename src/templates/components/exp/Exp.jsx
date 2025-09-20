@@ -36,7 +36,7 @@ const CompanyName = styled.div`
 `;
 
 const CompanyRole = styled.div`
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.7rem;
   line-height: inherit;
 `;
@@ -48,35 +48,41 @@ const CompanyExp = styled.div`
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-export function CompanyHeader({ company, workConfig }) {
+export function CompanyHeader({ company, config }) {
   return (
     <>
       <Flex jc="space-between" ai="flex-end" style={{ lineHeight: 'initial' }}>
-        <CompanyName>{company.name}</CompanyName>
+        <CompanyName>{config.isExchangeExpCompany ? company.position : company.name}</CompanyName>
         <CompanyExp>
           {company.startDate} - {company.endDate}
         </CompanyExp>
       </Flex>
       <Flex jc="space-between" ai="flex-end">
-        <CompanyRole>{company.position}</CompanyRole>
+        <CompanyRole>{config.isExchangeExpCompany ? company.name : company.position}</CompanyRole>
         <CompanyExp>
-          {workConfig.isShowLocation ? company.location : company.years}
+          {config.isShowExpLocation ? company.location : company.years}
         </CompanyExp>
       </Flex>
     </>
   );
 }
 
-export function Exp({ companies, styles, isShowTimeline=true }) {
-  const workConfig = useWork((state) => state.workConfig);
+function CompanyItem({ company, config }) {
+  return (
+    <>
+      <CompanyHeader company={company} config={config} />
+      <div dangerouslySetInnerHTML={{ __html: mdParser.render(company.summary ?? '') }} />
+    </>
+  );
+}
 
+export function Exp({ companies, config, styles, isShowTimeline=true }) {
   if (isShowTimeline) {
     return (
       <FlexTimeline style={styles}>
         {companies.map((company, index) => (
           <TimelineItem key={`${company.name}-${index}`}>
-            <CompanyHeader company={company} workConfig={workConfig} />
-            <div dangerouslySetInnerHTML={{ __html: mdParser.render(company.summary ?? '') }} />
+            <CompanyItem company={company} config={config}/>
           </TimelineItem>
         ))}
       </FlexTimeline>
@@ -87,8 +93,7 @@ export function Exp({ companies, styles, isShowTimeline=true }) {
     <FlexCol style={styles} rGap="0.6rem">
       {companies.map((company, index) => (
         <div key={`${company.name}-${index}`}>
-          <CompanyHeader company={company} workConfig={workConfig} />
-          <div dangerouslySetInnerHTML={{ __html: mdParser.render(company.summary ?? '') }} />
+          <CompanyItem company={company} config={config}/>
         </div>
       ))}
     </FlexCol>

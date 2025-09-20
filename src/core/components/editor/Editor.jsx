@@ -29,6 +29,14 @@ import { SocialEdit } from './SocialEdit';
 import { PreferDataBtn } from "./PreferEdit";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import {
+  INTRO_CONFIGS,
+  EDU_CONFIGS,
+  EXP_CONFIGS,
+  PROJECTS_CONFIGS,
+  AWARDS_CONFIGS,
+  useTemplates,
+} from '../../../stores/templates.store';
 
 const Divider = styled.div`
   height: 2px;
@@ -69,11 +77,26 @@ const configStyles = {
 export const IntroEditor = () => {
   const introState = useIntro((state) => state.intro);
   const update = useIntro((state) => state.update);
+  const currConfig = useTemplates((state) => state.currConfig());
+  const [updateConfig] = useTemplates((state) => [state.updateConfig], shallow);
 
   return (
     <Container>
       <Heading>Intro <PreferDataBtn content='basics'/></Heading>
       <IntroEdit state={introState} METADATA={INTRO_METADATA} update={update} />
+
+      <Divider />
+      {/* Configure */}
+      <Wrapper style={configStyles}>
+        <Topic>Configure</Topic>
+        {INTRO_CONFIGS.map(({key, label}) => (
+          <FormControlLabel
+            control={<Switch checked={currConfig[key]} onChange={() => updateConfig(key, !currConfig[key])} />}
+            label={label}
+            key={key}
+          />
+        ))}
+      </Wrapper>
     </Container>
   );
 };
@@ -110,24 +133,16 @@ export const LabelsEditor = () => {
 };
 
 export const EduEditor = () => {
-  const [education, eduConfig] = useEducation(
-    (state) => [state.education, state.eduConfig],
+  const [education] = useEducation(
+    (state) => [state.education],
     shallow
   );
-  const [add, update, purge, changeOrder, updateConfig] = useEducation(
-    (state) => [state.add, state.update, state.purge, state.changeOrder, state.updateConfig],
+  const [add, update, purge, changeOrder] = useEducation(
+    (state) => [state.add, state.update, state.purge, state.changeOrder],
     shallow
   );
-  const CONFIGS = [{
-    key: "isShowDissertation",
-    label: "Display Dissertation"
-  }, {
-    key: "isShowCourses",
-    label: "Display Courses"
-  }, {
-    key: "isShowHighlights",
-    label: "Display Highlights"
-  }]
+  const currConfig = useTemplates((state) => state.currConfig());
+  const [updateConfig] = useTemplates((state) => [state.updateConfig], shallow);
 
   return (
     <Container>
@@ -146,9 +161,9 @@ export const EduEditor = () => {
       {/* Configure */}
       <Wrapper style={configStyles}>
         <Topic>Configure</Topic>
-        {CONFIGS.map(({key, label}) => (
+        {EDU_CONFIGS.map(({key, label}) => (
           <FormControlLabel
-            control={<Switch checked={eduConfig[key]} onChange={() => updateConfig(key, !eduConfig[key])} />}
+            control={<Switch checked={currConfig[key]} onChange={() => updateConfig(key, !currConfig[key])} />}
             label={label}
             key={key}
           />
@@ -160,16 +175,12 @@ export const EduEditor = () => {
 
 export const ExperienceEditor = () => {
   const companies = useWork((state) => state.companies);
-  const workConfig = useWork((state) => state.workConfig);
-  const [add, update, purge, changeOrder, updateConfig] = useWork(
-    (state) => [state.add, state.update, state.purge, state.changeOrder, state.updateConfig],
+  const [add, update, purge, changeOrder] = useWork(
+    (state) => [state.add, state.update, state.purge, state.changeOrder],
     shallow
   );
-  const WORK_CONFIGS = [{
-    key: "isShowLocation",
-    label: "Display Location (instead of Years)"
-  }];
-
+  const currConfig = useTemplates((state) => state.currConfig());
+  const [updateConfig] = useTemplates((state) => [state.updateConfig], shallow);
   return (
     <Container>
       <Heading>Experience<PreferDataBtn content='work'/></Heading>
@@ -184,9 +195,9 @@ export const ExperienceEditor = () => {
       {/* Configure */}
       <Wrapper style={configStyles}>
         <Topic>Configure</Topic>
-        {WORK_CONFIGS.map(({key, label}) => (
+        {EXP_CONFIGS.map(({key, label}) => (
           <FormControlLabel
-            control={<Switch checked={workConfig[key]} onChange={() => updateConfig(key, !workConfig[key])} />}
+            control={<Switch checked={currConfig[key]} onChange={() => updateConfig(key, !currConfig[key])} />}
             label={label}
             key={key}
           />
@@ -202,7 +213,8 @@ export const ProjectEditor = () => {
     (state) => [state.add, state.update, state.purge, state.changeOrder],
     shallow
   );
-
+  const currConfig = useTemplates((state) => state.currConfig());
+  const [updateConfig] = useTemplates((state) => [state.updateConfig], shallow);
   return (
     <Container>
       <Heading>Project<PreferDataBtn content='projects'/></Heading>
@@ -212,26 +224,19 @@ export const ProjectEditor = () => {
         identifier="title"
         operations={{ update, add, purge, changeOrder }}
       />
-    </Container>
-  );
-};
 
-const VolunteerEditor = () => {
-  const volunteer = useVolunteer((state) => state.volunteer);
-  const [add, update, purge, changeOrder] = useVolunteer(
-    (state) => [state.add, state.update, state.purge, state.changeOrder],
-    shallow
-  );
-
-  return (
-    <Container>
-      <Heading>Volunteering<PreferDataBtn content='volunteer'/></Heading>
-      <TimelineEdit
-        METADATA={VOLUNTEERING_METADATA}
-        itemList={volunteer}
-        identifier="organization"
-        operations={{ update, add, purge, changeOrder }}
-      />
+      <Divider />
+      {/* Configure */}
+      <Wrapper style={configStyles}>
+        <Topic>Configure</Topic>
+        {PROJECTS_CONFIGS.map(({key, label}) => (
+          <FormControlLabel
+            control={<Switch checked={currConfig[key]} onChange={() => updateConfig(key, !currConfig[key])} />}
+            label={label}
+            key={key}
+          />
+        ))}
+      </Wrapper>
     </Container>
   );
 };
@@ -252,6 +257,41 @@ const AwardsEditor = () => {
         identifier="title"
         operations={{ update, add, purge, changeOrder }}
       />
+    </Container>
+  );
+};
+
+const VolunteerEditor = () => {
+  const volunteer = useVolunteer((state) => state.volunteer);
+  const [add, update, purge, changeOrder] = useVolunteer(
+    (state) => [state.add, state.update, state.purge, state.changeOrder],
+    shallow
+  );
+  const currConfig = useTemplates((state) => state.currConfig());
+  const [updateConfig] = useTemplates((state) => [state.updateConfig], shallow);
+
+  return (
+    <Container>
+      <Heading>Volunteering<PreferDataBtn content='volunteer'/></Heading>
+      <TimelineEdit
+        METADATA={VOLUNTEERING_METADATA}
+        itemList={volunteer}
+        identifier="organization"
+        operations={{ update, add, purge, changeOrder }}
+      />
+
+      <Divider />
+      {/* Configure */}
+      <Wrapper style={configStyles}>
+        <Topic>Configure</Topic>
+        {AWARDS_CONFIGS.map(({key, label}) => (
+          <FormControlLabel
+            control={<Switch checked={currConfig[key]} onChange={() => updateConfig(key, !currConfig[key])} />}
+            label={label}
+            key={key}
+          />
+        ))}
+      </Wrapper>
     </Container>
   );
 };

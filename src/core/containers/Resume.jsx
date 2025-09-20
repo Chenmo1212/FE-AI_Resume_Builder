@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { ThemeProvider } from 'styled-components';
-import { useTemplates, useZoom } from '../../stores/settings.store';
+import { useTemplates } from '../../stores/templates.store';
+import { useZoom } from '../../stores/settings.store';
 import { useThemes } from '../../stores/theme.store';
+import shallow from 'zustand/shallow';
 
 const ResumeContainer = styled.div`
     width: 210mm;
@@ -26,9 +28,10 @@ const ResumeContainer = styled.div`
 `;
 
 export function Resume() {
-  const Template = useTemplates((state) => state.template);
+  const [getTemplate] = useTemplates((state) => [state.getTemplate], shallow);
   const zoom = useZoom((state) => state.zoom);
   const theme = useThemes((state) => state.theme);
+  const Template = getTemplate()
 
   return (
     <ThemeProvider theme={theme}>

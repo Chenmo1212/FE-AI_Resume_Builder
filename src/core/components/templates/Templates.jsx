@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { templates, useTemplates, templatesSrc, templatesName } from '../../../stores/settings.store';
+import { templates, useTemplates, templatesSrc, templatesName } from '../../../stores/templates.store';
 
 const TemplateWrapper = styled.div`
   display: grid;

@@ -40,7 +40,6 @@ const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 export function EduSection({ education, config, noBorder = false }) {
   if (!education) return null;
-
   return (
     <FlexCol rGap="0.3rem">
       {education.map((data) => (
