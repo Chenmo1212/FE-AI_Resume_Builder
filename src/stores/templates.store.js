@@ -33,6 +33,7 @@ export const templates = [ProfessionalTemplate, LegacyTemplate, GraduateTemplate
 export const templatesSrc = [ProfessionalImg, LegacyImg, GraduateImg, OneColumnImg, ClassicImg];
 export const templatesName = ['Professional', 'Legacy', 'Graduate', 'OneColumn', 'Classic'];
 
+// Section configuration definitions
 export const INTRO_CONFIGS = [{
   key: "isShowSummary",
   label: "Display Summary"
@@ -40,6 +41,7 @@ export const INTRO_CONFIGS = [{
   key: "isShowReferral",
   label: "Display Reference"
 }]
+
 export const EDU_CONFIGS = [{
   key: "isShowEdu",
   label: "Display Education"
@@ -95,6 +97,64 @@ export const SKILLS_CONFIGS = [{
   label: "Display Practices"
 }]
 
+// Define all available sections with their default visibility
+export const AVAILABLE_SECTIONS = {
+  summary: {
+    id: 'summary',
+    displayName: 'Summary',
+    visibilityKey: 'isShowSummary',
+    defaultVisible: true
+  },
+  education: {
+    id: 'education',
+    displayName: 'Education',
+    visibilityKey: 'isShowEdu',
+    defaultVisible: true
+  },
+  experience: {
+    id: 'experience',
+    displayName: 'Experience',
+    visibilityKey: 'isShowExp',
+    defaultVisible: true
+  },
+  skills: {
+    id: 'skills',
+    displayName: 'Skills',
+    visibilityKey: 'isShowSkills',
+    defaultVisible: true
+  },
+  practices: {
+    id: 'practices',
+    displayName: 'Practices',
+    visibilityKey: 'isShowPractices',
+    defaultVisible: true
+  },
+  projects: {
+    id: 'projects',
+    displayName: 'Projects',
+    visibilityKey: 'isShowProjects',
+    defaultVisible: true
+  },
+  achievements: {
+    id: 'achievements',
+    displayName: 'Achievements',
+    visibilityKey: 'isShowAchievements',
+    defaultVisible: true
+  },
+  involvements: {
+    id: 'involvements',
+    displayName: 'Involvements',
+    visibilityKey: 'isShowInvolvements',
+    defaultVisible: true
+  },
+  referral: {
+    id: 'referral',
+    displayName: 'References',
+    visibilityKey: 'isShowReferral',
+    defaultVisible: true
+  }
+};
+
 // Default section order
 export const defaultSectionOrder = [
   'summary',
@@ -108,29 +168,38 @@ export const defaultSectionOrder = [
   'referral'
 ];
 
+// Base configuration with default settings
 const baseConfig = {
+  // Section visibility settings
   isShowSummary: true,
-  isShowReferral: true,
   isShowEdu: true,
+  isShowExp: true,
+  isShowSkills: true,
+  isShowPractices: true,
+  isShowProjects: true,
+  isShowAchievements: true,
+  isShowInvolvements: true,
+  isShowReferral: true,
+  
+  // Education specific settings
   isExchangeEduInstitution: true,
   isShowEduDissertation: false,
   isShowEduCourses: false,
   isShowEduHighlights: false,
-  isShowExp: true,
+  
+  // Experience specific settings
   isExchangeExpCompany: true,
   isShowExpLocation: true,
-  isShowInvolvements: true,
-  isShowAchievements: true,
-  isShowProjects: true,
+  
+  // Other settings
   isShowAwards: true,
   isShowVolunteer: true,
-  isShowPractices: true,
-  isShowSkills: true,
   
-  // Store section order for each template
+  // Default section order
   sectionOrder: [...defaultSectionOrder],
 };
 
+// Template-specific configurations
 export const professionalConfig = {
   ...baseConfig,
   isShowInvolvements: false,
@@ -142,9 +211,7 @@ export const professionalConfig = {
     'education',
     'skills',
     'practices',
-    'achievements',
-    'involvements',
-    'referral'
+    'achievements'
   ],
 }
 
@@ -159,8 +226,7 @@ export const legacyConfig = {
     'education',
     'skills',
     'practices',
-    'projects',
-    'referral',
+    'referral'
   ],
 }
 
@@ -176,8 +242,7 @@ export const graduateConfig = {
     'referral',
     'summary',
     'education',
-    'experience',
-    'projects',
+    'experience'
   ],
 }
 
@@ -192,11 +257,7 @@ export const oneColumnConfig = {
     'education',
     'experience',
     'skills',
-    'practices',
-    'achievements',
-    'involvements',
-    'projects',
-    'referral',
+    'referral'
   ],
 }
 
@@ -211,9 +272,7 @@ export const classicConfig = {
     'experience',
     'skills',
     'achievements',
-    'involvements',
-    'projects',
-    'referral',
+    'referral'
   ],
 }
 
@@ -236,26 +295,78 @@ export const useTemplates = create(
           ...newConfigs[state.index],
           [field]: value
         };
+        
+        // If this is a visibility setting, we may need to update the section order
+        if (field.startsWith('isShow')) {
+          // Find which section this visibility setting controls
+          const sectionId = Object.keys(AVAILABLE_SECTIONS).find(
+            key => AVAILABLE_SECTIONS[key].visibilityKey === field
+          );
+          
+          if (sectionId) {
+            // If turning off visibility, remove from section order
+            if (!value && newConfigs[state.index].sectionOrder.includes(sectionId)) {
+              newConfigs[state.index].sectionOrder = newConfigs[state.index].sectionOrder
+                .filter(id => id !== sectionId);
+            } 
+            // If turning on visibility and not already in order, add to end
+            else if (value && !newConfigs[state.index].sectionOrder.includes(sectionId)) {
+              newConfigs[state.index].sectionOrder = [
+                ...newConfigs[state.index].sectionOrder,
+                sectionId
+              ];
+            }
+          }
+        }
+        
         return { configs: newConfigs };
       }),
 
       // Update section order for current template
       updateSectionOrder: (newOrder) => set((state) => {
         const newConfigs = [...state.configs];
+        const currentConfig = newConfigs[state.index];
+        
+        // Only include sections that are visible in the new order
+        const validOrder = newOrder.filter(sectionId => {
+          const section = AVAILABLE_SECTIONS[sectionId];
+          return section && currentConfig[section.visibilityKey] !== false;
+        });
+        
         newConfigs[state.index] = {
-          ...newConfigs[state.index],
-          sectionOrder: newOrder
+          ...currentConfig,
+          sectionOrder: validOrder
         };
+        
         return { configs: newConfigs };
       }),
 
       currConfig: () => get().configs[get().index],
       
-      // Get section order for current template
+      // Get section order for current template, filtered by visibility
       getSectionOrder: () => {
         const config = get().configs[get().index];
-        return config.sectionOrder || defaultSectionOrder;
+        const allSections = config.sectionOrder || defaultSectionOrder;
+        
+        // Filter out sections that are disabled
+        return allSections.filter(sectionId => {
+          const section = AVAILABLE_SECTIONS[sectionId];
+          return section && config[section.visibilityKey] !== false;
+        });
       },
+      
+      // Get all available sections with their current visibility status
+      getAvailableSections: () => {
+        const config = get().configs[get().index];
+        
+        return Object.keys(AVAILABLE_SECTIONS).map(id => {
+          const section = AVAILABLE_SECTIONS[id];
+          return {
+            ...section,
+            isVisible: config[section.visibilityKey] !== false
+          };
+        });
+      }
     }), {
       name: 'sprb-templates',
     }

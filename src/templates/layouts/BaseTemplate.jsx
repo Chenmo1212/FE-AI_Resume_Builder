@@ -16,7 +16,7 @@ export const BaseTemplate = ({
   customComponents = {},
   customStyles = {}
 }) => {
-  // Get section order from the store
+  // Get section order from the store - this will already be filtered by visibility
   const getSectionOrder = useTemplates(state => state.getSectionOrder);
   const storeSectionOrder = getSectionOrder();
   

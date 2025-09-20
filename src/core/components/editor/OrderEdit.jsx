@@ -4,6 +4,7 @@ import { SortableContainer, SortableElement, SortableHandle } from 'react-sortab
 import { TEMPLATE_CONFIGS, useTemplates } from '../../../stores/templates.store';
 import { getIcon } from '../../../styles/icons';
 import { Flex } from '../../../styles/styles';
+import { AVAILABLE_SECTIONS } from '../../../stores/templates.store';
 
 const Container = styled.div`
   margin: 8px 0;
@@ -67,17 +68,9 @@ const ResetButton = styled.span`
     justify-content: center;
 `;
 
-// Map section IDs to display names
-const sectionDisplayNames = {
-  intro: 'Introduction',
-  summary: 'Summary',
-  education: 'Education',
-  experience: 'Experience',
-  projects: 'Projects',
-  achievements: 'Achievements',
-  involvements: 'Involvements',
-  skills: 'Skills',
-  referral: 'References'
+// Get display name for a section
+const getSectionDisplayName = (sectionId) => {
+  return AVAILABLE_SECTIONS[sectionId]?.displayName || sectionId;
 };
 
 const DragHandle = SortableHandle(() => <Handle>{getIcon('drag')}</Handle>);
@@ -87,7 +80,7 @@ const SortableItem = SortableElement(({ sectionId }) => (
     <Flex>
       <DragHandle />
       <SectionItem>
-        {sectionDisplayNames[sectionId] || sectionId}
+        {getSectionDisplayName(sectionId)}
       </SectionItem>
     </Flex>
   </Wrapper>
@@ -129,8 +122,19 @@ export function OrderEdit() {
   
   // Reset to default order
   const handleReset = () => {
-    setSections([...TEMPLATE_CONFIGS[index].sectionOrder]);
-    updateSectionOrder([...TEMPLATE_CONFIGS[index].sectionOrder]);
+    // Get the default section order for the current template
+    const defaultOrder = [...TEMPLATE_CONFIGS[index].sectionOrder];
+    
+    // Filter out sections that are not visible in the current template
+    const config = TEMPLATE_CONFIGS[index];
+    const visibleSections = defaultOrder.filter(sectionId => {
+      const section = AVAILABLE_SECTIONS[sectionId];
+      return section && config[section.visibilityKey] !== false;
+    });
+    
+    // Update the sections and store
+    setSections(visibleSections);
+    updateSectionOrder(visibleSections);
   };
 
   return (
