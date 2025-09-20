@@ -95,6 +95,19 @@ export const SKILLS_CONFIGS = [{
   label: "Display Practices"
 }]
 
+// Default section order
+export const defaultSectionOrder = [
+  'summary',
+  'education',
+  'experience',
+  'skills',
+  'practices',
+  'projects',
+  'achievements',
+  'involvements',
+  'referral'
+];
+
 const baseConfig = {
   isShowSummary: true,
   isShowReferral: true,
@@ -103,11 +116,9 @@ const baseConfig = {
   isShowEduDissertation: false,
   isShowEduCourses: false,
   isShowEduHighlights: false,
-
   isShowExp: true,
   isExchangeExpCompany: true,
   isShowExpLocation: true,
-
   isShowInvolvements: true,
   isShowAchievements: true,
   isShowProjects: true,
@@ -115,35 +126,104 @@ const baseConfig = {
   isShowVolunteer: true,
   isShowPractices: true,
   isShowSkills: true,
+  
+  // Store section order for each template
+  sectionOrder: [...defaultSectionOrder],
 };
+
+export const professionalConfig = {
+  ...baseConfig,
+  isShowInvolvements: false,
+  isShowReferral: false,
+  sectionOrder: [
+    'experience',
+    'projects',
+    'summary',
+    'education',
+    'skills',
+    'practices',
+    'achievements',
+    'involvements',
+    'referral'
+  ],
+}
+
+export const legacyConfig = {
+  ...baseConfig,
+  isShowProjects: false,
+  sectionOrder: [
+    'experience',
+    'achievements',
+    'involvements',
+    'summary',
+    'education',
+    'skills',
+    'practices',
+    'projects',
+    'referral',
+  ],
+}
+
+export const graduateConfig = {
+  ...baseConfig,
+  isShowProjects: false,
+  isShowEduCourses: true,
+  sectionOrder: [
+    'achievements',
+    'involvements',
+    'skills',
+    'practices',
+    'referral',
+    'summary',
+    'education',
+    'experience',
+    'projects',
+  ],
+}
+
+export const oneColumnConfig = {
+  ...baseConfig,
+  isShowAchievements: false,
+  isShowInvolvements: false,
+  isShowPractices: false,
+  isShowProjects: false,
+  sectionOrder: [
+    'summary',
+    'education',
+    'experience',
+    'skills',
+    'practices',
+    'achievements',
+    'involvements',
+    'projects',
+    'referral',
+  ],
+}
+
+export const classicConfig = {
+  ...baseConfig,
+  isExchangeEduInstitution: false,
+  isShowInvolvements: false,
+  isShowProjects: false,
+  sectionOrder: [
+    'summary',
+    'education',
+    'experience',
+    'skills',
+    'achievements',
+    'involvements',
+    'projects',
+    'referral',
+  ],
+}
+
+export const TEMPLATE_CONFIGS = [professionalConfig, legacyConfig, graduateConfig, oneColumnConfig, classicConfig];
 
 export const useTemplates = create(
   persist(
     (set, get) => ({
       index: 0,
-      configs: [{
-        ...baseConfig,
-        isShowInvolvements: false,
-        isShowReferral: false,
-      }, {
-        ...baseConfig,
-        isShowProjects: false,
-      }, {
-        ...baseConfig,
-        isShowProjects: false,
-        isShowEduCourses: true,
-      }, {
-        ...baseConfig,
-        isShowAchievements: false,
-        isShowInvolvements: false,
-        isShowPractices: false,
-        isShowProjects: false,
-      }, {
-        ...baseConfig,
-        isExchangeEduInstitution: false,
-        isShowInvolvements: false,
-        isShowProjects: false,
-      }],
+      configs: TEMPLATE_CONFIGS,
 
       getTemplate: () => templates[get().index],
 
@@ -159,7 +239,23 @@ export const useTemplates = create(
         return { configs: newConfigs };
       }),
 
+      // Update section order for current template
+      updateSectionOrder: (newOrder) => set((state) => {
+        const newConfigs = [...state.configs];
+        newConfigs[state.index] = {
+          ...newConfigs[state.index],
+          sectionOrder: newOrder
+        };
+        return { configs: newConfigs };
+      }),
+
       currConfig: () => get().configs[get().index],
+      
+      // Get section order for current template
+      getSectionOrder: () => {
+        const config = get().configs[get().index];
+        return config.sectionOrder || defaultSectionOrder;
+      },
     }), {
       name: 'sprb-templates',
     }

@@ -29,20 +29,6 @@ const Section = styled(FlexCol)`
 `;
 
 export default function OneColumnTemplate() {
-  // Custom section order for this template
-  const sectionOrder = [
-    'intro',
-    'summary',
-    'education',
-    'experience',
-    'projects',
-    'skills',
-    'practices',
-    'achievements',
-    'involvements',
-    'referral'
-  ];
-  
   // Custom components
   const customComponents = {
     renderIntro: (intro, labels) => <Intro intro={intro} labels={labels} />,
@@ -89,7 +75,6 @@ export default function OneColumnTemplate() {
   
   return (
     <BaseTemplate
-      sectionOrder={sectionOrder}
       customComponents={customComponents}
       renderContainer={renderContainer}
     />

@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { JobEditor } from '../components/jobs/JobsEdit';
+import { OrderEdit } from '../components/editor/OrderEdit';
 import {
   SocialEditor,
   EduEditor,
@@ -80,6 +81,12 @@ export const leftNavList = [
   },
   {
     key: 8,
+    title: 'Section Order',
+    icon: 'sort',
+    component: <OrderEdit />,
+  },
+  {
+    key: 9,
     title: 'Job',
     icon: 'job',
     disabled: true,
