@@ -13,6 +13,7 @@ import {
   useProjects,
 } from '../../stores/data.store';
 import { useLeftDrawer } from '../../stores/settings.store';
+import { useTemplates } from '../../stores/templates.store';
 import { leftNavList } from '../../core/containers/LeftNav';
 import { Intro } from '../components/intro/Intro-Classic';
 import { EduSection } from '../components/education/EduSection';
@@ -41,15 +42,23 @@ const SectionTitle = styled.h2`
   border-bottom: 1px solid #000;
 `;
 
+const Divider = styled.div`
+  height: 2px;
+  background: #eee;
+  margin: 5px 0;
+`;
+
+
 const mdParser = new MarkdownIt();
 
 export default function ClassicTemplate() {
   const intro = useIntro((state) => state.intro);
-  const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
-  const [companies, workConfig] = useWork((state) => [state.companies, state.workConfig], shallow);
+  const [education] = useEducation((state) => [state.education], shallow);
+  const [companies] = useWork((state) => [state.companies], shallow);
   const projects = useProjects((state) => state.projects);
-  const [achievements] = useActivities((state) => [state.achievements], shallow);
+  const [achievements, involvements] = useActivities((state) => [state.achievements, state.involvements], shallow);
   const labels = useLabels((state) => state.labels);
+  const config = useTemplates((state) => state.currConfig());
   const setLeftDrawer = useLeftDrawer((state) => state.update);
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
     (state) => [
@@ -95,7 +104,7 @@ export default function ClassicTemplate() {
       <Intro intro={intro} />
 
       {/* Summary Section */}
-      {intro.summary && (
+      {config.isShowSummary && intro.summary && (
         <div onClick={(e) => clickHandler(e, 'Intro')}>
           <SectionTitle>{labels[3]}</SectionTitle>
           <p dangerouslySetInnerHTML={{ __html: mdParser.render(intro.summary) }} />
@@ -103,31 +112,48 @@ export default function ClassicTemplate() {
       )}
 
       {/* Education Section */}
-      <div onClick={(e) => clickHandler(e, labels[9])}>
+      {config.isShowEdu && education.length > 0 && (
+        <div onClick={(e) => clickHandler(e, labels[9])}>
         <SectionTitle>{labels[9]}</SectionTitle>
-        <EduSection education={education} config={eduConfig} noBorder={true}/>
-      </div>
+        <EduSection education={education} config={config} noBorder={true}/>
+        </div>
+      )}
 
       {/* Experience Section */}
-      <div onClick={(e) => clickHandler(e, labels[0])}>
+      {config.isShowExp && companies.length > 0 && (
+        <div onClick={(e) => clickHandler(e, labels[0])}>
         <SectionTitle>{labels[0]}</SectionTitle>
-        <Exp companies={companies} workConfig={workConfig} isShowTimeline={false}/>
-      </div>
+        <Exp companies={companies} config={config} isShowTimeline={false}/>
+        </div>
+      )}
 
       {/* Projects Section */}
-      <div onClick={(e) => clickHandler(e, labels[1])}>
+      {config.isShowProjects && projects.length > 0 && (
+        <div onClick={(e) => clickHandler(e, labels[1])}>
         <SectionTitle>{labels[1]}</SectionTitle>
         <Projects projects={projects}/>
-      </div>
+        </div>
+      )}
 
       {/* Achievements Section */}
-      <div onClick={(e) => clickHandler(e, labels[2])}>
+      {config.isShowAchievements && achievements && (
+        <div onClick={(e) => clickHandler(e, labels[2])}>
         <SectionTitle>{labels[2]}</SectionTitle>
         <Description description={achievements} />
-      </div>
+        </div>
+      )}
+      
+      {/* Involvements Section */}
+      {config.isShowInvolvements && involvements && (
+        <div onClick={(e) => clickHandler(e, labels[12])}>
+          <SectionTitle>{labels[12]}</SectionTitle>
+          <Description description={involvements} />
+        </div>
+      )}
 
       {/* Skills Section */}
-      <div onClick={(e) => clickHandler(e, labels[5])}>
+      {config.isShowSkills && (
+        <div onClick={(e) => clickHandler(e, labels[5])}>
         <SectionTitle>{labels[5]}</SectionTitle>
         <UnratedTabsText
           label="Skills"
@@ -144,7 +170,16 @@ export default function ClassicTemplate() {
           label="Methodologies"
           items={[...practices]}
         />
-      </div>
+        </div>
+      )}
+
+      {/* References Section */}
+      {config.isShowReferral && intro.referral && (
+        <div onClick={(e) => clickHandler(e, 'Intro')}>
+          <Divider />
+          <Description description={intro.referral}/>
+        </div>
+      )}
     </ResumeContainer>
   );
 }

@@ -23,7 +23,9 @@ import {
   useProjects,
 } from '../../stores/data.store';
 import {useLeftDrawer} from '../../stores/settings.store';
+import {useTemplates} from '../../stores/templates.store';
 import {leftNavList} from '../../core/containers/LeftNav';
+import { LegacyHeader } from '../components/section-layout/LegacyHeader';
 
 const ResumeContainer = styled(Flex)`
   height: 100%;
@@ -69,15 +71,18 @@ const labelsIcon = [
   'branch',
   'tool',
   'education',
-  'social',
-  'referral'
+  '',
+  '',
+  'edit',
+  'referral',
 ];
 
 export default function ProfessionalTemplate() {
   const intro = useIntro((state) => state.intro);
-  const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
-  const [companies, workConfig] = useWork((state) => [state.companies, state.workConfig], shallow);
+  const [education] = useEducation((state) => [state.education], shallow);
+  const [companies] = useWork((state) => [state.companies], shallow);
   const projects = useProjects((state) => state);
+  const config = useTemplates((state) => state.currConfig());
   const [achievements, involvements] = useActivities((state) => [state.achievements, state.involvements], shallow);
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
     (state) => [
@@ -124,6 +129,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[3],
       icon: labelsIcon[3],
+      isShow: config.isShowSummary && intro.summary,
       component: (
         <div onClick={(e) => clickHandler(e, labels[3])}>
           <Description photo={intro.image} description={intro.summary}/>
@@ -133,15 +139,27 @@ export default function ProfessionalTemplate() {
     {
       title: labels[9],
       icon: labelsIcon[9],
+      isShow: config.isShowEdu && education.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[9])}>
-          <EduSection education={education} config={eduConfig}/>
+          <EduSection education={education} config={config}/>
+        </div>
+      ),
+    },
+    {
+      title: labels[0],
+      icon: labelsIcon[0],
+      isShow: config.isShowExp && companies.length,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[0])}>
+          <Exp companies={companies} config={config}/>
         </div>
       ),
     },
     {
       title: labels[1],
       icon: labelsIcon[1],
+      isShow: config.isShowProjects && projects.projects.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[1])}>
           <Projects projects={projects.projects}/>
@@ -149,21 +167,52 @@ export default function ProfessionalTemplate() {
       ),
     },
     {
-      title: labels[0],
-      icon: labelsIcon[0],
-      component: (
-        <div onClick={(e) => clickHandler(e, labels[0])}>
-          <Exp companies={companies} workConfig={workConfig}/>
-        </div>
-      ),
-      styles: {flexGrow: 1},
-    },
-    {
       title: labels[6],
       icon: labelsIcon[6],
+      isShow: config.isShowSkills && [...technologies, ...libraries, ...databases].length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[6])}>
           <UnratedTabs items={[...technologies, ...libraries, ...databases]}/>
+        </div>
+      ),
+    },
+    {
+      title: labels[7],
+      icon: labelsIcon[7],
+      isShow: config.isShowPractices && practices.length,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[7])}>
+          <UnratedTabs items={practices} />
+        </div>
+      ),
+    },
+    {
+      title: labels[2],
+      icon: labelsIcon[2],
+      isShow: config.isShowAchievements && achievements,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[2])}>
+          <Description description={achievements} />
+        </div>
+      ),
+    },
+    {
+      title: labels[12],
+      icon: labelsIcon[12],
+      isShow: config.isShowInvolvements && involvements,
+      component: (
+        <div onClick={(e) => clickHandler(e, labels[2])}>
+          <Description description={involvements} />
+        </div>
+      ),
+    },
+    {
+      title: labels[13],
+      icon: labelsIcon[13],
+      isShow: config.isShowReferral,
+      component: (
+        <div onClick={(e) => clickHandler(e, 'Intro')}>
+          <Description description={intro.referral}/>
         </div>
       ),
     },
@@ -179,7 +228,7 @@ export default function ProfessionalTemplate() {
         </ModernHeaderIntro>
 
         {sections
-          .filter(({title}) => !!title)
+          .filter(({title, isShow}) => !!title && isShow)
           .map(({title, icon, component}) => (
             <ModernHeader icon={getIcon(icon)} title={title} key={title}>
               {component}
