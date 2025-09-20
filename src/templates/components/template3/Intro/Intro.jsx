@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Color from 'color';
 import { getIcon } from '../../../../styles/icons';
-import Image from 'next/image';
+import CustomImage from '../../../../core/utils/imageUtils';
 
 const IntroContainer = styled.div`
   display: flex;
@@ -81,7 +81,7 @@ function Intro({ intro }) {
       <div className="about">
         {intro.image && (
           <div className="about__profile-image">
-            <Image src={intro.image} alt={intro.name} />
+            <CustomImage src={intro.image} alt={intro.name} />
           </div>
         )}
         <div className="about__info">

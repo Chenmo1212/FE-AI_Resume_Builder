@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import styled from 'styled-components';
+import CustomImage from '../core/utils/imageUtils';
 
 const HeroHolder = styled.div`
   display: flex;
@@ -73,7 +73,7 @@ export const Hero = () => {
           </Link>
         </div>
       </div>
-      <Image src="/hiring.svg" alt="hiring" width="300px" height="300px" priority />
+      <CustomImage src="/hiring.svg" alt="hiring" width="300px" height="300px" priority />
     </HeroHolder>
   );
 };
