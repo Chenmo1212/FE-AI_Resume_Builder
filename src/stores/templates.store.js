@@ -31,6 +31,9 @@ export const templatesSrc = [ProfessionalImg, LegacyImg, ProfessionalImg, OneCol
 export const templatesName = ['Professional', 'Legacy', 'Graduate', 'OneColumn', 'Classic'];
 
 export const INTRO_CONFIGS = [{
+  key: "isShowSummary",
+  label: "Display Summary"
+}, {
   key: "isShowReferral",
   label: "Display Reference"
 }]
@@ -82,6 +85,7 @@ export const AWARDS_CONFIGS = [{
 }]
 
 const baseConfig = {
+  isShowSummary: true,
   isShowReferral: true,
   isShowEdu: true,
   isExchangeEduInstitution: true,

@@ -139,7 +139,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[3],
       icon: labelsIcon[3],
-      isShow: intro.summary,
+      isShow: config.isShowSummary && intro.summary,
       component: (
         <div onClick={(e) => clickHandler(e, labels[3])}>
           <Description photo={intro.image} description={intro.summary} />
@@ -179,7 +179,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[2],
       icon: labelsIcon[2],
-      isShow: achievements,
+      isShow: config.isShowAchievements && achievements,
       component: (
         <div onClick={(e) => clickHandler(e, labels[2])}>
           <Description description={achievements} />
@@ -189,7 +189,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[12],
       icon: labelsIcon[12],
-      isShow: involvements,
+      isShow: config.isShowInvolvement && involvements,
       component: (
         <div onClick={(e) => clickHandler(e, labels[2])}>
           <Description description={involvements} />
@@ -199,7 +199,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[13],
       icon: labelsIcon[13],
-      isShow: intro.referral,
+      isShow: config.isShowReferral && intro.referral,
       component: (
         <div onClick={(e) => clickHandler(e, 'Intro')}>
           <Description description={intro.referral}/>
