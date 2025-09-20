@@ -24,6 +24,7 @@ import { useLeftDrawer } from '../../stores/settings.store';
 import { leftNavList } from '../../core/containers/LeftNav';
 import { Flex, FlexCol } from '../../styles/styles';
 import { getIcon } from '../../styles/icons';
+import { useTemplates } from '../../stores/templates.store';
 
 const ResumeContainer = styled(Flex)`
   height: 100%;
@@ -65,8 +66,8 @@ const labelsIcon = [
 
 export default function ProfessionalTemplate() {
   const intro = useIntro((state) => state.intro);
-  const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
-  const [companies, workConfig] = useWork((state) => [state.companies, state.workConfig], shallow);
+  const [education] = useEducation((state) => [state.education], shallow);
+  const [companies] = useWork((state) => [state.companies], shallow);
   const projects = useProjects((state) => state.projects);
   const [involvements, achievements] = useActivities((state) => [state.involvements, state.achievements], shallow);
   const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
@@ -81,6 +82,7 @@ export default function ProfessionalTemplate() {
     ],
     shallow
   );
+  const config = useTemplates((state) => state.currConfig());
   const labels = useLabels((state) => state.labels);
 
   const setLeftDrawer = useLeftDrawer((state) => state.update);
@@ -114,10 +116,10 @@ export default function ProfessionalTemplate() {
     {
       title: labels[0],
       icon: labelsIcon[0],
-      isShow: companies.length,
+      isShow: config.isShowExp && companies.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[0])}>
-          <Exp companies={companies} workConfig={workConfig} />
+          <Exp companies={companies} config={config} />
         </div>
       ),
       styles: { flexGrow: 1 },
@@ -170,7 +172,7 @@ export default function ProfessionalTemplate() {
       isShow: education.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[9])}>
-          <EduSection education={education} config={eduConfig}/>
+          <EduSection education={education} config={config}/>
         </div>
       ),
     },
@@ -200,7 +202,7 @@ export default function ProfessionalTemplate() {
       isShow: intro.referral,
       component: (
         <div onClick={(e) => clickHandler(e, 'Intro')}>
-          <Description description={intro?.referral}/>
+          <Description description={intro.referral}/>
         </div>
       ),
     },

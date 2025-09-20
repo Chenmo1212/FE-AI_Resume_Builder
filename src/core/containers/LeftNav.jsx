@@ -68,15 +68,15 @@ export const leftNavList = [
   },
   {
     key: 6,
-    title: 'Label',
-    icon: 'label',
-    component: <LabelsEditor />,
-  },
-  {
-    key: 7,
     title: 'Skills',
     icon: 'tool',
     component: <SkillsEditor />,
+  },
+  {
+    key: 7,
+    title: 'Label',
+    icon: 'label',
+    component: <LabelsEditor />,
   },
   {
     key: 8,

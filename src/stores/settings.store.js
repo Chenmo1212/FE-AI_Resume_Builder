@@ -1,42 +1,5 @@
 import create from 'zustand';
 
-import ProfessionalImg from '../../public/images/professional.png';
-import LegacyImg from '../../public/images/legacy.png';
-import OneColumnImg from '../../public/images/onecolumn.png';
-import ClassicImg from '../../public/images/classic.png';
-import dynamic from 'next/dynamic';
-
-const ProfessionalTemplate = dynamic(() => import('../templates/layouts/ProfessionalTemplate'), {
-  ssr: false,
-});
-
-const LegacyTemplate = dynamic(() => import('../templates/layouts/LegacyTemplate'), {
-  ssr: false,
-});
-
-const GraduateTemplate = dynamic(() => import('../templates/layouts/GraduateTemplate'), {
-  ssr: false,
-})
-
-const OneColumnTemplate = dynamic(() => import('../templates/layouts/OneColumnTemplate'), {
-  ssr: false,
-})
-
-const ClassicTemplate = dynamic(() => import('../templates/layouts/ClassicTemplate'), {
-  ssr: false,
-})
-
-export const templates = [ProfessionalTemplate, LegacyTemplate, GraduateTemplate, OneColumnTemplate, ClassicTemplate];
-export const templatesSrc = [ProfessionalImg, LegacyImg, ProfessionalImg, OneColumnImg, ClassicImg];
-export const templatesName = ['Professional', 'Legacy', 'Graduate', 'OneColumn', 'Classic'];
-
-export const useTemplates = create((set) => ({
-  index: 0,
-  template: templates[0],
-
-  setTemplate: (index) => set({ index, template: templates[index] }),
-}));
-
 export const useItems = create((set) => ({
   isPhotoDisplayed: true,
 
