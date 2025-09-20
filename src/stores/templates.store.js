@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 // Use string paths instead of direct imports for images
 const ProfessionalImg = '/images/professional.png';
 const LegacyImg = '/images/legacy.png';
+const GraduateImg = '/images/graduate.png';
 const OneColumnImg = '/images/onecolumn.png';
 const ClassicImg = '/images/classic.png';
 
@@ -29,7 +30,7 @@ const ClassicTemplate = dynamic(() => import('../templates/layouts/ClassicTempla
 })
 
 export const templates = [ProfessionalTemplate, LegacyTemplate, GraduateTemplate, OneColumnTemplate, ClassicTemplate];
-export const templatesSrc = [ProfessionalImg, LegacyImg, ProfessionalImg, OneColumnImg, ClassicImg];
+export const templatesSrc = [ProfessionalImg, LegacyImg, GraduateImg, OneColumnImg, ClassicImg];
 export const templatesName = ['Professional', 'Legacy', 'Graduate', 'OneColumn', 'Classic'];
 
 export const INTRO_CONFIGS = [{
