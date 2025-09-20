@@ -62,6 +62,10 @@ const labelsIcon = [
   'branch',
   'tool',
   'education',
+  '',
+  '',
+  'edit',
+  'referral',
 ];
 
 export default function ProfessionalTemplate() {
@@ -189,7 +193,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[12],
       icon: labelsIcon[12],
-      isShow: config.isShowInvolvement && involvements,
+      isShow: config.isShowInvolvements && involvements,
       component: (
         <div onClick={(e) => clickHandler(e, labels[2])}>
           <Description description={involvements} />

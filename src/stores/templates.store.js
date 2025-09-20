@@ -66,7 +66,7 @@ export const EXP_CONFIGS = [{
 }]
 
 export const PROJECTS_CONFIGS = [{
-  key: "isShowInvolvement",
+  key: "isShowInvolvements",
   label: "Display Involvement"
 }, {
   key: "isShowAchievements",
@@ -105,7 +105,7 @@ const baseConfig = {
   isExchangeExpCompany: true,
   isShowExpLocation: true,
 
-  isShowInvolvement: true,
+  isShowInvolvements: true,
   isShowAchievements: true,
   isShowProjects: true,
   isShowAwards: true,
