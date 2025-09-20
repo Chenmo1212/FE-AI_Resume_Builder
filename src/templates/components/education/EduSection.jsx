@@ -40,26 +40,27 @@ const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 export function EduSection({ education, config, noBorder = false }) {
   if (!education) return null;
+  console.log("====== config", config);
   return (
     <FlexCol rGap="0.3rem">
       {education.map((data) => (
         <Education key={data.studyType} noBorder={noBorder}>
           <Flex jc="space-between">
-            <Institution>{data.institution}</Institution>
+            <Institution>{config.isExchangeEduInstitution ? `${data.studyType} - ${data.area}` : data.institution}</Institution>
             <Year>
               {data.startDate}-{data.endDate}
             </Year>
           </Flex>
 
           <Flex jc="space-between">
-            <Specialization>{data.studyType} - {data.area}</Specialization>
+            <Specialization>{config.isExchangeEduInstitution ? data.institution : `${data.studyType} - ${data.area}`}</Specialization>
             <em>{data.score}</em>
           </Flex>
 
           {/* Config */}
-          {config.isShowCourses && (data.courses && data.courses.length) ? <Topic><b>Main Modules:</b> {data.courses}</Topic> : ""}
-          {config.isShowDissertation && data.dissertation ? <Topic><b>Dissertation:</b> {data.dissertation}</Topic> : ""}
-          {config.isShowHighlights && data.highlights && <Highlights>
+          {config.isShowEduCourses && (data.courses && data.courses.length) ? <Topic><b>Main Modules:</b> {data.courses}</Topic> : ""}
+          {config.isShowEduDissertation && data.dissertation ? <Topic><b>Dissertation:</b> {data.dissertation}</Topic> : ""}
+          {config.isShowEduHighlights && data.highlights && <Highlights>
             <b>Highlights:</b>
             <div dangerouslySetInnerHTML={{ __html: mdParser.render(data.highlights ?? '') }} />
           </Highlights>

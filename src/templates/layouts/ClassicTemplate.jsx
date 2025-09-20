@@ -47,7 +47,6 @@ export default function ClassicTemplate() {
     'achievements',
     'involvements',
     'skills',
-    'practices',
     'referral'
   ];
   
@@ -64,24 +63,16 @@ export default function ClassicTemplate() {
       <Exp companies={companies} config={config} isShowTimeline={false} />
     ),
     renderSkills: (items) => (
-      <>
-        <UnratedTabsText
-          label="Skills"
-          items={items}
-        />
-      </>
+      <UnratedTabsText label="Skills" items={items} />
     ),
     renderPractices: (items) => (
-      <UnratedTabsText
-        label="Methodologies"
-        items={items}
-      />
+      <UnratedTabsText label="Methodologies" items={items} />
     ),
   };
   
   // Custom container renderer for this template
   const renderContainer = (sections, components, baseTemplate) => {
-    const { intro } = baseTemplate;
+    const { intro, practices } = baseTemplate;
     
     return (
       <ResumeContainer>
@@ -94,17 +85,15 @@ export default function ClassicTemplate() {
           .map(section => (
             <div key={section.id}>
               <SectionTitle>{section.title}</SectionTitle>
-              {section.component({ ...components })}
+              <div onClick={(e) => baseTemplate.clickHandler(e, section.navKey)}>
+                {section.component({ ...components })}
+                {section.id === 'skills' && practices.length > 0 &&
+                  components.renderPractices(practices)
+                }
+              </div>
             </div>
-          ))}
-          
-        {/* Special handling for referral with divider */}
-        {sections.find(s => s.id === 'referral') && (
-          <div>
-            <Divider />
-            {components.renderReferral(intro.referral)}
-          </div>
-        )}
+          ))
+        }
       </ResumeContainer>
     );
   };

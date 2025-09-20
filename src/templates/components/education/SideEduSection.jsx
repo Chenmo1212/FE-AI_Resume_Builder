@@ -40,13 +40,12 @@ export function EduSection({ education, config }) {
   return education.map((data) => (
     <Education key={data.studyType}>
       <Flex jc="space-between">
-        <Specialization>{config.isExchangeEduInstitution ? data.institution : data.studyType}</Specialization>
+        <Specialization>{config.isExchangeEduInstitution ? `${data.studyType} - ${data.area}` : data.institution}</Specialization>
         <Year>
           {data.startDate}-{data.endDate}
         </Year>
       </Flex>
-      <Topic>{data.area}</Topic>
-      <Institution>{config.isExchangeEduInstitution ? data.studyType : data.institution}</Institution>
+      <Institution>{config.isExchangeEduInstitution ? data.institution : `${data.studyType} - ${data.area}`}</Institution>
 
       {/* Config */}
       {config.isShowEduCourses && (data.courses && data.courses.length) ? <Topic><b>Main Modules:</b> {data.courses}</Topic> : ""}
