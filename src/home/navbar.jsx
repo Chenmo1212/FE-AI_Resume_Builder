@@ -1,8 +1,8 @@
 
 import Link from 'next/link';
-import Image from 'next/image';
 import styled from 'styled-components';
 import { getIcon } from '../styles/icons';
+import CustomImage from '../core/utils/imageUtils';
 
 const Nav = styled.nav`
   display: flex;
@@ -38,7 +38,7 @@ const NavBar = () => {
     <Nav>
       <Link href="/">
         <a>
-          <Image src="/logo.png" alt="logo" height="50px" width="50px" />
+          <CustomImage src="/logo.png" alt="logo" height="50px" width="50px" />
         </a>
       </Link>
       <RightItemsContainer>

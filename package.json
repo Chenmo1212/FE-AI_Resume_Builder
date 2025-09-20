@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export -o dist",
+    "build:export": "next build && next export -o dist",
     "start": "next start -p 9000",
     "lint": "next lint",
     "prepare": "husky install",
