@@ -130,4 +130,15 @@ dist
 .pnp.*
 
 .idea/
-src/stores/data.json
+../../../stores/data.json
+.husky
+_next
+
+# macOS system files
+.DS_Store
+*/.DS_Store
+**/.DS_Store
+
+# Lock files
+package-lock.json
+yarn.lock

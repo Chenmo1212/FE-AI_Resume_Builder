@@ -5,8 +5,21 @@ module.exports = {
   reactStrictMode: false,
   images: {
     domains: ['img.icons8.com'],
+    unoptimized: true,
+    loader: 'custom',
+    loaderFile: './src/utils/image-loader',
   },
   eslint: {
-    dirs: ['src/pages', 'src/core', 'src/stores', 'src/templates', 'src/home'],
+    dirs: ['src/pages', '../core', '../../../stores', 'src/templates', 'src/home'],
   },
+  // This ensures that HTML files are generated for each page
+  exportPathMap: async function() {
+    return {
+      '/': { page: '/' },
+      '/editor': { page: '/editor' }
+    };
+  },
+  // Fix asset path issues in static export
+  assetPrefix: './',
+  basePath: '',
 };
