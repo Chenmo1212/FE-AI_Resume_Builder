@@ -40,18 +40,18 @@ export function EduSection({ education, config }) {
   return education.map((data) => (
     <Education key={data.studyType}>
       <Flex jc="space-between">
-        <Specialization>{data.studyType}</Specialization>
+        <Specialization>{config.isExchangeEduInstitution ? data.institution : data.studyType}</Specialization>
         <Year>
           {data.startDate}-{data.endDate}
         </Year>
       </Flex>
       <Topic>{data.area}</Topic>
-      <Institution>{data.institution}</Institution>
+      <Institution>{config.isExchangeEduInstitution ? data.studyType : data.institution}</Institution>
 
       {/* Config */}
-      {config.isShowCourses && (data.courses && data.courses.length) ? <Topic><b>Main Modules:</b> {data.courses}</Topic> : ""}
-      {config.isShowDissertation && data.dissertation ? <Topic><b>Dissertation:</b> {data.dissertation}</Topic> : ""}
-      {config.isShowHighlights && data.highlights && <Highlights>
+      {config.isShowEduCourses && (data.courses && data.courses.length) ? <Topic><b>Main Modules:</b> {data.courses}</Topic> : ""}
+      {config.isShowEduDissertation && data.dissertation ? <Topic><b>Dissertation:</b> {data.dissertation}</Topic> : ""}
+      {config.isShowEduHighlights && data.highlights && <Highlights>
         <b>Highlights:</b>
         <div dangerouslySetInnerHTML={{ __html: mdParser.render(data.highlights ?? '') }} />
       </Highlights>

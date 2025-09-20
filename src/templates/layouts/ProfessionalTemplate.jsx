@@ -127,7 +127,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[1],
       icon: labelsIcon[1],
-      isShow: projects.length,
+      isShow: config.isShowProjects && projects.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[1])}>
           <Projects projects={projects} />
@@ -169,7 +169,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[9],
       icon: labelsIcon[9],
-      isShow: education.length,
+      isShow: config.isShowEdu &&education.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[9])}>
           <EduSection education={education} config={config}/>
