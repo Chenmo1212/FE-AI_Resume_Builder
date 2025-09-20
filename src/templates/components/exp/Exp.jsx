@@ -48,7 +48,7 @@ const CompanyExp = styled.div`
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-export function CompanyHeader({ company, config }) {
+export function CompanyHeader({ company, config={} }) {
   return (
     <>
       <Flex jc="space-between" ai="flex-end" style={{ lineHeight: 'initial' }}>
