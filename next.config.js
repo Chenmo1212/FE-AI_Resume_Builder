@@ -7,7 +7,7 @@ module.exports = {
     domains: ['img.icons8.com'],
     unoptimized: true,
     loader: 'custom',
-    loaderFile: 'src/utils/image-loader',
+    loaderFile: './src/utils/image-loader',
   },
   eslint: {
     dirs: ['src/pages', '../core', '../../../stores', 'src/templates', 'src/home'],

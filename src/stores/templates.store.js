@@ -1,10 +1,12 @@
 import create from 'zustand';
 import dynamic from 'next/dynamic';
-import ProfessionalImg from '../../public/images/professional.png';
-import LegacyImg from '../../public/images/legacy.png';
-import OneColumnImg from '../../public/images/onecolumn.png';
-import ClassicImg from '../../public/images/classic.png';
 import { persist } from 'zustand/middleware';
+
+// Use string paths instead of direct imports for images
+const ProfessionalImg = '/images/professional.png';
+const LegacyImg = '/images/legacy.png';
+const OneColumnImg = '/images/onecolumn.png';
+const ClassicImg = '/images/classic.png';
 
 const ProfessionalTemplate = dynamic(() => import('../templates/layouts/ProfessionalTemplate'), {
   ssr: false,
