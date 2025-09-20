@@ -1,313 +1,313 @@
 {
-  "basics": {
-    "bio": "Master in Computer Science",
-    "email": "chenmo991212@gmail.com",
-    "image": "",
-    "label": "Frontend Developer",
-    "location": {
-      "address": "Dublin, Ireland",
-      "city": "Dublin",
-      "countryCode": "",
-      "postalCode": "",
-      "region": ""
+    "basics": {
+        "bio": "Master in Computer Science",
+        "email": "chenmo991212@gmail.com",
+        "image": "",
+        "label": "Frontend Developer",
+        "location": {
+            "address": "Dublin, Ireland",
+            "city": "Dublin",
+            "countryCode": "",
+            "postalCode": "",
+            "region": ""
+        },
+        "name": "Chandler Pan",
+        "phone": "(+353) 012-12345678",
+        "profiles": [
+            {
+                "network": "globe",
+                "url": "https://chenmo1212.cn?f=cv",
+                "username": "chenmo1212.cn"
+            },
+            {
+                "network": "linkedin",
+                "url": "https://www.linkedin.com/in/chandler-pan/",
+                "username": "Chandler Pan"
+            },
+            {
+                "network": "github",
+                "url": "https://github.com/Chenmo1212?f=cv",
+                "username": "Chenmo1212"
+            }
+        ],
+        "referral": "References available on request",
+        "relExp": "",
+        "summary": "Experienced front-end developer with a strong\nwork ethic and a passion for user experience\ndesign. With over 2 years of expertise in web\nfront-end development, I have led the\ndevelopment of innovative web-based software\nsolutions, resulting in significant productivity\ngains and improved user satisfaction. I am\nexcited about the opportunity to join IBM's\nSecurity design team and contribute to delivering\nreusable experiences and patterns using\ntechnologies like React and TypeScript. I am\nconfident that my technical skills, collaborative\nmindset, and dedication to bridging the gap\nbetween design and engineering will make a\nvaluable impact at IBM.",
+        "totalExp": "2 Years",
+        "url": ""
     },
-    "name": "Chandler Pan",
-    "phone": "(+353) 012-12345678",
-    "profiles": [
-      {
-        "network": "globe",
-        "url": "https://chenmo1212.cn?f=cv",
-        "username": "chenmo1212.cn"
-      },
-      {
-        "network": "linkedin",
-        "url": "https://www.linkedin.com/in/chandler-pan/",
-        "username": "Chandler Pan"
-      },
-      {
-        "network": "github",
-        "url": "https://github.com/Chenmo1212?f=cv",
-        "username": "Chenmo1212"
-      }
+    "skills": {
+        "languages": [
+            {
+                "name": "Javascript",
+                "level": 5
+            },
+            {
+                "name": "Python",
+                "level": 4
+            },
+            {
+                "name": "C++",
+                "level": 3
+            }
+        ],
+        "frameworks": [
+            {
+                "name": "ReactJS",
+                "level": 4
+            },
+            {
+                "name": "VueJS",
+                "level": 3
+            }
+        ],
+        "libraries": [],
+        "databases": [],
+        "technologies": [
+            {
+                "level": 3,
+                "name": "ReactJS"
+            },
+            {
+                "level": 3,
+                "name": "VueJS"
+            },
+            {
+                "level": 3,
+                "name": "JavaScript"
+            },
+            {
+                "level": 3,
+                "name": "HTML"
+            },
+            {
+                "level": 3,
+                "name": "CSS"
+            },
+            {
+                "level": 3,
+                "name": "RESTful"
+            },
+            {
+                "level": 3,
+                "name": "CI / CD"
+            },
+            {
+                "level": 3,
+                "name": "Webpack"
+            },
+            {
+                "level": 3,
+                "name": "Babel"
+            },
+            {
+                "level": 3,
+                "name": "Npm"
+            },
+            {
+                "level": 3,
+                "name": "Redux"
+            },
+            {
+                "level": 3,
+                "name": "Git"
+            },
+            {
+                "level": 3,
+                "name": "Node.js"
+            },
+            {
+                "level": 3,
+                "name": "Python"
+            },
+            {
+                "level": 3,
+                "name": "Flask"
+            },
+            {
+                "level": 3,
+                "name": "Github Action"
+            }
+        ],
+        "practices": [
+            {
+                "level": 3,
+                "name": "Teamwork"
+            },
+            {
+                "level": 3,
+                "name": "Adaptability"
+            },
+            {
+                "level": 3,
+                "name": "Problem solving"
+            },
+            {
+                "level": 3,
+                "name": "Time Management"
+            },
+            {
+                "level": 3,
+                "name": "Critical thinking"
+            },
+            {
+                "level": 3,
+                "name": "Verbal Communication"
+            },
+            {
+                "level": 3,
+                "name": "Diversity and Inclusion"
+            },
+            {
+                "level": 3,
+                "name": "Collaboration"
+            },
+            {
+                "level": 3,
+                "name": "Communication"
+            },
+            {
+                "level": 3,
+                "name": "Attention to detail"
+            }
+        ],
+        "tools": []
+    },
+    "work": [
+        {
+            "endDate": "present",
+            "highlights": [
+                "Leveraged IBM Carbon Component to revamp NS1 portal code, achieving a remarkable 98% direct acceptance rate, showcasing a strong ability to deliver high-quality features consistently.",
+                "Introduced Cypress for automated front-end testing, significantly boosting component reuse and development efficiency, aligning with the need to build, test, and ship high-quality features in the <Job Posting>.",
+                "Led three weekly standup meetings across teams, following Agile practices rigorously, demonstrating a commitment to uninterrupted operation of features in a production environment."
+            ],
+            "id": "1",
+            "isWorkingHere": false,
+            "name": "International Business Machines (IBM)",
+            "position": "Front-end Developer",
+            "startDate": "02/2024",
+            "summary": "* Leveraged lBM Carbon Component to revamp NS1 portal code, achieving a remarkable 98% direct acceptance rate, showcasing a strong ability to deliver high-quality features consistently.\n* Introduced Cypress for automated front-end testing, significantly boosting component reuse and development efficiency, aligning with the need to build, test, and ship high-quality features.\n* Led three weekly standup meetings across teams, following Agile practices rigorously, demonstrating a commitment to uninterrupted operation of features in a production environment.",
+            "unedited": true,
+            "url": "",
+            "years": "1.5 years"
+        },
+        {
+            "endDate": "8/2022",
+            "highlights": [
+                "Led the enhancement of user productivity by 30% through innovative feature implementations like Report Generation and Label Printing in a web-based nesting software.",
+                "Demonstrated strong design skills and collaboration abilities by leading the creation of an automatic 3D model and CAD drawing generation system.",
+                "Improved user satisfaction by 15% and reduced support requests by 30% through the design and implementation of a web-based CAD software."
+            ],
+            "id": "1",
+            "isWorkingHere": false,
+            "name": "SHANGHAI FRIENDESS ELECTRONICS TECHNOLOGY.",
+            "position": "Web Front-end Development Engineer",
+            "startDate": "7/2021",
+            "summary": "* Led the development of a web-based nesting software, implementing key features such as Report Generation and Label Printing, resulting in a 30% increase in user productivity. \n* Played a critical role in developing an automatic 3D model and CAD drawing generation system, demonstrating the ability to take part in features design and collaborate with teammembers.\n* Designed and implemented a web-based CAD software, improving user satisfaction scores by 15% and reducing support requests by 30%.\n* Led the development of a Material Calculation System, reducing production time by 40% and saving €50,000 annually, while working with other teams and stakeholders to drive product improvements.",
+            "unedited": true,
+            "url": "",
+            "years": "1.1 years"
+        },
+        {
+            "endDate": "5/2021",
+            "highlights": [
+                "Based on the Master Resume, the highlights demonstrate relevant skills and experiences that align with the Job Posting, showcasing proficiency in modern client-side/web technologies and software design."
+            ],
+            "id": "1",
+            "isWorkingHere": false,
+            "name": "TUQI CONSTRUCTION TECHONOLOGY.",
+            "position": "Web Front-end Engineer",
+            "startDate": "3/2021",
+            "summary": "* Automated data collection system using Node,js, jQuery, and LayUl, saving 50% of timespent on manual data verification and cleaning. lmplemented batch row and cell merging features, improving data organization and efficiency.\n* Developed a 3D monitoring web program for a dredger contruction project using React, WebGL, and Three.js. Real-time display of dredger state and environment in three dimensions on the web, improving project efficiency by 30% through real-time visualizationof dredging effects.\n* Utilized Figma as a pixel-perfect mockup for developing web pages, resulting in a 20% reduction in design implementation time.",
+            "unedited": true,
+            "url": "",
+            "years": "2 months"
+        }
     ],
-    "referral": "References available on request",
-    "relExp": "",
-    "summary": "Experienced front-end developer with a strong\nwork ethic and a passion for user experience\ndesign. With over 2 years of expertise in web\nfront-end development, I have led the\ndevelopment of innovative web-based software\nsolutions, resulting in significant productivity\ngains and improved user satisfaction. I am\nexcited about the opportunity to join IBM's\nSecurity design team and contribute to delivering\nreusable experiences and patterns using\ntechnologies like React and TypeScript. I am\nconfident that my technical skills, collaborative\nmindset, and dedication to bridging the gap\nbetween design and engineering will make a\nvaluable impact at IBM.",
-    "totalExp": "2 Years",
-    "url": ""
-  },
-  "skills": {
-    "languages": [
-      {
-        "name": "Javascript",
-        "level": 5
-      },
-      {
-        "name": "Python",
-        "level": 4
-      },
-      {
-        "name": "C++",
-        "level": 3
-      }
+    "education": [
+        {
+            "area": "Computer Science",
+            "branch": "Augment and Virtual Reality",
+            "courses": [
+                "Advanced Software Engineering",
+                "Machine Learning",
+                "Computer Vision",
+                "Computer Graphics",
+                "Real-time Animation",
+                "Real-time rendering",
+                "Augmented Reality"
+            ],
+            "dissertation": "Rhythm-Aware Co-Speech Gesture Synthesis with Learned Templates",
+            "endDate": "2023",
+            "institution": "Trinity College Dublin, The University Of Dublin",
+            "score": "",
+            "startDate": "2022",
+            "studyType": "Master",
+            "url": ""
+        },
+        {
+            "area": "Computer Science",
+            "branch": "Information management and information system",
+            "courses": [
+                "Web Design and Developing",
+                "Computer Network",
+                "Data Structure",
+                "Operating System",
+                "Data Structure",
+                "Object-Oriented Programming",
+                "Principle of Database"
+            ],
+            "dissertation": "Study on Influence of Population Migration on Epidemic Spread and Detection of Domestic Origin",
+            "endDate": "2021",
+            "institution": "Changchun University of Science and Technology, China",
+            "score": "",
+            "startDate": "2017",
+            "studyType": "Bachelor",
+            "url": ""
+        }
     ],
-    "frameworks": [
-      {
-        "name": "ReactJS",
-        "level": 4
-      },
-      {
-        "name": "VueJS",
-        "level": 3
-      }
+    "projects": [
+        {
+            "demoIcon": "globe",
+            "demoUrl": "https://chenmo1212.cn?f=cv",
+            "githubIcon": "github",
+            "githubUrl": "https://github.com/Chenmo1212/homePage",
+            "highlights": [
+                "Developed a personal portfolio using native Web front-end technology and Python back-end, showcasing expertise in both front-end and back-end development."
+            ],
+            "skills": "TweenLiteJS, ScrollMagicJS, Python, FLask,  REST API, pytest, Github Action",
+            "summary": "* **Skills**: TweenLiteJS, ScrollMagicJS, Python, FLask,  REST API, pytest, Github Action \n* Developed a personal portfolio using native Web front-end technology and Python back-end, showcasing expertise in both front-end and back-end development.\n",
+            "title": "Portfolio"
+        },
+        {
+            "demoIcon": "globe",
+            "demoUrl": "https://note.chenmo1212.cn?f=cv",
+            "githubIcon": "github",
+            "githubUrl": "",
+            "highlights": [
+                "An online note-taking application developed based on Docsify and Markdown, using Github as warehouse storage and Github Action as an automated deployment tool."
+            ],
+            "skills": "Shell, Python, Git, Docsify, Github Action",
+            "summary": "* **Skills**: Shell, Python, Git, Docsify, Github Action \n* An online note-taking application developed based on Docsify and Markdown, using Github as warehouse storage and Github Action as an automated deployment tool.\n",
+            "title": "Sonder Notebook"
+        },
+        {
+            "demoIcon": "globe",
+            "demoUrl": "https://virtual-library-ase.github.io/Front-end/#/home?f=cv",
+            "githubIcon": "github",
+            "githubUrl": "https://github.com/Virtual-Library-ASE/Front-end",
+            "highlights": [
+                "Developed a ReactJS library management system for the web-side of a Unity project, demonstrating familiarity with various web development technologies."
+            ],
+            "skills": "React, React-redux, Firebase, Antd, tailwindcss, Jest, enzyme",
+            "summary": "* **Skills**: React, React-redux, Firebase, Antd, tailwindcss, Jest, enzyme \n* Developed a ReactJS library management system for the web-side of a Unity project, demonstrating familiarity with various web development technologies.\n",
+            "title": "Virtual Library Homepage"
+        }
     ],
-    "libraries": [],
-    "databases": [],
-    "technologies": [
-      {
-        "level": 3,
-        "name": "ReactJS"
-      },
-      {
-        "level": 3,
-        "name": "VueJS"
-      },
-      {
-        "level": 3,
-        "name": "JavaScript"
-      },
-      {
-        "level": 3,
-        "name": "HTML"
-      },
-      {
-        "level": 3,
-        "name": "CSS"
-      },
-      {
-        "level": 3,
-        "name": "RESTful"
-      },
-      {
-        "level": 3,
-        "name": "CI / CD"
-      },
-      {
-        "level": 3,
-        "name": "Webpack"
-      },
-      {
-        "level": 3,
-        "name": "Babel"
-      },
-      {
-        "level": 3,
-        "name": "Npm"
-      },
-      {
-        "level": 3,
-        "name": "Redux"
-      },
-      {
-        "level": 3,
-        "name": "Git"
-      },
-      {
-        "level": 3,
-        "name": "Node.js"
-      },
-      {
-        "level": 3,
-        "name": "Python"
-      },
-      {
-        "level": 3,
-        "name": "Flask"
-      },
-      {
-        "level": 3,
-        "name": "Github Action"
-      }
-    ],
-    "practices": [
-      {
-        "level": 3,
-        "name": "Teamwork"
-      },
-      {
-        "level": 3,
-        "name": "Adaptability"
-      },
-      {
-        "level": 3,
-        "name": "Problem solving"
-      },
-      {
-        "level": 3,
-        "name": "Time Management"
-      },
-      {
-        "level": 3,
-        "name": "Critical thinking"
-      },
-      {
-        "level": 3,
-        "name": "Verbal Communication"
-      },
-      {
-        "level": 3,
-        "name": "Diversity and Inclusion"
-      },
-      {
-        "level": 3,
-        "name": "Collaboration"
-      },
-      {
-        "level": 3,
-        "name": "Communication"
-      },
-      {
-        "level": 3,
-        "name": "Attention to detail"
-      }
-    ],
-    "tools": []
-  },
-  "work": [
-    {
-      "endDate": "present",
-      "highlights": [
-        "Leveraged IBM Carbon Component to revamp NS1 portal code, achieving a remarkable 98% direct acceptance rate, showcasing a strong ability to deliver high-quality features consistently.",
-        "Introduced Cypress for automated front-end testing, significantly boosting component reuse and development efficiency, aligning with the need to build, test, and ship high-quality features in the <Job Posting>.",
-        "Led three weekly standup meetings across teams, following Agile practices rigorously, demonstrating a commitment to uninterrupted operation of features in a production environment."
-      ],
-      "id": "1",
-      "isWorkingHere": false,
-      "name": "International Business Machines (IBM)",
-      "position": "Front-end Developer",
-      "startDate": "02/2024",
-      "summary": "* Leveraged lBM Carbon Component to revamp NS1 portal code, achieving a remarkable 98% direct acceptance rate, showcasing a strong ability to deliver high-quality features consistently.\n* Introduced Cypress for automated front-end testing, significantly boosting component reuse and development efficiency, aligning with the need to build, test, and ship high-quality features.\n* Led three weekly standup meetings across teams, following Agile practices rigorously, demonstrating a commitment to uninterrupted operation of features in a production environment.",
-      "unedited": true,
-      "url": "",
-      "years": "1.5 years"
+    "activities": {
+        "involvements": "* 2022 – 2023: Volunteer Research Assistant, Dept. of Computer Science, assisted in data collection and analysis\n* 2021 – 2022: Event Coordinator, University Tech Club, organized hackathons and technical workshops\n* 2020 – 2021: Teaching Assistant, Programming Fundamentals, guided undergraduate students in weekly labs",
+        "achievements": "* 2022: E3 Excellence Postgraduate Scholarships (5000 Euros)\n* 2021: Excellent Documentation Writing Award for outstanding documentation (1000 CNY)\n * 2021: Principal Scholarship for Excellence (3000 CNY)\n* 2017 - 2020: Class Scholarship for Excellence (1000 CNY)\n"
     },
-    {
-      "endDate": "8/2022",
-      "highlights": [
-        "Led the enhancement of user productivity by 30% through innovative feature implementations like Report Generation and Label Printing in a web-based nesting software.",
-        "Demonstrated strong design skills and collaboration abilities by leading the creation of an automatic 3D model and CAD drawing generation system.",
-        "Improved user satisfaction by 15% and reduced support requests by 30% through the design and implementation of a web-based CAD software."
-      ],
-      "id": "1",
-      "isWorkingHere": false,
-      "name": "SHANGHAI FRIENDESS ELECTRONICS TECHNOLOGY.",
-      "position": "Web Front-end Development Engineer",
-      "startDate": "7/2021",
-      "summary": "* Led the development of a web-based nesting software, implementing key features such as Report Generation and Label Printing, resulting in a 30% increase in user productivity. \n* Played a critical role in developing an automatic 3D model and CAD drawing generation system, demonstrating the ability to take part in features design and collaborate with teammembers.\n* Designed and implemented a web-based CAD software, improving user satisfaction scores by 15% and reducing support requests by 30%.\n* Led the development of a Material Calculation System, reducing production time by 40% and saving €50,000 annually, while working with other teams and stakeholders to drive product improvements.",
-      "unedited": true,
-      "url": "",
-      "years": "1.1 years"
-    },
-    {
-      "endDate": "5/2021",
-      "highlights": [
-        "Based on the Master Resume, the highlights demonstrate relevant skills and experiences that align with the Job Posting, showcasing proficiency in modern client-side/web technologies and software design."
-      ],
-      "id": "1",
-      "isWorkingHere": false,
-      "name": "TUQI CONSTRUCTION TECHONOLOGY.",
-      "position": "Web Front-end Engineer",
-      "startDate": "3/2021",
-      "summary": "* Automated data collection system using Node,js, jQuery, and LayUl, saving 50% of timespent on manual data verification and cleaning. lmplemented batch row and cell merging features, improving data organization and efficiency.\n* Developed a 3D monitoring web program for a dredger contruction project using React, WebGL, and Three.js. Real-time display of dredger state and environment in three dimensions on the web, improving project efficiency by 30% through real-time visualizationof dredging effects.\n* Utilized Figma as a pixel-perfect mockup for developing web pages, resulting in a 20% reduction in design implementation time.",
-      "unedited": true,
-      "url": "",
-      "years": "2 months"
-    }
-  ],
-  "education": [
-    {
-      "area": "Computer Science",
-      "branch": "Augment and Virtual Reality",
-      "courses": [
-        "Advanced Software Engineering",
-        "Machine Learning",
-        "Computer Vision",
-        "Computer Graphics",
-        "Real-time Animation",
-        "Real-time rendering",
-        "Augmented Reality"
-      ],
-      "dissertation": "Rhythm-Aware Co-Speech Gesture Synthesis with Learned Templates",
-      "endDate": "2023",
-      "institution": "Trinity College Dublin, The University Of Dublin",
-      "score": "",
-      "startDate": "2022",
-      "studyType": "Master",
-      "url": ""
-    },
-    {
-      "area": "Computer Science",
-      "branch": "Information management and information system",
-      "courses": [
-        "Web Design and Developing",
-        "Computer Network",
-        "Data Structure",
-        "Operating System",
-        "Data Structure",
-        "Object-Oriented Programming",
-        "Principle of Database"
-      ],
-      "dissertation": "Study on Influence of Population Migration on Epidemic Spread and Detection of Domestic Origin",
-      "endDate": "2021",
-      "institution": "Changchun University of Science and Technology, China",
-      "score": "",
-      "startDate": "2017",
-      "studyType": "Bachelor",
-      "url": ""
-    }
-  ],
-  "projects": [
-    {
-      "demoIcon": "globe",
-      "demoUrl": "https://chenmo1212.cn?f=cv",
-      "githubIcon": "github",
-      "githubUrl": "https://github.com/Chenmo1212/homePage",
-      "highlights": [
-        "Developed a personal portfolio using native Web front-end technology and Python back-end, showcasing expertise in both front-end and back-end development."
-      ],
-      "skills": "TweenLiteJS, ScrollMagicJS, Python, FLask,  REST API, pytest, Github Action",
-      "summary": "* **Skills**: TweenLiteJS, ScrollMagicJS, Python, FLask,  REST API, pytest, Github Action \n* Developed a personal portfolio using native Web front-end technology and Python back-end, showcasing expertise in both front-end and back-end development.\n",
-      "title": "Portfolio"
-    },
-    {
-      "demoIcon": "globe",
-      "demoUrl": "https://note.chenmo1212.cn?f=cv",
-      "githubIcon": "github",
-      "githubUrl": "",
-      "highlights": [
-        "An online note-taking application developed based on Docsify and Markdown, using Github as warehouse storage and Github Action as an automated deployment tool."
-      ],
-      "skills": "Shell, Python, Git, Docsify, Github Action",
-      "summary": "* **Skills**: Shell, Python, Git, Docsify, Github Action \n* An online note-taking application developed based on Docsify and Markdown, using Github as warehouse storage and Github Action as an automated deployment tool.\n",
-      "title": "Sonder Notebook"
-    },
-    {
-      "demoIcon": "globe",
-      "demoUrl": "https://virtual-library-ase.github.io/Front-end/#/home?f=cv",
-      "githubIcon": "github",
-      "githubUrl": "https://github.com/Virtual-Library-ASE/Front-end",
-      "highlights": [
-        "Developed a ReactJS library management system for the web-side of a Unity project, demonstrating familiarity with various web development technologies."
-      ],
-      "skills": "React, React-redux, Firebase, Antd, tailwindcss, Jest, enzyme",
-      "summary": "* **Skills**: React, React-redux, Firebase, Antd, tailwindcss, Jest, enzyme \n* Developed a ReactJS library management system for the web-side of a Unity project, demonstrating familiarity with various web development technologies.\n",
-      "title": "Virtual Library Homepage"
-    }
-  ],
-  "activities": {
-    "involvements": "",
-    "achievements": "* 2022: E3 Excellence Postgraduate Scholarships (5000 Euros)\n* 2021: Excellent Documentation Writing Award for outstanding documentation (1000 CNY)\n * 2021: Principal Scholarship for Excellence (3000 CNY)\n* 2017 - 2020: Class Scholarship for Excellence (1000 CNY)\n"
-  },
-  "volunteer": [],
-  "awards": []
+    "volunteer": [],
+    "awards": []
 }

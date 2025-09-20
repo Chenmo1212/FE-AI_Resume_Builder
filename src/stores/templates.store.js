@@ -100,9 +100,9 @@ const baseConfig = {
   isShowReferral: true,
   isShowEdu: true,
   isExchangeEduInstitution: true,
-  isShowEduDissertation: true,
-  isShowEduCourses: true,
-  isShowEduHighlights: true,
+  isShowEduDissertation: false,
+  isShowEduCourses: false,
+  isShowEduHighlights: false,
 
   isShowExp: true,
   isExchangeExpCompany: true,
@@ -121,7 +121,29 @@ export const useTemplates = create(
   persist(
     (set, get) => ({
       index: 0,
-      configs: [baseConfig, baseConfig, baseConfig, baseConfig, baseConfig],
+      configs: [{
+        ...baseConfig,
+        isShowInvolvements: false,
+        isShowReferral: false,
+      }, {
+        ...baseConfig,
+        isShowProjects: false,
+      }, {
+        ...baseConfig,
+        isShowProjects: false,
+        isShowEduCourses: true,
+      }, {
+        ...baseConfig,
+        isShowAchievements: false,
+        isShowInvolvements: false,
+        isShowPractices: false,
+        isShowProjects: false,
+      }, {
+        ...baseConfig,
+        isExchangeEduInstitution: false,
+        isShowInvolvements: false,
+        isShowProjects: false,
+      }],
 
       getTemplate: () => templates[get().index],
 
