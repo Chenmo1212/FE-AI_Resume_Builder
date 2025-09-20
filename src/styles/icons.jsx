@@ -51,6 +51,7 @@ import {
 } from 'react-icons/si';
 import {
   FaAward,
+  FaBars,
   FaMediumM,
   FaUniversity,
   FaWordpressSimple,
@@ -92,6 +93,7 @@ const icons = new Map([
   ['eye', <AiOutlineEye />],
   ['load', <AiOutlineCloudUpload />],
   ['apply', <MdPets />],
+  ['sort', <FaBars />],
 
   ['identity', <MdPermIdentity />],
   ['expert', <SiExpertsexchange />],

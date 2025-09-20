@@ -37,19 +37,6 @@ const Divider = styled.div`
 const mdParser = new MarkdownIt();
 
 export default function ClassicTemplate() {
-  // Custom section order for this template
-  const sectionOrder = [
-    'intro',
-    'summary',
-    'education',
-    'experience',
-    'projects',
-    'achievements',
-    'involvements',
-    'skills',
-    'referral'
-  ];
-  
   // Custom components specific to this template
   const customComponents = {
     renderIntro: (intro) => <Intro intro={intro} />,
@@ -100,7 +87,6 @@ export default function ClassicTemplate() {
   
   return (
     <BaseTemplate
-      sectionOrder={sectionOrder}
       customComponents={customComponents}
       renderContainer={renderContainer}
     />

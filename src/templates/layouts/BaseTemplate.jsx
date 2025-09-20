@@ -1,5 +1,6 @@
 import React from 'react';
 import { useBaseTemplate } from '../hooks/useBaseTemplate';
+import { useTemplates } from '../../stores/templates.store';
 import { Description } from '../components/description/Description';
 import { Exp } from '../components/exp/Exp';
 import { Projects } from '../components/projects/Projects';
@@ -7,14 +8,21 @@ import { EduSection } from '../components/education/EduSection';
 import { UnratedTabs } from '../components/skills/UnratedTabs';
 import { Intro } from '../components/intro/Intro';
 
-export const BaseTemplate = ({ 
+export const BaseTemplate = ({
   children,
   renderContainer,
-  sectionOrder,
+  sectionOrder: defaultSectionOrder,
   columnConfig,
   customComponents = {},
   customStyles = {}
 }) => {
+  // Get section order from the store
+  const getSectionOrder = useTemplates(state => state.getSectionOrder);
+  const storeSectionOrder = getSectionOrder();
+  
+  // Use store section order if available, otherwise use the default provided
+  const sectionOrder = storeSectionOrder || defaultSectionOrder;
+  
   // Get all the shared functionality
   const baseTemplate = useBaseTemplate(sectionOrder);
   
