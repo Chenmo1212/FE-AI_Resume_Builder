@@ -134,3 +134,11 @@ dist
 .husky
 _next
 
+# macOS system files
+.DS_Store
+*/.DS_Store
+**/.DS_Store
+
+# Lock files
+package-lock.json
+yarn.lock
