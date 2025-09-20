@@ -81,18 +81,18 @@ export default function ClassicTemplate() {
   
   // Custom container renderer for this template
   const renderContainer = (sections, components, baseTemplate) => {
-    const { clickHandler, labels, intro } = baseTemplate;
+    const { intro } = baseTemplate;
     
     return (
       <ResumeContainer>
-        {/* Header with Name and Contact Info - special handling for intro */}
+        {/* The intro component already has its own click handler */}
         {components.renderIntro(intro)}
         
         {/* Render other sections */}
         {sections
           .filter(section => section.id !== 'intro')
           .map(section => (
-            <div key={section.id} onClick={(e) => clickHandler(e, section.navKey)}>
+            <div key={section.id}>
               <SectionTitle>{section.title}</SectionTitle>
               {section.component({ ...components })}
             </div>
@@ -100,7 +100,7 @@ export default function ClassicTemplate() {
           
         {/* Special handling for referral with divider */}
         {sections.find(s => s.id === 'referral') && (
-          <div onClick={(e) => clickHandler(e, 'Intro')}>
+          <div>
             <Divider />
             {components.renderReferral(intro.referral)}
           </div>

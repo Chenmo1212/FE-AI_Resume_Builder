@@ -88,17 +88,13 @@ export default function LegacyTemplate() {
     return (
       <GridContainer>
         <GridColumn>
-          <div onClick={(e) => clickHandler(e, 'Intro')}>
-            {components.renderIntro(intro, labels)}
-          </div>
+          {components.renderIntro(intro, labels)}
 
           {leftSections.map((section, index) => (
             <React.Fragment key={section.id}>
               {index > 0 && <LineSeparator />}
-              <div onClick={(e) => clickHandler(e, section.navKey)}>
-                <LegacyHeader Icon={getIcon(section.icon)} title={section.title} />
-                {section.component({ ...components })}
-              </div>
+              <LegacyHeader Icon={getIcon(section.icon)} title={section.title} />
+              {section.component({ ...components })}
             </React.Fragment>
           ))}
         </GridColumn>
@@ -128,19 +124,6 @@ export default function LegacyTemplate() {
             </>
           )}
 
-          {/* Render other right sections */}
-          {rightSections
-            .filter(section => section.id !== 'summary')
-            .map((section, index) => (
-              <React.Fragment key={section.id}>
-                <div onClick={(e) => clickHandler(e, section.navKey)}>
-                  <LegacyHeader Icon={getIcon(section.icon)} title={section.title} />
-                  {section.component({ ...components })}
-                </div>
-                {index < rightSections.length - 2 && <LineSeparator />}
-              </React.Fragment>
-            ))}
-
           {/* Special handling for tools */}
           {tools.length > 0 && (
             <>
@@ -151,6 +134,17 @@ export default function LegacyTemplate() {
               <LineSeparator />
             </>
           )}
+
+          {/* Render other right sections */}
+          {rightSections
+            .filter(section => section.id !== 'summary')
+            .map((section, index) => (
+              <React.Fragment key={section.id}>
+                <LegacyHeader Icon={getIcon(section.icon)} title={section.title} />
+                {section.component({ ...components })}
+                {index < rightSections.length - 2 && <LineSeparator />}
+              </React.Fragment>
+            ))}
         </GridColumn>
       </GridContainer>
     );

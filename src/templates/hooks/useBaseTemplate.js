@@ -30,7 +30,8 @@ export function useBaseTemplate(customSectionOrder = null) {
 
   // 2. Click Handler Logic
   const clickHandler = (e, type) => {
-    console.log("=========>", e.detail, type, labels);
+    e.stopPropagation();
+
     let navIndex = -1;
     if (e.detail === 2) {
       switch (type) {
@@ -42,17 +43,21 @@ export function useBaseTemplate(customSectionOrder = null) {
           break;
         case labels[1]:
         case labels[2]:
+        case labels[12]:
           navIndex = leftNavList.findIndex((e) => e.title === 'Activities');
           break;
         case labels[3]:
         case labels[4]:
+        case labels[13]:
           navIndex = leftNavList.findIndex((e) => e.title === 'Intro');
           break;
         default:
           navIndex = leftNavList.findIndex((e) => e.title === type);
-          console.log("======== default", type, navIndex);
       }
-      setLeftDrawer(navIndex.toString());
+      
+      if (navIndex !== -1) {
+        setLeftDrawer(navIndex.toString());
+      }
     }
   };
 
@@ -182,7 +187,7 @@ export function useBaseTemplate(customSectionOrder = null) {
       13,
       config.isShowReferral && intro.referral,
       (props) => (
-        <div onClick={(e) => clickHandler(e, 'Intro')}>
+        <div onClick={(e) => clickHandler(e, labels[13])}>
           {props.renderReferral ? props.renderReferral(intro.referral) : null}
         </div>
       )
