@@ -212,6 +212,7 @@ export function useBaseTemplate(customSectionOrder = null) {
   const sectionOrder = customSectionOrder || defaultSectionOrder;
 
   // 7. Get ordered sections based on sectionOrder
+  // The sectionOrder array is already filtered by visibility in the store
   const getOrderedSections = (orderArray = sectionOrder) => {
     return orderArray
       .map(sectionKey => allSections[sectionKey])
