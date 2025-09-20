@@ -59,7 +59,6 @@ export default function ProfessionalTemplate() {
   // Custom container renderer for two-column layout
   const renderContainer = (sections, components, baseTemplate) => {
     const { clickHandler, getIcon, labels, intro } = baseTemplate;
-    console.log("===== sections", sections);
     
     // Filter sections by column
     const leftSections = sections.filter(section => 
@@ -86,9 +85,7 @@ export default function ProfessionalTemplate() {
               title={section.title}
               styles={section.id === 'experience' ? {flexGrow: 1} : {}}
             >
-              <div onClick={(e) => clickHandler(e, section.navKey)}>
-                {section.component({ ...components })}
-              </div>
+              {section.component({ ...components })}
             </ModernHeader>
           ))}
         </LeftSection>
@@ -100,9 +97,7 @@ export default function ProfessionalTemplate() {
               icon={getIcon(section.icon)} 
               title={section.title}
             >
-              <div onClick={(e) => clickHandler(e, section.navKey)}>
-                {section.component({ ...components })}
-              </div>
+              {section.component({ ...components })}
             </ModernHeader>
           ))}
         </RightSection>

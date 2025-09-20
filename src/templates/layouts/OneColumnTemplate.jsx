@@ -79,9 +79,7 @@ export default function OneColumnTemplate() {
               icon={getIcon(section.icon)} 
               title={section.title}
             >
-              <div onClick={(e) => clickHandler(e, section.navKey)}>
-                {section.component({ ...components })}
-              </div>
+              {section.component({ ...components })}
             </ModernHeader>
           ))}
         </Section>

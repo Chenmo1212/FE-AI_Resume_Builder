@@ -85,9 +85,7 @@ export default function GraduateTemplate() {
               icon={getIcon(section.icon)} 
               title={section.title}
             >
-              <div onClick={(e) => clickHandler(e, section.navKey)}>
-                {section.component({ ...components })}
-              </div>
+              {section.component({ ...components })}
             </ModernHeader>
           ))}
         </LeftSection>
@@ -100,9 +98,7 @@ export default function GraduateTemplate() {
               title={section.title}
               styles={section.id === 'experience' ? {flexGrow: 1} : {}}
             >
-              <div onClick={(e) => clickHandler(e, section.navKey)}>
-                {section.component({ ...components })}
-              </div>
+              {section.component({ ...components })}
             </ModernHeader>
           ))}
         </RightSection>
