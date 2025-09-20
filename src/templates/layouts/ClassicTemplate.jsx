@@ -1,25 +1,11 @@
 import React from 'react';
-import shallow from 'zustand/shallow';
 import styled from 'styled-components';
 import MarkdownIt from 'markdown-it';
 import { FlexCol } from '../../styles/styles';
-import {
-  useIntro,
-  useWork,
-  useSkills,
-  useActivities,
-  useEducation,
-  useLabels,
-  useProjects,
-} from '../../stores/data.store';
-import { useLeftDrawer } from '../../stores/settings.store';
-import { useTemplates } from '../../stores/templates.store';
-import { leftNavList } from '../../core/containers/LeftNav';
+import { BaseTemplate } from './BaseTemplate';
 import { Intro } from '../components/intro/Intro-Classic';
 import { EduSection } from '../components/education/EduSection';
 import { Exp } from '../components/exp/Exp';
-import { Projects } from '../components/projects/Projects';
-import { Description } from '../components/description/Description';
 import { UnratedTabsText } from '../components/skills/UnratedTabsText';
 
 // Components for the Classic Template
@@ -48,138 +34,86 @@ const Divider = styled.div`
   margin: 5px 0;
 `;
 
-
 const mdParser = new MarkdownIt();
 
 export default function ClassicTemplate() {
-  const intro = useIntro((state) => state.intro);
-  const [education] = useEducation((state) => [state.education], shallow);
-  const [companies] = useWork((state) => [state.companies], shallow);
-  const projects = useProjects((state) => state.projects);
-  const [achievements, involvements] = useActivities((state) => [state.achievements, state.involvements], shallow);
-  const labels = useLabels((state) => state.labels);
-  const config = useTemplates((state) => state.currConfig());
-  const setLeftDrawer = useLeftDrawer((state) => state.update);
-  const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
-    (state) => [
-      state.languages,
-      state.frameworks,
-      state.libraries,
-      state.databases,
-      state.technologies,
-      state.practices,
-      state.tools,
-    ],
-    shallow
-  );
-
-  const clickHandler = (e, type) => {
-    let navIndex = -1;
-    if (e.detail === 2) {
-      switch (type) {
-        case labels[5]:
-        case labels[6]:
-        case labels[7]:
-        case labels[8]:
-          navIndex = leftNavList.findIndex((e) => e.title === 'Skills');
-          break;
-        case labels[1]:
-        case labels[2]:
-          navIndex = leftNavList.findIndex((e) => e.title === 'Activities');
-          break;
-        case labels[3]:
-        case labels[4]:
-          navIndex = leftNavList.findIndex((e) => e.title === 'Intro');
-          break;
-        default:
-          navIndex = leftNavList.findIndex((e) => e.title === type);
-      }
-      setLeftDrawer(navIndex.toString());
-    }
-  };
-
-  return (
-    <ResumeContainer>
-      {/* Header with Name and Contact Info */}
-      <Intro intro={intro} />
-
-      {/* Summary Section */}
-      {config.isShowSummary && intro.summary && (
-        <div onClick={(e) => clickHandler(e, 'Intro')}>
-          <SectionTitle>{labels[3]}</SectionTitle>
-          <p dangerouslySetInnerHTML={{ __html: mdParser.render(intro.summary) }} />
-        </div>
-      )}
-
-      {/* Education Section */}
-      {config.isShowEdu && education.length > 0 && (
-        <div onClick={(e) => clickHandler(e, labels[9])}>
-        <SectionTitle>{labels[9]}</SectionTitle>
-        <EduSection education={education} config={config} noBorder={true}/>
-        </div>
-      )}
-
-      {/* Experience Section */}
-      {config.isShowExp && companies.length > 0 && (
-        <div onClick={(e) => clickHandler(e, labels[0])}>
-        <SectionTitle>{labels[0]}</SectionTitle>
-        <Exp companies={companies} config={config} isShowTimeline={false}/>
-        </div>
-      )}
-
-      {/* Projects Section */}
-      {config.isShowProjects && projects.length > 0 && (
-        <div onClick={(e) => clickHandler(e, labels[1])}>
-        <SectionTitle>{labels[1]}</SectionTitle>
-        <Projects projects={projects}/>
-        </div>
-      )}
-
-      {/* Achievements Section */}
-      {config.isShowAchievements && achievements && (
-        <div onClick={(e) => clickHandler(e, labels[2])}>
-        <SectionTitle>{labels[2]}</SectionTitle>
-        <Description description={achievements} />
-        </div>
-      )}
-      
-      {/* Involvements Section */}
-      {config.isShowInvolvements && involvements && (
-        <div onClick={(e) => clickHandler(e, labels[12])}>
-          <SectionTitle>{labels[12]}</SectionTitle>
-          <Description description={involvements} />
-        </div>
-      )}
-
-      {/* Skills Section */}
-      {config.isShowSkills && (
-        <div onClick={(e) => clickHandler(e, labels[5])}>
-        <SectionTitle>{labels[5]}</SectionTitle>
+  // Custom section order for this template
+  const sectionOrder = [
+    'intro',
+    'summary',
+    'education',
+    'experience',
+    'projects',
+    'achievements',
+    'involvements',
+    'skills',
+    'practices',
+    'referral'
+  ];
+  
+  // Custom components specific to this template
+  const customComponents = {
+    renderIntro: (intro) => <Intro intro={intro} />,
+    renderSummary: (summary) => (
+      <p dangerouslySetInnerHTML={{ __html: mdParser.render(summary) }} />
+    ),
+    renderEducation: (education, config) => (
+      <EduSection education={education} config={config} noBorder={true} />
+    ),
+    renderExperience: (companies, config) => (
+      <Exp companies={companies} config={config} isShowTimeline={false} />
+    ),
+    renderSkills: (items) => (
+      <>
         <UnratedTabsText
           label="Skills"
-          items={[
-            ...languages,
-            ...frameworks,
-            ...libraries,
-            ...databases,
-            ...tools,
-            ...technologies,
-          ]}
+          items={items}
         />
-        <UnratedTabsText
-          label="Methodologies"
-          items={[...practices]}
-        />
-        </div>
-      )}
-
-      {/* References Section */}
-      {config.isShowReferral && intro.referral && (
-        <div onClick={(e) => clickHandler(e, 'Intro')}>
-          <Divider />
-          <Description description={intro.referral}/>
-        </div>
-      )}
-    </ResumeContainer>
+      </>
+    ),
+    renderPractices: (items) => (
+      <UnratedTabsText
+        label="Methodologies"
+        items={items}
+      />
+    ),
+  };
+  
+  // Custom container renderer for this template
+  const renderContainer = (sections, components, baseTemplate) => {
+    const { clickHandler, labels, intro } = baseTemplate;
+    
+    return (
+      <ResumeContainer>
+        {/* Header with Name and Contact Info - special handling for intro */}
+        {components.renderIntro(intro)}
+        
+        {/* Render other sections */}
+        {sections
+          .filter(section => section.id !== 'intro')
+          .map(section => (
+            <div key={section.id} onClick={(e) => clickHandler(e, section.navKey)}>
+              <SectionTitle>{section.title}</SectionTitle>
+              {section.component({ ...components })}
+            </div>
+          ))}
+          
+        {/* Special handling for referral with divider */}
+        {sections.find(s => s.id === 'referral') && (
+          <div onClick={(e) => clickHandler(e, 'Intro')}>
+            <Divider />
+            {components.renderReferral(intro.referral)}
+          </div>
+        )}
+      </ResumeContainer>
+    );
+  };
+  
+  return (
+    <BaseTemplate
+      sectionOrder={sectionOrder}
+      customComponents={customComponents}
+      renderContainer={renderContainer}
+    />
   );
 }

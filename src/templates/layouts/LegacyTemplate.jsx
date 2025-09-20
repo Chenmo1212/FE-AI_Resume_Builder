@@ -1,8 +1,6 @@
 import React from 'react';
-import shallow from 'zustand/shallow';
 import styled from 'styled-components';
-import { getIcon } from '../../styles/icons';
-
+import { BaseTemplate } from './BaseTemplate';
 import { Intro } from '../components/intro/Intro';
 import { Description } from '../components/description/Description';
 import { RatedPill } from '../components/skills/RatedPills';
@@ -13,17 +11,6 @@ import { EduSection } from '../components/education/SideEduSection';
 import { LineSeparator } from '../components/separator/LineSeparator';
 import { LegacyHeader } from '../components/section-layout/LegacyHeader';
 import { SocialBar } from '../components/social/SocialBar';
-import {
-  useIntro,
-  useWork,
-  useSkills,
-  useActivities,
-  useEducation,
-  useLabels, useProjects,
-} from '../../stores/data.store';
-import { useLeftDrawer } from '../../stores/settings.store';
-import { leftNavList } from '../../core/containers/LeftNav';
-import { useTemplates } from '../../stores/templates.store';
 
 const GridContainer = styled.div`
   margin: auto;
@@ -57,183 +44,123 @@ const EmployeName = styled.div`
 `;
 
 export default function LegacyTemplate() {
-  const intro = useIntro((state) => state.intro);
-  const [education, eduConfig] = useEducation((state) => [state.education, state.eduConfig], shallow);
-  const [companies, workConfig] = useWork((state) => [state.companies, state.workConfig], shallow);
-  const [projects] = useProjects((state) => [state.projects], shallow);
-  const [involvements, achievements] = useActivities((state) => [state.involvements, state.achievements], shallow);
-  const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
-    (state) => [
-      state.languages,
-      state.frameworks,
-      state.libraries,
-      state.databases,
-      state.technologies,
-      state.practices,
-      state.tools,
-    ],
-    shallow
-  );
-
-  const config = useTemplates((state) => state.currConfig());
-  const labels = useLabels((state) => state.labels);
-
-  const setLeftDrawer = useLeftDrawer((state) => state.update);
-
-  const clickHandler = (e, type) => {
-    let navIndex = -1;
-    if (e.detail === 2) {
-      switch (type) {
-        case labels[5]:
-        case labels[6]:
-        case labels[7]:
-        case labels[8]:
-          navIndex = leftNavList.findIndex((e) => e.title === 'Skills');
-          break;
-        case labels[1]:
-        case labels[2]:
-          navIndex = leftNavList.findIndex((e) => e.title === 'Activities');
-          break;
-        case labels[3]:
-        case labels[4]:
-          navIndex = leftNavList.findIndex((e) => e.title === 'Intro');
-          break;
-        default:
-          navIndex = leftNavList.findIndex((e) => e.title === type);
-      }
-      setLeftDrawer(navIndex.toString());
-    }
+  // Column configuration
+  const columnConfig = {
+    left: ['intro', 'experience', 'projects', 'achievements', 'involvements'],
+    right: ['summary', 'skills', 'practices', 'tools', 'education', 'referral']
   };
+  
+  // Custom components
+  const customComponents = {
+    renderIntro: (intro, labels) => (
+      <>
+        <EmployeName>{intro.name}</EmployeName>
+        <Intro intro={intro} labels={labels} />
+        <SocialBar profiles={intro.profiles} />
+      </>
+    ),
+    renderSummary: (summary) => <Description description={summary} />,
+    renderEducation: (education, config) => <EduSection education={education} config={config} />,
+    renderExperience: (companies, config) => <Exp companies={companies} config={config} />,
+    renderProjects: (projects) => <Projects projects={projects} />,
+    renderSkills: (items) => <UnratedTabs items={items} />,
+    renderPractices: (items) => <UnratedTabs items={items} />,
+    renderTools: (items) => <UnratedTabs items={items} />,
+    renderAchievements: (description) => <Description description={description} />,
+    renderInvolvements: (description) => <Description description={description} />,
+    renderReferral: (description) => <Description description={description} />,
+    renderExpertSkills: (items) => <RatedPill items={items} />,
+  };
+  
+  // Custom container renderer for grid layout
+  const renderContainer = (sections, components, baseTemplate) => {
+    const { clickHandler, getIcon, labels, intro, languages, frameworks, tools } = baseTemplate;
+    
+    // Filter sections by column
+    const leftSections = sections.filter(section => 
+      columnConfig.left.includes(section.id) && section.id !== 'intro'
+    );
+    
+    const rightSections = sections.filter(section => 
+      columnConfig.right.includes(section.id)
+    );
+    
+    return (
+      <GridContainer>
+        <GridColumn>
+          <div onClick={(e) => clickHandler(e, 'Intro')}>
+            {components.renderIntro(intro, labels)}
+          </div>
 
-  const labelsIcon = [
-    'work',
-    'key',
-    'certificate',
-    'identity',
-    'career',
-    'expert',
-    'skill',
-    'branch',
-    'tool',
-    'education',
-    '',
-    '',
-    'edit',
-    'referral',
-  ];
+          {leftSections.map((section, index) => (
+            <React.Fragment key={section.id}>
+              {index > 0 && <LineSeparator />}
+              <div onClick={(e) => clickHandler(e, section.navKey)}>
+                <LegacyHeader Icon={getIcon(section.icon)} title={section.title} />
+                {section.component({ ...components })}
+              </div>
+            </React.Fragment>
+          ))}
+        </GridColumn>
 
+        <Divider />
+
+        <GridColumn>
+          {/* Special handling for summary with separator */}
+          {rightSections.find(s => s.id === 'summary') && (
+            <>
+              <div onClick={(e) => clickHandler(e, labels[3])}>
+                <LegacyHeader Icon={getIcon('identity')} title={labels[3]} />
+                {components.renderSummary(intro.summary)}
+              </div>
+              <LineSeparator />
+            </>
+          )}
+
+          {/* Special handling for expert skills */}
+          {[...languages, ...frameworks].length > 0 && (
+            <>
+              <div onClick={(e) => clickHandler(e, labels[5])}>
+                <LegacyHeader Icon={getIcon('expert')} title={labels[5]} />
+                {components.renderExpertSkills([...languages, ...frameworks])}
+              </div>
+              <LineSeparator />
+            </>
+          )}
+
+          {/* Render other right sections */}
+          {rightSections
+            .filter(section => section.id !== 'summary')
+            .map((section, index) => (
+              <React.Fragment key={section.id}>
+                <div onClick={(e) => clickHandler(e, section.navKey)}>
+                  <LegacyHeader Icon={getIcon(section.icon)} title={section.title} />
+                  {section.component({ ...components })}
+                </div>
+                {index < rightSections.length - 2 && <LineSeparator />}
+              </React.Fragment>
+            ))}
+
+          {/* Special handling for tools */}
+          {tools.length > 0 && (
+            <>
+              <div onClick={(e) => clickHandler(e, labels[8])}>
+                <LegacyHeader Icon={getIcon('tool')} title={labels[8]} />
+                {components.renderTools(tools)}
+              </div>
+              <LineSeparator />
+            </>
+          )}
+        </GridColumn>
+      </GridContainer>
+    );
+  };
+  
   return (
-    <GridContainer>
-      <GridColumn>
-        <div onClick={(e) => clickHandler(e,'Intro')}>
-          <EmployeName>{intro.name}</EmployeName>
-          <Intro intro={intro} labels={labels} config={config} />
-          <SocialBar profiles={intro.profiles} />
-        </div>
-
-        {config.isShowExp && companies.length > 0 ? (<div onClick={(e) => clickHandler(e, labels[0])}>
-            <LegacyHeader Icon={getIcon(labelsIcon[0])} title={labels[0]} />
-            <Exp companies={companies} config={config} />
-          </div>
-        ) : ""}
-
-        {/* Projects */}
-        {config.isShowProjects && projects.length > 0 ? (
-          <div onClick={(e) => clickHandler(e, labels[1])}>
-            <LineSeparator />
-            <LegacyHeader Icon={getIcon(labelsIcon[1])} title={labels[1]} />
-            <Projects projects={projects} config={config} />
-          </div>
-        ) : ""}
-
-        {/* Achievements */}
-        {config.isShowAchievements && achievements ? (
-          <div onClick={(e) => clickHandler(e, labels[2])}>
-            <LineSeparator />
-            <LegacyHeader Icon={getIcon(labelsIcon[2])} title={labels[2]} />
-            <Description description={achievements} />
-          </div>
-        ) : ""}
-
-        {/* Involvements */}
-        {config.isShowInvolvements && involvements ? (
-          <div onClick={(e) => clickHandler(e, labels[12])}>
-            <LineSeparator />
-            <LegacyHeader Icon={getIcon(labelsIcon[12])} title={labels[12]} />
-            <Description description={involvements} />
-          </div>
-        ) : ""}
-      </GridColumn>
-
-      <Divider />
-
-      <GridColumn>
-        {/* Summary */}
-        {config.isShowSummary && intro.summary ? (
-          <>
-            <div onClick={(e) => clickHandler(e, labels[3])}>
-              <LegacyHeader Icon={getIcon(labelsIcon[3])} title={labels[3]} />
-              <Description description={intro.summary} />
-            </div>
-            <LineSeparator />
-          </>
-        ) : ""}
-
-        {/* Expert */}
-        {config.isShowSkills && [...languages, ...frameworks].length > 0 ? (
-          <>
-          <div onClick={(e) => clickHandler(e, labels[5])}>
-            <LegacyHeader Icon={getIcon(labelsIcon[5])} title={labels[5]} />
-            <RatedPill items={[...languages, ...frameworks]} />
-          </div>
-          <LineSeparator />
-          </>
-        ) : ""}
-
-        {config.isShowSkills && [...technologies, ...libraries, ...databases].length > 0 ? (
-          <>
-            <div onClick={(e) => clickHandler(e, labels[6])}>
-              <LegacyHeader Icon={getIcon(labelsIcon[6])} title={labels[6]} />
-              <UnratedTabs items={[...technologies, ...libraries, ...databases]} />
-            </div>
-            <LineSeparator />
-          </>
-        ) : ""}
-
-        {/* Practices */}
-        {config.isShowPractices && practices.length > 0 ? (
-          <>
-            <div onClick={(e) => clickHandler(e, labels[7])}>
-              <LegacyHeader Icon={getIcon(labelsIcon[7])} title={labels[7]} />
-              <UnratedTabs items={practices} />
-            </div>
-            <LineSeparator />
-          </>
-        ) : ""}
-
-        {/* Tool */}
-        {tools.length > 0 ? (
-          <>
-          <div onClick={(e) => clickHandler(e, labels[7])}>
-            <LegacyHeader Icon={getIcon(labelsIcon[8])} title={labels[8]} />
-            <UnratedTabs items={tools} />
-            <LineSeparator />
-          </div>
-          </>
-        ) : ""}
-
-        {config.isShowEdu && education.length > 0 ? (<div onClick={(e) => clickHandler(e, labels[9])}>
-            <LegacyHeader Icon={getIcon(labelsIcon[9])} title={labels[9]} />
-            <EduSection education={education} config={config}/>
-          </div>
-        ) : ""}
-
-        {config.isShowReferral && education.length > 0 ? (<div onClick={(e) => clickHandler(e, 'Intro')}>
-            <LegacyHeader Icon={getIcon(labelsIcon[13])} title={labels[13]} />
-            <Description description={intro.referral}/>
-          </div>
-        ) : ""}
-      </GridColumn>
-    </GridContainer>
+    <BaseTemplate
+      columnConfig={columnConfig}
+      customComponents={customComponents}
+      renderContainer={renderContainer}
+    />
   );
 }
