@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { ThemeProvider } from 'styled-components';
-import { useTemplates } from '../../stores/templates.store';
+import { templates, useTemplates } from '../../stores/templates.store';
 import { useZoom } from '../../stores/settings.store';
 import { useThemes } from '../../stores/theme.store';
 import shallow from 'zustand/shallow';
@@ -28,10 +28,10 @@ const ResumeContainer = styled.div`
 `;
 
 export function Resume() {
-  const [getTemplate] = useTemplates((state) => [state.getTemplate], shallow);
+  const index = useTemplates((state) => state.index);
   const zoom = useZoom((state) => state.zoom);
   const theme = useThemes((state) => state.theme);
-  const Template = getTemplate()
+  const Template = templates[index];
 
   return (
     <ThemeProvider theme={theme}>

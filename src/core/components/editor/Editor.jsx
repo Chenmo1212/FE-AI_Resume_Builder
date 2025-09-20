@@ -35,6 +35,7 @@ import {
   EXP_CONFIGS,
   PROJECTS_CONFIGS,
   AWARDS_CONFIGS,
+  SKILLS_CONFIGS,
   useTemplates,
 } from '../../../stores/templates.store';
 
@@ -326,14 +327,32 @@ export const SkillEditor = ({ type, hasRating = false }) => {
   );
 };
 
-export const SkillsEditor = () => (
-  <>
-    <SkillEditor type="languages" hasRating />
-    <SkillEditor type="frameworks" hasRating />
-    <SkillEditor type="technologies" hasRating={false} />
-    <SkillEditor type="libraries" hasRating={false} />
-    <SkillEditor type="databases" hasRating={false} />
-    <SkillEditor type="practices" hasRating={false} />
-    <SkillEditor type="tools" hasRating={false} />
-  </>
-);
+export const SkillsEditor = () => {
+  const currConfig = useTemplates((state) => state.currConfig());
+  const [updateConfig] = useTemplates((state) => [state.updateConfig], shallow);
+
+  return (
+    <>
+      <SkillEditor type="languages" hasRating />
+      <SkillEditor type="frameworks" hasRating />
+      <SkillEditor type="technologies" hasRating={false} />
+      <SkillEditor type="libraries" hasRating={false} />
+      <SkillEditor type="databases" hasRating={false} />
+      <SkillEditor type="practices" hasRating={false} />
+      <SkillEditor type="tools" hasRating={false} />
+
+      <Divider />
+      {/* Configure */}
+      <Wrapper style={configStyles}>
+        <Topic>Configure</Topic>
+        {SKILLS_CONFIGS.map(({key, label}) => (
+          <FormControlLabel
+            control={<Switch checked={currConfig[key]} onChange={() => updateConfig(key, !currConfig[key])} />}
+            label={label}
+            key={key}
+          />
+        ))}
+      </Wrapper>
+    </>
+  );
+}

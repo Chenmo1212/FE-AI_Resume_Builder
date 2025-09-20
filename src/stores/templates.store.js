@@ -84,6 +84,14 @@ export const AWARDS_CONFIGS = [{
   label: "Display Volunteer"
 }]
 
+export const SKILLS_CONFIGS = [{
+  key: "isShowSkills",
+  label: "Display Skills"
+}, {
+  key: "isShowPractices",
+  label: "Display Practices"
+}]
+
 const baseConfig = {
   isShowSummary: true,
   isShowReferral: true,
@@ -102,6 +110,8 @@ const baseConfig = {
   isShowProjects: true,
   isShowAwards: true,
   isShowVolunteer: true,
+  isShowPractices: true,
+  isShowSkills: true,
 };
 
 export const useTemplates = create(
@@ -112,11 +122,7 @@ export const useTemplates = create(
 
       getTemplate: () => templates[get().index],
 
-      setTemplate: (index) => set((state) => ({
-        index,
-        template: templates[index],
-        config: state.configs[index],
-      })),
+      setTemplate: (index) => set(() => ({ index })),
 
       // Update specific config for current template
       updateConfig: (field, value) => set((state) => {

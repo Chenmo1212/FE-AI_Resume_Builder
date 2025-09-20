@@ -149,7 +149,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[6],
       icon: labelsIcon[6],
-      isShow: [...technologies, ...libraries, ...databases].length,
+      isShow: config.isShowSkills && [...technologies, ...libraries, ...databases].length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[6])}>
           <UnratedTabs items={[...technologies, ...libraries, ...databases]} />
@@ -159,7 +159,7 @@ export default function ProfessionalTemplate() {
     {
       title: labels[7],
       icon: labelsIcon[7],
-      isShow: practices.length,
+      isShow: config.isShowPractices && practices.length,
       component: (
         <div onClick={(e) => clickHandler(e, labels[7])}>
           <UnratedTabs items={practices} />
