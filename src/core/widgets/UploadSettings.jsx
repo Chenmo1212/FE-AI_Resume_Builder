@@ -51,7 +51,11 @@ export function UploadSettings() {
       const userJSoN = JSON.parse(e.target.result);
       resetBasics(userJSoN.basics);
       resetSkills(userJSoN.skills);
-      resetWork(userJSoN.work);
+      resetWork(userJSoN.work.map((company) => ({
+        ...company,
+        // Add * before highlights if they don't start with it
+        summary: company.highlights.map(h => h.startsWith('*') ? h : `* ${h}`).join('\n'),
+      })));
       resetEducation(userJSoN.education);
       resetActivities(userJSoN.activities);
       resetProjects(userJSoN.projects);

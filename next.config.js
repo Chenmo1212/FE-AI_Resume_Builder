@@ -12,14 +12,14 @@ module.exports = {
   eslint: {
     dirs: ['src/pages', '../core', '../../../stores', 'src/templates', 'src/home'],
   },
-  // // This ensures that HTML files are generated for each page
-  // exportPathMap: async function() {
-  //   return {
-  //     '/': { page: '/' },
-  //     '/editor': { page: '/editor' }
-  //   };
-  // },
-  // // Fix asset path issues in static export
-  // assetPrefix: './',
+  // This ensures that HTML files are generated for each page
+  exportPathMap: async function() {
+    return {
+      '/': { page: '/' },
+      '/editor': { page: '/editor' }
+    };
+  },
+  // Fix asset path issues in static export
+  assetPrefix: './',
   basePath: '',
 };
