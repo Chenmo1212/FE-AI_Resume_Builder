@@ -2,6 +2,7 @@ import { dbService, STORES } from './db.service';
 
 // Task status constants
 export const TASK_STATUS = {
+  WAITING: 'waiting',
   PENDING: 'pending',
   PROCESSING: 'processing',
   COMPLETED: 'completed',
@@ -28,7 +29,7 @@ class TaskService {
     // Create task with default values
     const task = {
       id: window.crypto ? crypto.randomUUID() : `task-${timestamp}`,
-      status: TASK_STATUS.PENDING,
+      status: TASK_STATUS.WAITING,
       createdAt: timestamp,
       updatedAt: timestamp,
       completedAt: null,
@@ -36,8 +37,6 @@ class TaskService {
       error: null,
       ...taskData
     };
-
-    console.log("===================> Task created: ", task);
     
     // Add to database
     await dbService.add(STORES.TASKS, task);

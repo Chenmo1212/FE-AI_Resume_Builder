@@ -70,13 +70,13 @@ export const useJobs = create(
             createdAt: Date.now(),
             updatedAt: Date.now()
           };
-          
+
           // Add job to IndexedDB
           const jobId = await dbService.add(STORES.JOBS, newJob);
           
           // Get the job with the generated ID
           const job = await dbService.getById(STORES.JOBS, jobId);
-          
+
           set(
             produce((state) => {
               state.jobs.push(job);

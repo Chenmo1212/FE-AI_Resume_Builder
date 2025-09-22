@@ -1,4 +1,4 @@
-import { taskService } from './task.service';
+import { TASK_STATUS, taskService } from './task.service';
 
 /**
  * Service for AI resume processing
@@ -10,21 +10,16 @@ class AIService {
 
   /**
    * Submit a resume for AI improvement
+   * @param {Object} task - Task data
    * @param {Object} resume - Resume data
    * @param {Object} job - Job description
    * @returns {Promise<string>} Task ID
    */
-  async improveResume(resume, job) {
+  async improveResume(task, resume, job) {
     try {
-      // Create a task in the local database
-      const task = await taskService.createTask({
-        jobId: job.id,
-        resumeId: resume.id || 'resume-1',
-        type: 'ai_improvement',
-        input: { resumeData: resume, jobData: job },
-        requiresPolling: true
-      });
-      
+      // Update task status in the local database
+      await taskService.updateTaskStatus(task.id, TASK_STATUS.PROCESSING);
+
       // // Call the serverless function to start processing
       // const response = await fetch(`${this.serverlessEndpoint}/optimize`, {
       //   method: 'POST',

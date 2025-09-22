@@ -107,10 +107,8 @@ class DBService {
     // Remove functions to prevent DataCloneError
     const serializable = this.makeSerializable(itemWithTimestamps);
     
-    console.log("====== itemWithTimestamps: ", serializable);
     await db.add(storeName, serializable);
-    // return itemWithTimestamps.id;
-    return 'itemWithTimestamps.id';
+    return serializable.id;
   }
 
   /**
@@ -135,7 +133,7 @@ class DBService {
       ...updates,
       updatedAt: Date.now()
     };
-    
+
     // Remove functions to prevent DataCloneError
     const serializable = this.makeSerializable(updatedItem);
     

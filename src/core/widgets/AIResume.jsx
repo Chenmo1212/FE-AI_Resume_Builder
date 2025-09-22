@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Table, Button, message, Tag, Space, Spin, Checkbox} from 'antd';
 import {useTasks} from '../../stores/tasks.store';
-import {taskService} from '../../services/task.service';
+import { TASK_STATUS, taskService } from '../../services/task.service';
 import {aiService} from '../../services/ai.service';
 import shallow from 'zustand/shallow';
 import {
@@ -22,6 +22,7 @@ import { useJobs } from '../../stores/jobs.store';
 const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
   const [isLoading, setLoading] = useState(false);
   const [isPrefer, setIsPrefer] = useState(true);
+  const updateTask = useTasks((state) => state.update, shallow);
   const jobs = useJobs((state) => state.jobs);
   const preferResume = usePreferData((state) => state.getResume(), shallow);
 
@@ -41,9 +42,11 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
       for (const task of selectedRows) {
         const job = jobs.find((j) => j.id === task.jobId);
         await aiService.improveResume(
+          task,
           isPrefer ? preferResume : resume,
           job,
         );
+        await updateTask(task.id, 'status', TASK_STATUS.PROCESSING);
       }
 
       messageApi.open({
@@ -131,27 +134,27 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       title: 'Status',
       dataIndex: 'status',
       render: (status) => {
-        if (status === -1) return <Tag icon={getIcon('cloud')} color="default"/>;
-        else if (status === 0) return <Tag icon={getIcon('clock')} color="default"/>;
-        else if (status === 1) return <Tag icon={getIcon('sync')} color="processing"/>;
-        else if (status === 2) return <Tag icon={getIcon('check')} color="success"/>;
+        if (status === TASK_STATUS.WAITING) return <Tag icon={getIcon('cloud')} color="default"/>;
+        else if (status === TASK_STATUS.PENDING) return <Tag icon={getIcon('clock')} color="default"/>;
+        else if (status === TASK_STATUS.PROCESSING) return <Tag icon={getIcon('sync')} color="processing"/>;
+        else if (status === TASK_STATUS.COMPLETED) return <Tag icon={getIcon('check')} color="success"/>;
       },
       filters: [
         {
           text: 'Default',
-          value: -1,
+          value: TASK_STATUS.WAITING,
         },
         {
           text: 'Waiting',
-          value: 0,
+          value: TASK_STATUS.PENDING,
         },
         {
           text: 'Processing',
-          value: 1,
+          value: TASK_STATUS.PROCESSING,
         },
         {
           text: 'Success',
-          value: 2,
+          value: TASK_STATUS.COMPLETED,
         },
       ],
       onFilter: (value, record) => record.status === value,

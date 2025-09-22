@@ -1,8 +1,8 @@
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
-import { dbService, STORES } from '../services/db.service';
 import produce from 'immer';
 import { debounce } from 'lodash';
+import { taskService, TASK_STATUS } from '../services/task.service';
 
 const debouncedUpdateTask = debounce(async (index) => {
   try {
@@ -10,10 +10,10 @@ const debouncedUpdateTask = debounce(async (index) => {
     const updatedTask = { ...currentState.tasks[index] };
     const taskId = updatedTask.id;
 
-    // Update task in IndexedDB
-    await dbService.update(STORES.TASKS, taskId, updatedTask);
+    // Update task using taskService
+    await taskService.updateTaskStatus(taskId, updatedTask.status, updatedTask);
   } catch (err) {
-    console.error('Error updating task in IndexedDB:', err);
+    console.error('Error updating task:', err);
   }
 }, 1000);
 
@@ -27,7 +27,7 @@ export const useTasks = create(
       fetch: async () => {
         get().updateLoading(true);
         try {
-          const tasks = await dbService.getAll(STORES.TASKS);
+          const tasks = await taskService.getAllTasks();
           set(
             produce((state) => {
               state.tasks = tasks.map(task => ({
@@ -38,29 +38,23 @@ export const useTasks = create(
             })
           );
         } catch (err) {
-          console.error('Error fetching tasks from IndexedDB:', err);
+          console.error('Error fetching tasks:', err);
           get().updateLoading(false);
         }
       },
 
-      // Add a task to IndexedDB
       add: async (data) => {
         try {
-          // Create task object
-          const task = {
+          const taskData = {
             jobId: data.job_id,
             title: '', // job title
             company: '', // job company
-            status: -1,
-            progress: 0,
-            createdAt: Date.now(),
-            updatedAt: Date.now()
           };
 
-          // Add task to IndexedDB
-          await dbService.add(STORES.TASKS, task);
+          // Add task using taskService
+          await taskService.createTask(taskData);
         } catch (err) {
-          console.error('Error adding task to IndexedDB:', err);
+          console.error('Error adding task:', err);
         }
       },
 
@@ -68,43 +62,39 @@ export const useTasks = create(
       create: async (data) => {
         get().updateLoading(true);
         try {
-          // Add tasks to IndexedDB
           for (const taskData of data) {
-            await dbService.add(STORES.TASKS, {
+            await taskService.createTask({
               ...taskData,
-              status: 0,
-              progress: 0,
-              createdAt: Date.now(),
-              updatedAt: Date.now()
+              status: TASK_STATUS.WAITING,
+              progress: 0
             });
           }
 
           get().updateLoading(false);
           get().fetch();
         } catch (err) {
-          console.error('Error creating tasks in IndexedDB:', err);
+          console.error('Error creating tasks:', err);
           get().updateLoading(false);
         }
       },
 
       // Update a task in IndexedDB
-      update: async (index, key, value) => {
+      update: async (id, key, value) => {
         set((state) => produce(state, (draftState) => {
+          const index = draftState.tasks.findIndex(task => task.id === id);
           draftState.tasks[index][key] = value;
           draftState.tasks[index].updatedAt = Date.now();
           debouncedUpdateTask(index);
         }));
       },
 
-      // Delete a task from IndexedDB
+      // Delete a task using taskService
       purge: async (index) => {
         try {
           const currentState = get();
           if (currentState.tasks[index]) {
             const taskId = currentState.tasks[index].id;
-
-            // Delete task from IndexedDB
-            await dbService.delete(STORES.TASKS, taskId);
+            await taskService.deleteTask(taskId);
           }
 
           set(
@@ -113,7 +103,7 @@ export const useTasks = create(
             })
           );
         } catch (err) {
-          console.error('Error deleting task from IndexedDB:', err);
+          console.error('Error deleting task:', err);
         }
       },
 
