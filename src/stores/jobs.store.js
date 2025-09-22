@@ -1,203 +1,141 @@
 import create from 'zustand';
-import {debounce} from 'lodash';
-import {persist} from 'zustand/middleware';
+import { debounce } from 'lodash';
+import { persist } from 'zustand/middleware';
 import produce from 'immer';
-import {
-  getJobs,
-  addJob,
-  updateJob,
-  purgeJob,
-  addTasks,
-  addTask,
-  getTasks
-} from '../axios/api';
-
-const JOBS_DATA = [];
-
-const TASK_DATA = [];
+import { dbService, STORES } from '../services/db.service';
+import { useTasks } from './tasks.store';
 
 const debouncedUpdateJob = debounce(async (index) => {
+  let updatedJob = null
   try {
     const currentState = useJobs.getState();
-    const updatedJob = {...currentState.jobs[index]};
-    const jobId = updatedJob['id'];
-    updatedJob['raw'] = updatedJob['description'];
-    delete updatedJob['description'];
-    delete updatedJob['id'];
-    await updateJob(jobId, updatedJob);
+    updatedJob = { ...currentState.jobs[index] };
+    const jobId = updatedJob.id;
+    // Update job in IndexedDB
+    await dbService.update(STORES.JOBS, jobId, updatedJob);
   } catch (err) {
-    console.log(err);
+    console.error('Error updating job in IndexedDB:', err);
   }
-}, 3000);
+
+  // Update job details to IndexedDB
+  try {
+    const tasks = await dbService.getAll(STORES.TASKS);
+    const index = tasks.findIndex((task) => task.jobId === updatedJob.id);
+    const task = tasks[index];
+    if (task && (updatedJob.title !== task.title || updatedJob.company !== task.company)) {
+      await dbService.update(STORES.TASKS, task.id, { ...task, title: updatedJob.title, company: updatedJob.company });
+    }
+  } catch (err) {
+    console.error('Error updating task in IndexedDB:', err);
+  }
+}, 1000);
 
 export const useJobs = create(
   persist(
-    (set) => ({
-      jobs: JOBS_DATA,
+    (set, get) => ({
+      jobs: [],
       loading: true,
 
-      fetch: () => {
-        useJobs.getState().updateLoading(true);
-        getJobs()
-          .then((res) => {
-            set(
-              produce((state) => {
-                state.jobs = res.data.jobs.map((job) => ({
-                  id: job.id,
-                  company: job.company,
-                  title: job.title,
-                  link: job.link,
-                  description: job.raw,
-                }));
-                state.loading = false;
-              })
-            );
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      },
-
-      add: () => {
-        useJobs.getState().updateLoading(true);
-        addJob({title: 'job title'}).then(res => {
-          set(
-            produce((state) => {
-              const job = {
-                id: res.data['job_id'],
-                company: '',
-                title: 'job title',
-                link: '',
-                description: '',
-              };
-              state.jobs.push(job);
-              useTasks.getState().add({job_id: job.id});
-              state.loading = false;
-            })
-          );
-        }).catch(err => {
-          console.error(err);
-          set((state) => state.loading = false);
-        })
-      },
-
-      update: (index, key, value) =>
-        set((state) => produce(state, (draftState) => {
-          draftState.jobs[index][key] = value;
-          debouncedUpdateJob(index);
-        })),
-
-      purge: async (index) => {
+      // Fetch jobs from IndexedDB
+      fetch: async () => {
+        get().updateLoading(true);
         try {
-          set((state) => state.loading = true);
-          const currentState = useJobs.getState();
-          const delJobId = currentState.jobs[index].id;
-          await purgeJob(delJobId);
+          // Get all jobs from IndexedDB
+          const jobs = await dbService.getAll(STORES.JOBS);
+          
           set(
             produce((state) => {
-              state.jobs = state.jobs.filter((_, ind) => ind !== index);
-              useTasks.getState().purge(index);
+              state.jobs = jobs;
               state.loading = false;
             })
           );
         } catch (err) {
-          console.log(err);
+          console.error('Error fetching jobs from IndexedDB:', err);
+          set(produce((state) => {
+            state.loading = false;
+          }));
         }
       },
 
-      updateLoading: (bool) => {
-        set(produce((state) => {
-          state.loading = bool;
-        }));
-      }
-    }),
-    {
-      name: 'sprb-jobs',
-    }
-  )
-);
+      // Add a new job to IndexedDB
+      add: async () => {
+        get().updateLoading(true);
+        try {
+          // Create new job object
+          const newJob = {
+            company: '',
+            title: 'job title',
+            link: '',
+            description: '',
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+          };
+          
+          // Add job to IndexedDB
+          const jobId = await dbService.add(STORES.JOBS, newJob);
+          
+          // Get the job with the generated ID
+          const job = await dbService.getById(STORES.JOBS, jobId);
+          
+          set(
+            produce((state) => {
+              state.jobs.push(job);
+              state.loading = false;
+            })
+          );
 
-const underscoreToCamel = (obj) => {
-  if (typeof obj !== 'object' || obj === null) {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(item => underscoreToCamel(item));
-  }
-  const camelCaseObj = {};
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-      camelCaseObj[camelKey] = underscoreToCamel(obj[key]);
-    }
-  }
-  return camelCaseObj;
-}
-
-export const useTasks = create(
-  persist(
-    (set) => ({
-      tasks: TASK_DATA,
-      loading: true,
-
-      fetch: () => {
-        useTasks.getState().updateLoading(true);
-        let jobIds = [];
-        useJobs.getState().jobs.forEach((job, idx) => {
-          if (job.id) jobIds.push(job.id);
-        });
-        getTasks({job_ids: jobIds})
-          .then((res) => {
-            const tasks = res.data.data;
-            set(produce((state) => {
-              let camelTasks = tasks.map(e => underscoreToCamel(e))
-              camelTasks.forEach(task => task.key = task.id)
-              state.tasks = camelTasks
-              state.loading = false
-            }));
-          })
-          .catch((err) => {
-            console.log(err);
-            useTasks.getState().updateLoading(false);
-          });
+          if (useTasks.getState) {
+            useTasks.getState().add({ job_id: jobId });
+          }
+          
+          return jobId;
+        } catch (err) {
+          console.error('Error adding job to IndexedDB:', err);
+          set(produce((state) => {
+            state.loading = false;
+          }));
+          return null;
+        }
       },
 
-      add: (data) => {
-        addTask(data).then(res => {
-          console.log(res)
-        }).catch(err => {
-          console.error(err)
-        })
-      },
-
-      create: (data) => {
-        useTasks.getState().updateLoading(true);
-        addTasks(data)
-          .then((res) => {
-            console.log(res)
-            useTasks.getState().updateLoading(false);
-            useTasks.getState().fetch();
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      },
-
+      // Update a job in IndexedDB
       update: (index, key, value) =>
-        set(
-          produce((state) => {
-            state.tasks[index][key] = value;
-          })
-        ),
+        set((state) => produce(state, (draftState) => {
+          draftState.jobs[index][key] = value;
+          draftState.jobs[index].updatedAt = Date.now();
+          debouncedUpdateJob(index);
+        })),
 
-      purge: (index) => {
-        set(
-          produce((state) => {
-            state.tasks = state.tasks.filter((_, ind) => ind !== index);
-          })
-        );
+      // Delete a job from IndexedDB
+      purge: async (index) => {
+        try {
+          set((state) => ({ ...state, loading: true }));
+          
+          const currentState = useJobs.getState();
+          const jobId = currentState.jobs[index].id;
+          
+          // Delete job from IndexedDB
+          await dbService.delete(STORES.JOBS, jobId);
+          
+          set(
+            produce((state) => {
+              state.jobs = state.jobs.filter((_, ind) => ind !== index);
+              state.loading = false;
+            })
+          );
+
+          if (useTasks.getState) {
+            useTasks.getState().purge(index);
+          }
+        } catch (err) {
+          console.error('Error deleting job from IndexedDB:', err);
+          set(produce((state) => {
+            state.loading = false;
+          }));
+        }
       },
 
+      // Update loading state
       updateLoading: (bool) => {
         set(produce((state) => {
           state.loading = bool;
@@ -205,7 +143,7 @@ export const useTasks = create(
       }
     }),
     {
-      name: 'sprb-tasks',
+      name: 'sprb-jobs'
     }
   )
 );

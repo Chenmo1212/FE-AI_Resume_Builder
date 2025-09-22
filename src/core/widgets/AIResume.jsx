@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Table, Button, message, Tag, Space, Spin, Checkbox} from 'antd';
-import {useTasks} from '../../stores/jobs.store';
+import {useTasks} from '../../stores/tasks.store';
+import {taskService} from '../../services/task.service';
 import shallow from 'zustand/shallow';
 import {
   useActivities,
@@ -12,52 +13,64 @@ import {
   useVolunteer,
   useWork,
 } from '../../stores/data.store';
-import {updateResume, updateTask} from "../../axios/api";
-import { getIcon } from '../../styles/icons';
-import { Container } from '@mui/material';
-import { Heading } from '../components/editor/Editor';
+import {getIcon} from '../../styles/icons';
+import {Container} from '@mui/material';
+import {Heading} from '../components/editor/Editor';
 
 const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
-  const create = useTasks((state) => state.create, shallow);
+  const createAIResumeTask = useTasks((state) => state.createAIResumeTask);
   const [isLoading, setLoading] = useState(false);
   const [isPrefer, setIsPrefer] = useState(true);
   const preferResume = usePreferData((state) => state.getResume(), shallow);
 
-  const handleSubmit = () => {
-    setLoading(true)
+  const handleSubmit = async () => {
+    setLoading(true);
     if (!selectedRows.length) {
       messageApi.open({
         type: 'error',
-        content: 'Please select the task!',
+        content: 'Please select a job!',
       });
-      setLoading(false)
+      setLoading(false);
       return;
     }
 
-    create({
-      task_list: selectedRows,
-      resume: isPrefer ? preferResume : resume,
-    });
-    messageApi.open({
-      type: 'success',
-      content: 'Submit task successfully!',
-    });
-    setSelectedRowKeys([]);
-    setSelectedTasks([]);
-    setLoading(false);
+    try {
+      // Create tasks for each selected job
+      for (const job of selectedRows) {
+        await createAIResumeTask(
+          job.id,
+          'resume-1',
+          {
+            resumeData: isPrefer ? preferResume : resume,
+            jobData: job
+          }
+        );
+      }
+
+      messageApi.open({
+        type: 'success',
+        content: 'Submit task successfully!',
+      });
+      setSelectedRowKeys([]);
+      setSelectedTasks([]);
+    } catch (error) {
+      console.error('Error submitting tasks:', error);
+      messageApi.open({
+        type: 'error',
+        content: 'Failed to submit tasks: ' + error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleStatus = () => {
-    for (const row of selectedRows) {
-      if (row.status >= 0) {
-        return true;
-      }
-    }
+    // No need to check status for jobs
     return false;
   };
 
   const onPreferChange = (e) => {
-    setIsPrefer(e.target.checked)
+    setIsPrefer(e.target.checked);
   };
 
   return (
@@ -150,7 +163,6 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
         <>
           <Space>
             <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
-            <a onClick={() => uploadResume(record)}>{getIcon('upload')}</a>
             <a onClick={() => applyStatusHandle(record)} style={{ color: record.isApply ? '#52c41a' : '' }}>{getIcon('apply')}</a>
           </Space>
         </>
@@ -159,7 +171,15 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
   ];
 
   const displayResume = (record) => {
-    const resume = {...record['resume']};
+    if (!record.task || !record.task.result || !record.task.result.resume) {
+      messageApi.open({
+        type: 'error',
+        content: 'No resume data available!',
+      });
+      return;
+    }
+
+    const resume = { ...record.task.result.resume };
     resetBasics(resume.basics);
     resetSkills(resume.skills);
     resetWork(resume.work);
@@ -168,44 +188,44 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
     resetProjects(resume.projects);
     resetVolunteer(resume.volunteer);
     resetAwards(resume.awards);
+    
     messageApi.open({
       type: 'success',
       content: 'Resume checkout successfully!',
     });
   };
 
-  const uploadResume = (record) => {
-    setLoading(true)
-    updateResume(record.newResumeId, resume).then(res => {
-      if (res.status === 200) {
-        messageApi.open({
-          type: 'success',
-          content: 'Resume update successfully!',
-        });
-        setLoading(false);
-      }
-    }).catch(err=> {
-      console.log(err)
-      setLoading(false);
-    })
-  };
+  const applyStatusHandle = async (record) => {
+    if (!record.taskId) {
+      messageApi.open({
+        type: 'error',
+        content: 'No task associated with this job!',
+      });
+      return;
+    }
 
-  const applyStatusHandle = (record) => {
-    setLoading(true);
-    updateTask(record.id, {is_apply: !record.isApply, apply_time: new Date().toISOString()}).then(res => {
-      if (res.status === 201) {
-        messageApi.open({
-          type: 'success',
-          content: !record.isApply ? 'Successfully applied!' : "Waiting to apply!",
-        });
-        fetch();
-        setLoading(false);
-      }
-    }).catch(err=>{
-      console.log(err)
-      setLoading(false);
-    })
-  }
+    try {
+      // Update the task's apply status in IndexedDB
+      await taskService.updateTaskStatus(record.taskId, record.task.status, {
+        isApply: !record.isApply,
+        applyTime: new Date().toISOString()
+      });
+      
+      messageApi.open({
+        type: 'success',
+        content: !record.isApply ? 'Successfully applied!' : "Waiting to apply!",
+      });
+      
+      // Refresh jobs to update the UI
+      fetch();
+    } catch (error) {
+      console.error('Error updating apply status:', error);
+      messageApi.open({
+        type: 'error',
+        content: 'Failed to update apply status: ' + error.message,
+      });
+    }
+  };
 
   return (
     <div>
@@ -234,7 +254,8 @@ export const AIResume = () => {
   const projects = useProjects((state) => state.projects);
   const volunteer = useVolunteer((state) => state.volunteer);
   const awards = useAwards((state) => state.awards);
-  const [loading] = useTasks((state) => [state.loading]);
+  const loading = useTasks((state) => state.loading);
+  
   const resume = {
     basics,
     skills,
