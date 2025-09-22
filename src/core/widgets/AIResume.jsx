@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Table, Button, message, Tag, Space, Spin, Checkbox} from 'antd';
 import {useTasks} from '../../stores/tasks.store';
 import {taskService} from '../../services/task.service';
+import {aiService} from '../../services/ai.service';
 import shallow from 'zustand/shallow';
 import {
   useActivities,
@@ -16,11 +17,12 @@ import {
 import {getIcon} from '../../styles/icons';
 import {Container} from '@mui/material';
 import {Heading} from '../components/editor/Editor';
+import { useJobs } from '../../stores/jobs.store';
 
 const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
-  const createAIResumeTask = useTasks((state) => state.createAIResumeTask);
   const [isLoading, setLoading] = useState(false);
   const [isPrefer, setIsPrefer] = useState(true);
+  const jobs = useJobs((state) => state.jobs);
   const preferResume = usePreferData((state) => state.getResume(), shallow);
 
   const handleSubmit = async () => {
@@ -36,14 +38,11 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
 
     try {
       // Create tasks for each selected job
-      for (const job of selectedRows) {
-        await createAIResumeTask(
-          job.id,
-          'resume-1',
-          {
-            resumeData: isPrefer ? preferResume : resume,
-            jobData: job
-          }
+      for (const task of selectedRows) {
+        const job = jobs.find((j) => j.id === task.jobId);
+        await aiService.improveResume(
+          isPrefer ? preferResume : resume,
+          job,
         );
       }
 

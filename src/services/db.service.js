@@ -5,9 +5,6 @@
  */
 import { openDB } from 'idb';
 
-// Check if we're running in a browser environment
-const isBrowser = typeof window !== 'undefined' && window.indexedDB;
-
 // Database configuration
 const DB_NAME = 'resumeBuilderDB';
 const DB_VERSION = 1;
@@ -24,12 +21,7 @@ const STORES = {
  */
 class DBService {
   constructor() {
-    if (isBrowser) {
-      this.dbPromise = this.initDB();
-    } else {
-      // Create a mock promise that resolves to null when not in browser
-      this.dbPromise = Promise.resolve(null);
-    }
+    this.dbPromise = this.initDB();
   }
 
   /**
@@ -37,8 +29,6 @@ class DBService {
    * @returns {Promise<IDBDatabase>} Database instance
    */
   async initDB() {
-    if (!isBrowser) return null;
-    
     return openDB(DB_NAME, DB_VERSION, {
       upgrade(db) {
         // Create resumes store if it doesn't exist
@@ -71,8 +61,6 @@ class DBService {
    * @returns {Promise<Array>} Array of items
    */
   async getAll(storeName) {
-    if (!isBrowser) return [];
-    
     const db = await this.dbPromise;
     if (!db) return [];
     
@@ -86,8 +74,6 @@ class DBService {
    * @returns {Promise<Object>} Item data
    */
   async getById(storeName, id) {
-    if (!isBrowser) return null;
-    
     const db = await this.dbPromise;
     if (!db) return null;
     
@@ -101,27 +87,30 @@ class DBService {
    * @returns {Promise<string>} ID of the added item
    */
   async add(storeName, item) {
-    if (!isBrowser) return null;
-    
     const db = await this.dbPromise;
     if (!db) return null;
-    
+
     const timestamp = Date.now();
-    
+
     // Add timestamps if they don't exist
     const itemWithTimestamps = {
       ...item,
       createdAt: item.createdAt || timestamp,
       updatedAt: timestamp
     };
-    
+
     // Generate ID if not provided
     if (!itemWithTimestamps.id) {
       itemWithTimestamps.id = crypto.randomUUID();
     }
     
-    await db.add(storeName, itemWithTimestamps);
-    return itemWithTimestamps.id;
+    // Remove functions to prevent DataCloneError
+    const serializable = this.makeSerializable(itemWithTimestamps);
+    
+    console.log("====== itemWithTimestamps: ", serializable);
+    await db.add(storeName, serializable);
+    // return itemWithTimestamps.id;
+    return 'itemWithTimestamps.id';
   }
 
   /**
@@ -132,8 +121,6 @@ class DBService {
    * @returns {Promise<Object>} Updated item
    */
   async update(storeName, id, updates) {
-    if (!isBrowser) return null;
-    
     const db = await this.dbPromise;
     if (!db) return null;
     
@@ -149,7 +136,10 @@ class DBService {
       updatedAt: Date.now()
     };
     
-    await db.put(storeName, updatedItem);
+    // Remove functions to prevent DataCloneError
+    const serializable = this.makeSerializable(updatedItem);
+    
+    await db.put(storeName, serializable);
     return updatedItem;
   }
 
@@ -160,8 +150,6 @@ class DBService {
    * @returns {Promise<void>}
    */
   async delete(storeName, id) {
-    if (!isBrowser) return;
-    
     const db = await this.dbPromise;
     if (!db) return;
     
@@ -176,8 +164,6 @@ class DBService {
    * @returns {Promise<Array>} Matching items
    */
   async getByIndex(storeName, indexName, value) {
-    if (!isBrowser) return [];
-    
     const db = await this.dbPromise;
     if (!db) return [];
     
@@ -192,14 +178,51 @@ class DBService {
    * @returns {Promise<void>}
    */
   async clearStore(storeName) {
-    if (!isBrowser) return;
-    
     const db = await this.dbPromise;
     if (!db) return;
     
     const tx = db.transaction(storeName, 'readwrite');
     await tx.store.clear();
     await tx.done;
+  }
+  
+  /**
+   * Make an object serializable by removing functions
+   * @param {Object} obj - Object to make serializable
+   * @returns {Object} Serializable object
+   */
+  makeSerializable(obj) {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+    
+    // Handle primitive types
+    if (typeof obj !== 'object') {
+      return typeof obj === 'function' ? null : obj;
+    }
+    
+    // Handle arrays
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.makeSerializable(item));
+    }
+    
+    // Handle Date objects
+    if (obj instanceof Date) {
+      return obj;
+    }
+    
+    // Handle regular objects
+    const result = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const value = obj[key];
+        if (typeof value !== 'function') {
+          result[key] = this.makeSerializable(value);
+        }
+      }
+    }
+    
+    return result;
   }
 }
 
@@ -208,5 +231,3 @@ export const dbService = new DBService();
 
 // Export store names for convenience
 export { STORES };
-
-// Made with Bob
