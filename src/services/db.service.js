@@ -5,6 +5,10 @@
  */
 import { openDB } from 'idb';
 
+// Check if we're in a browser environment with IndexedDB support
+const isBrowser = typeof window !== 'undefined';
+const hasIndexedDB = isBrowser && typeof window.indexedDB !== 'undefined';
+
 // Database configuration
 const DB_NAME = 'resumeBuilderDB';
 const DB_VERSION = 1;
@@ -17,11 +21,30 @@ const STORES = {
 };
 
 /**
+ * Create a no-op implementation for server-side rendering
+ */
+class NoOpDBService {
+  constructor() {
+    this.dbPromise = Promise.resolve(null);
+  }
+
+  async getAll() { return []; }
+  async getById() { return null; }
+  async add() { return null; }
+  async update() { return null; }
+  async delete() { return; }
+  async getByIndex() { return []; }
+  async clearStore() { return; }
+  makeSerializable(obj) { return obj; }
+}
+
+/**
  * IndexedDB service for managing database operations
  */
 class DBService {
   constructor() {
-    this.dbPromise = this.initDB();
+    // Only initialize IndexedDB in browser environments
+    this.dbPromise = hasIndexedDB ? this.initDB() : Promise.resolve(null);
   }
 
   /**
@@ -29,6 +52,8 @@ class DBService {
    * @returns {Promise<IDBDatabase>} Database instance
    */
   async initDB() {
+    if (!hasIndexedDB) return null;
+    
     return openDB(DB_NAME, DB_VERSION, {
       upgrade(db) {
         // Create resumes store if it doesn't exist
@@ -224,8 +249,8 @@ class DBService {
   }
 }
 
-// Export a singleton instance
-export const dbService = new DBService();
+// Export a singleton instance based on environment
+export const dbService = hasIndexedDB ? new DBService() : new NoOpDBService();
 
 // Export store names for convenience
 export { STORES };

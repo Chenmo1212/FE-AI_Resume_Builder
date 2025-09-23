@@ -26,9 +26,21 @@ class TaskService {
   async createTask(taskData) {
     const timestamp = Date.now();
     
+    // Check if we're in a browser environment
+    const isBrowser = typeof window !== 'undefined';
+
+    // Generate a unique ID that works in both browser and server environments
+    let uniqueId;
+    if (isBrowser && window.crypto) {
+      uniqueId = crypto.randomUUID();
+    } else {
+      // Fallback for server-side or older browsers
+      uniqueId = `task-${timestamp}-${Math.random().toString(36).substring(2, 15)}`;
+    }
+
     // Create task with default values
     const task = {
-      id: window.crypto ? crypto.randomUUID() : `task-${timestamp}`,
+      id: uniqueId,
       status: TASK_STATUS.WAITING,
       createdAt: timestamp,
       updatedAt: timestamp,
@@ -40,14 +52,11 @@ class TaskService {
     
     // Add to database
     await dbService.add(STORES.TASKS, task);
-    
-    // Start polling if needed
-    if (taskData.requiresPolling) {
-      this.startPolling(task.id);
+
+    // Emit event (only in browser)
+    if (isBrowser) {
+      this.emitEvent('taskCreated', task);
     }
-    
-    // Emit event
-    this.emitEvent('taskCreated', task);
     
     return task;
   }
@@ -164,6 +173,9 @@ class TaskService {
    * @param {number} interval - Polling interval in milliseconds
    */
   startPolling(taskId, interval = 5000) {
+    // Only run in browser environment
+    if (typeof window === 'undefined') return;
+    
     // Clear any existing polling
     this.stopPolling(taskId);
     
@@ -191,6 +203,9 @@ class TaskService {
    * @param {string} taskId - Task ID
    */
   stopPolling(taskId) {
+    // Only run in browser environment
+    if (typeof window === 'undefined') return;
+    
     if (this.pollingIntervals[taskId]) {
       clearInterval(this.pollingIntervals[taskId]);
       delete this.pollingIntervals[taskId];

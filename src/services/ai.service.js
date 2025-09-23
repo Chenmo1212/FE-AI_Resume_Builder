@@ -3,6 +3,9 @@ import { dbService, STORES } from './db.service';
 import { useJobs } from '../stores/jobs.store';
 import { useTasks } from '../stores/tasks.store';
 
+// Check if we're in a browser environment
+const isBrowser = typeof window !== 'undefined';
+
 /**
  * Service for AI resume processing
  */
@@ -20,6 +23,12 @@ class AIService {
    * @returns {Promise<string>} Task ID
    */
   async improveResume(task, resume, job) {
+    // Skip processing if not in browser environment
+    if (!isBrowser) {
+      console.warn('AI service called in non-browser environment');
+      return null;
+    }
+    
     try {
       await taskService.updateTaskStatus(task.id, TASK_STATUS.PROCESSING);
 
@@ -32,8 +41,12 @@ class AIService {
         await dbService.update(STORES.JOBS, job.id, {
           parsedData: parsedJob
         });
-        const jobsState = useJobs.getState();
-        jobsState.update(job.id, 'parsedData', parsedJob);
+        
+        // Only update state if we're in a browser environment
+        if (isBrowser && useJobs.getState) {
+          const jobsState = useJobs.getState();
+          jobsState.update(job.id, 'parsedData', parsedJob);
+        }
       } catch (error) {
         console.error('Error parsing job description:', error);
       }
@@ -129,6 +142,12 @@ class AIService {
    * @returns {Promise<Object>} Task status
    */
   async checkTaskStatus(taskId) {
+    // Skip processing if not in browser environment
+    if (!isBrowser) {
+      console.warn('checkTaskStatus called in non-browser environment');
+      return { status: 'error', error: 'Not in browser environment' };
+    }
+    
     try {
       const response = await fetch(`${this.apiEndpoint}/check-status`, {
         method: 'POST',

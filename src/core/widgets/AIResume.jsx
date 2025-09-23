@@ -22,7 +22,7 @@ import { useJobs } from '../../stores/jobs.store';
 
 const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
   const [isLoading, setLoading] = useState(false);
-  const [isPrefer, setIsPrefer] = useState(true);
+  const [isPrefer, setIsPrefer] = useState(false);
   const jobs = useJobs((state) => state.jobs);
   const preferResume = usePreferData((state) => state.getResume(), shallow);
 
@@ -76,7 +76,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
 
   return (
     <>
-      <Checkbox onChange={onPreferChange} style={{color: "#fff"}} checked={isPrefer}>Use Prefer Resume</Checkbox>
+      {/*<Checkbox onChange={onPreferChange} style={{color: "#fff"}} checked={isPrefer}>Use Prefer Resume</Checkbox>*/}
       <Button type="primary" onClick={handleSubmit} disabled={handleStatus()} loading={isLoading}>
         Submit
       </Button>
