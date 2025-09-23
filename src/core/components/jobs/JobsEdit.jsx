@@ -42,7 +42,7 @@ export const JobEditor = () => {
   // Enhanced update function with error handling
   const handleUpdate = async (index, key, value) => {
     try {
-      await update(index, key, value);
+      await update(jobs[index].id, key, value);
     } catch (err) {
       console.error('Error updating job:', err);
       message.error('Failed to update job');

@@ -46,7 +46,6 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
           isPrefer ? preferResume : resume,
           job,
         );
-        await updateTask(task.id, 'status', TASK_STATUS.PROCESSING);
       }
 
       messageApi.open({
@@ -89,6 +88,7 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
   const [tasks] = useTasks((state) => [state.tasks]);
   const [isLoading, setLoading] = useState(false);
   const fetch = useTasks((state) => state.fetch, shallow);
+  const jobs = useJobs((state) => state.jobs);
   const resetBasics = useIntro((state) => state.reset);
   const resetSkills = useSkills((state) => state.reset);
   const resetWork = useWork((state) => state.reset);
@@ -156,6 +156,10 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
           text: 'Success',
           value: TASK_STATUS.COMPLETED,
         },
+        {
+          text: 'Failed',
+          value: TASK_STATUS.FAILED,
+        },
       ],
       onFilter: (value, record) => record.status === value,
     },
@@ -164,7 +168,12 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       render: (record) => (
         <>
           <Space>
-            <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
+            {record.status === TASK_STATUS.COMPLETED && (
+              <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
+            )}
+            {record.status === TASK_STATUS.FAILED && (
+              <a onClick={() => retryTask(record)}>{getIcon('sync')}</a>
+            )}
             <a onClick={() => applyStatusHandle(record)} style={{ color: record.isApply ? '#52c41a' : '' }}>{getIcon('apply')}</a>
           </Space>
         </>
@@ -172,29 +181,97 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
     },
   ];
 
-  const displayResume = (record) => {
-    if (!record.task || !record.task.result || !record.task.result.resume) {
+  const displayResume = async (record) => {
+    // Get the task result from the record
+    const taskResult = record.result || (record.task && record.task.result);
+    
+    if (!taskResult || !taskResult.resumeId) {
       messageApi.open({
         type: 'error',
-        content: 'No resume data available!',
+        content: 'No resume ID available!',
       });
       return;
     }
 
-    const resume = { ...record.task.result.resume };
-    resetBasics(resume.basics);
-    resetSkills(resume.skills);
-    resetWork(resume.work);
-    resetEducation(resume.education);
-    resetActivities(resume.activities);
-    resetProjects(resume.projects);
-    resetVolunteer(resume.volunteer);
-    resetAwards(resume.awards);
-    
-    messageApi.open({
-      type: 'success',
-      content: 'Resume checkout successfully!',
-    });
+    try {
+      setLoading(true);
+      
+      // Fetch the resume from the resumes store using the resumeId
+      const resume = await dbService.getById(STORES.RESUMES, taskResult.resumeId);
+      
+      if (!resume) {
+        throw new Error('Resume not found in database');
+      }
+      
+      // Update all resume sections
+      resetBasics(resume.basics);
+      resetSkills(resume.skills);
+      resetWork(resume.work);
+      resetEducation(resume.education);
+      resetActivities(resume.activities);
+      resetProjects(resume.projects);
+      resetVolunteer(resume.volunteer);
+      resetAwards(resume.awards);
+      
+      messageApi.open({
+        type: 'success',
+        content: 'Resume loaded successfully!',
+      });
+    } catch (error) {
+      console.error('Error loading resume:', error);
+      messageApi.open({
+        type: 'error',
+        content: 'Failed to load resume: ' + error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const retryTask = async (record) => {
+    if (!record.taskId) {
+      messageApi.open({
+        type: 'error',
+        content: 'No task ID found!',
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Get the job data
+      const job = jobs.find((j) => j.id === record.jobId);
+      if (!job) {
+        throw new Error('Job not found');
+      }
+      
+      // Retry the task
+      await taskService.retryTask(record.taskId);
+      
+      // Re-submit to AI service
+      await aiService.improveResume(
+        record,
+        resume,
+        job
+      );
+      
+      messageApi.open({
+        type: 'success',
+        content: 'Task resubmitted successfully!',
+      });
+      
+      // Refresh tasks to update the UI
+      fetch();
+    } catch (error) {
+      console.error('Error retrying task:', error);
+      messageApi.open({
+        type: 'error',
+        content: 'Failed to retry task: ' + error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const applyStatusHandle = async (record) => {
@@ -207,7 +284,6 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
     }
 
     try {
-      // Update the task's apply status in IndexedDB
       await taskService.updateTaskStatus(record.taskId, record.task.status, {
         isApply: !record.isApply,
         applyTime: new Date().toISOString()

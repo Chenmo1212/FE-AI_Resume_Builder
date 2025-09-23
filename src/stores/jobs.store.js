@@ -99,8 +99,9 @@ export const useJobs = create(
       },
 
       // Update a job in IndexedDB
-      update: (index, key, value) =>
+      update: (id, key, value) =>
         set((state) => produce(state, (draftState) => {
+          const index = draftState.jobs.findIndex((job) => job.id === id);
           draftState.jobs[index][key] = value;
           draftState.jobs[index].updatedAt = Date.now();
           debouncedUpdateJob(index);
