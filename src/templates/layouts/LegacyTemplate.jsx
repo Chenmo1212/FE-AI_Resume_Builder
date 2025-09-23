@@ -74,7 +74,7 @@ export default function LegacyTemplate() {
   
   // Custom container renderer for grid layout
   const renderContainer = (sections, components, baseTemplate) => {
-    const { clickHandler, getIcon, labels, intro, languages, frameworks, tools } = baseTemplate;
+    const { clickHandler, getIcon, labels, intro, languages } = baseTemplate;
     
     // Filter sections by column
     const leftSections = sections.filter(section => 
@@ -114,11 +114,11 @@ export default function LegacyTemplate() {
           )}
 
           {/* Special handling for expert skills */}
-          {[...languages, ...frameworks].length > 0 && (
+          {[...languages].length > 0 && (
             <>
               <div onClick={(e) => clickHandler(e, labels[5])}>
                 <LegacyHeader Icon={getIcon('expert')} title={labels[5]} />
-                {components.renderExpertSkills([...languages, ...frameworks])}
+                {components.renderExpertSkills([...languages])}
               </div>
               <LineSeparator />
             </>

@@ -51,18 +51,6 @@
                 "level": 3
             }
         ],
-        "frameworks": [
-            {
-                "name": "ReactJS",
-                "level": 4
-            },
-            {
-                "name": "VueJS",
-                "level": 3
-            }
-        ],
-        "libraries": [],
-        "databases": [],
         "technologies": [
             {
                 "level": 3,

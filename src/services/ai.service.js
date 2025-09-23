@@ -83,6 +83,7 @@ class AIService {
       // Wait for all optimization steps to complete
       const optimizationResults = await Promise.all(optimizationPromises);
 
+
       // Combine all optimized sections into a single resume object
       const optimizedResume = {
         ...resume,
@@ -115,8 +116,6 @@ class AIService {
         jobId: job.id,
         optimizationDate: new Date().toISOString()
       });
-      await useTasks.getState().update(task.id, 'resume', optimizedResume);
-
       return task.id;
     } catch (error) {
       console.error('Error submitting resume for AI improvement:', error);

@@ -15,12 +15,9 @@ export function useBaseTemplate(customSectionOrder = null) {
   const labels = useLabels((state) => state.labels);
   const [config] = useTemplates((state) => [state.currConfig()], shallow);
   const setLeftDrawer = useLeftDrawer((state) => state.update);
-  const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
+  const [languages, technologies, practices, tools] = useSkills(
     (state) => [
       state.languages,
-      state.frameworks,
-      state.libraries,
-      state.databases,
       state.technologies,
       state.practices,
       state.tools,
@@ -145,10 +142,10 @@ export function useBaseTemplate(customSectionOrder = null) {
     skills: createSection(
       'skills',
       6,
-      config.isShowSkills && [...technologies, ...libraries, ...databases].length > 0,
+      config.isShowSkills && [...technologies].length > 0,
       (props) => (
         <div onClick={(e) => clickHandler(e, labels[6])}>
-          {props.renderSkills ? props.renderSkills([...technologies, ...libraries, ...databases]) : null}
+          {props.renderSkills ? props.renderSkills([...technologies]) : null}
         </div>
       )
     ),
@@ -231,9 +228,6 @@ export function useBaseTemplate(customSectionOrder = null) {
     labels,
     config,
     languages,
-    frameworks,
-    libraries,
-    databases,
     technologies,
     practices,
     tools,

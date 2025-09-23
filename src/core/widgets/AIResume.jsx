@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {Table, Button, message, Tag, Space, Spin, Checkbox} from 'antd';
 import {useTasks} from '../../stores/tasks.store';
 import { TASK_STATUS, taskService } from '../../services/task.service';
+import { dbService, STORES } from '../../services/db.service';
 import {aiService} from '../../services/ai.service';
 import shallow from 'zustand/shallow';
 import {
@@ -22,7 +23,6 @@ import { useJobs } from '../../stores/jobs.store';
 const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
   const [isLoading, setLoading] = useState(false);
   const [isPrefer, setIsPrefer] = useState(true);
-  const updateTask = useTasks((state) => state.update, shallow);
   const jobs = useJobs((state) => state.jobs);
   const preferResume = usePreferData((state) => state.getResume(), shallow);
 
@@ -84,7 +84,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
   );
 };
 
-const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, resume, messageApi}) => {
+const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, messageApi, resume}) => {
   const [tasks] = useTasks((state) => [state.tasks]);
   const [isLoading, setLoading] = useState(false);
   const fetch = useTasks((state) => state.fetch, shallow);
@@ -197,21 +197,28 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       setLoading(true);
       
       // Fetch the resume from the resumes store using the resumeId
-      const resume = await dbService.getById(STORES.RESUMES, taskResult.resumeId);
+      const newResume = await dbService.getById(STORES.RESUMES, taskResult.resumeId);
       
       if (!resume) {
         throw new Error('Resume not found in database');
       }
       
       // Update all resume sections
-      resetBasics(resume.basics);
-      resetSkills(resume.skills);
-      resetWork(resume.work);
-      resetEducation(resume.education);
-      resetActivities(resume.activities);
-      resetProjects(resume.projects);
-      resetVolunteer(resume.volunteer);
-      resetAwards(resume.awards);
+      resetBasics(newResume.basics);
+      resetSkills({
+        ...resume.skills,
+        ...newResume.skills,
+      });
+      resetWork(newResume.work.map((company) => ({
+        ...company,
+        // Add * before highlights if they don't start with it
+        summary: company.highlights.map(h => h.startsWith('*') ? h : `* ${h}`).join('\n'),
+      })));
+      resetEducation(newResume.education);
+      resetActivities(newResume.activities);
+      resetProjects(newResume.projects);
+      resetVolunteer(newResume.volunteer);
+      resetAwards(newResume.awards);
       
       messageApi.open({
         type: 'success',
@@ -355,8 +362,8 @@ export const AIResume = () => {
             selectedRowKeys={selectedRowKeys}
             onSelectedRowsChange={(selectedTasks) => setSelectedTasks(selectedTasks)}
             setSelectedRowKeys={setSelectedRowKeys}
-            resume={resume}
             messageApi={messageApi}
+            resume={resume}
           />
           <SubmitBtn
             selectedRows={selectedTasks}

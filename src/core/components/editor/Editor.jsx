@@ -334,10 +334,7 @@ export const SkillsEditor = () => {
   return (
     <>
       <SkillEditor type="languages" hasRating />
-      <SkillEditor type="frameworks" hasRating />
       <SkillEditor type="technologies" hasRating={false} />
-      <SkillEditor type="libraries" hasRating={false} />
-      <SkillEditor type="databases" hasRating={false} />
       <SkillEditor type="practices" hasRating={false} />
       <SkillEditor type="tools" hasRating={false} />
 

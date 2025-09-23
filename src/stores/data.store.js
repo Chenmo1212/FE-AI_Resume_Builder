@@ -95,9 +95,6 @@ export const useSkills = create(
   persist(
     (set) => ({
       languages: userData.skills.languages,
-      frameworks: userData.skills.frameworks,
-      libraries: userData.skills.libraries,
-      databases: userData.skills.databases,
       technologies: userData.skills.technologies,
       practices: userData.skills.practices,
       tools: userData.skills.tools,
@@ -105,9 +102,6 @@ export const useSkills = create(
       reset: (data = userData.skills) => {
         set({
           languages: data.languages,
-          frameworks: data.frameworks,
-          libraries: data.libraries,
-          databases: data.databases,
           technologies: data.technologies,
           practices: data.practices,
           tools: data.tools,
