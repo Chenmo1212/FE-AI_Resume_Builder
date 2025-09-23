@@ -51,7 +51,6 @@ export function EduSection({ education, config }) {
       {config.isShowEduCourses && (data.courses && data.courses.length) ? <Topic><b>Main Modules:</b> {data.courses}</Topic> : ""}
       {config.isShowEduDissertation && data.dissertation ? <Topic><b>Dissertation:</b> {data.dissertation}</Topic> : ""}
       {config.isShowEduHighlights && data.highlights && <Highlights>
-        <b>Highlights:</b>
         <div dangerouslySetInnerHTML={{ __html: mdParser.render(data.highlights ?? '') }} />
       </Highlights>
       }

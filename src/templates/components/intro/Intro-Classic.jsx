@@ -10,13 +10,18 @@ const Name = styled.h1`
 `;
 
 export function Intro({ intro }) {
+  // Filter valid profiles (those with URLs)
+  const validProfiles = intro.profiles.filter((profile) => profile.url);
+  const hasLessProfiles = validProfiles.length < 3;
+
   return (
     <FlexCol ai="center" style={{ textAlign: 'center' }}>
       <Name>{intro.name}</Name>
-      <FlexHC cGap="0.5rem">
-        {intro.profiles
-          .filter((profile) => profile.url)
-          .map((profile, index) => (
+      
+      {/* If 3 or more profiles, show them on a separate line */}
+      {!hasLessProfiles && (
+        <FlexHC cGap="0.5rem">
+          {validProfiles.map((profile, index) => (
             <React.Fragment key={profile.network + index}>
               {index > 0 && <span>|</span>}
               <FlexVC style={{ display: 'inline-flex' }}>
@@ -27,8 +32,29 @@ export function Intro({ intro }) {
               </FlexVC>
             </React.Fragment>
           ))}
-      </FlexHC>
+        </FlexHC>
+      )}
+      
+      {/* Contact information line, with profiles included if less than 3 */}
       <FlexHC cGap="10px">
+        {/* If fewer than 3 profiles, show them first on this line */}
+        {hasLessProfiles && validProfiles.length > 0 && (
+          <>
+            {validProfiles.map((profile, index) => (
+              <React.Fragment key={profile.network + index}>
+                {index > 0 && <span>|</span>}
+                <FlexVC style={{ display: 'inline-flex' }}>
+                  {getIcon(profile.network)} :&nbsp;
+                  <a href={profile.url}>
+                    {profile.username}
+                  </a>
+                </FlexVC>
+              </React.Fragment>
+            ))}
+            <span>|</span>
+          </>
+        )}
+        
         <span>{intro.email}</span>
         <span>|</span>
         <span>{intro.phone}</span>
