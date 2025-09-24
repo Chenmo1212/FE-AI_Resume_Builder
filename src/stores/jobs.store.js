@@ -126,7 +126,10 @@ export const useJobs = create(
           );
 
           if (useTasks.getState) {
-            useTasks.getState().purge(index);
+            const tasks = await dbService.getAll(STORES.TASKS);
+            const taskIndex = tasks.findIndex((task) => task.jobId === jobId);
+            const task = tasks[taskIndex];
+            useTasks.getState().purge(task.id);
           }
         } catch (err) {
           console.error('Error deleting job from IndexedDB:', err);

@@ -88,18 +88,27 @@ export const useTasks = create(
         }));
       },
 
-      // Delete a task using taskService
-      purge: async (index) => {
-        try {
-          const currentState = get();
-          if (currentState.tasks[index]) {
-            const taskId = currentState.tasks[index].id;
-            await taskService.deleteTask(taskId);
+      // Update optimization steps for a task
+      updateOptimizationSteps: async (id, steps) => {
+        set((state) => produce(state, (draftState) => {
+          const index = draftState.tasks.findIndex(task => task.id === id);
+          if (index !== -1) {
+            draftState.tasks[index].optimizationSteps = steps;
+            draftState.tasks[index].updatedAt = Date.now();
+            // Update the task in IndexedDB
+            debouncedUpdateTask(index);
           }
+        }));
+      },
+
+      // Delete a task using taskService
+      purge: async (taskId) => {
+        try {
+          await taskService.deleteTask(taskId);
 
           set(
             produce((state) => {
-              state.tasks = state.tasks.filter((_, ind) => ind !== index);
+              state.tasks = state.tasks.filter(task => task.id !== taskId);
             })
           );
         } catch (err) {
