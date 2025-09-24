@@ -160,11 +160,11 @@ const OptimizationProgress = ({ steps, taskId, messageApi, resume, job }) => {
             color = 'processing';
             break;
           case TASK_STATUS.COMPLETED:
-            icon = getIcon('check');
+            icon = getIcon(iconName);
             color = 'success';
             break;
           case TASK_STATUS.FAILED:
-            icon = getIcon('delete');
+            icon = getIcon(iconName);
             color = 'error';
             break;
           default:
@@ -190,6 +190,48 @@ const OptimizationProgress = ({ steps, taskId, messageApi, resume, job }) => {
   );
 };
 
+// Utility functions for resume optimization
+const resumeOptimizationUtils = {
+  // Initialize optimization steps tracking
+  initializeSteps: () => ({
+    [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.PENDING },
+    [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.WAITING },
+    [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.WAITING },
+    [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.WAITING },
+    [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.WAITING }
+  }),
+
+  // Check if all steps are completed or failed
+  areAllStepsFinished: (steps) => {
+    return Object.entries(steps).every(
+      ([_, stepStatus]) => stepStatus.status === TASK_STATUS.COMPLETED || stepStatus.status === TASK_STATUS.FAILED
+    );
+  },
+
+  // Create optimized resume object from results
+  createOptimizedResume: (currentResume, optimizedData) => {
+    const { optimizedExperiences, optimizedProjects, optimizedSkills, optimizedSummary } = optimizedData;
+    
+    // Create the optimized resume object
+    const optimizedResume = {
+      ...currentResume,
+      work: optimizedExperiences,
+      projects: optimizedProjects,
+      skills: optimizedSkills,
+    };
+
+    // Update summary in basics section
+    if (optimizedSummary) {
+      optimizedResume.basics = {
+        ...optimizedResume.basics,
+        summary: optimizedSummary
+      };
+    }
+    
+    return optimizedResume;
+  }
+};
+
 const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
   const [isLoading, setLoading] = useState(false);
   const [isPrefer, setIsPrefer] = useState(false);
@@ -197,6 +239,236 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
   const updateTask = useTasks((state) => state.update, shallow);
   const preferResume = usePreferData((state) => state.getResume(), shallow);
   const updateOptimizationSteps = useTasks(state => state.updateOptimizationSteps);
+
+  // Parse job description
+  const parseJobDescription = async (job, task, steps) => {
+    try {
+      // Update step status to processing
+      const updatedSteps = {
+        ...steps,
+        [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.PROCESSING }
+      };
+      await updateOptimizationSteps(task.id, updatedSteps);
+
+      // Parse job description
+      const parsedJob = await aiService.parseJobDescription(job);
+      
+      // Update step status to completed
+      const completedSteps = {
+        ...updatedSteps,
+        [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.COMPLETED, result: parsedJob }
+      };
+      await updateOptimizationSteps(task.id, completedSteps);
+      
+      return { parsedJob, steps: completedSteps };
+    } catch (error) {
+      // Update step status to failed
+      const failedSteps = {
+        ...steps,
+        [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.FAILED, error: error.message }
+      };
+      await updateOptimizationSteps(task.id, failedSteps);
+      
+      // Use existing parsed data as fallback
+      return { parsedJob: job.parsedData || {}, steps: failedSteps, error };
+    }
+  };
+
+  // Run optimization steps in parallel
+  const runOptimizationSteps = async (job, parsedJob, currentResume, task, steps) => {
+    // Update all steps to processing status
+    const processingSteps = {
+      ...steps,
+      [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.PROCESSING },
+      [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.PROCESSING },
+      [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.PROCESSING },
+      [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.PROCESSING }
+    };
+    await updateOptimizationSteps(task.id, processingSteps);
+    
+    // Run all optimization steps in parallel
+    const [
+      experienceResult,
+      projectsResult,
+      skillsResult,
+      summaryResult
+    ] = await Promise.allSettled([
+      // Experience optimization
+      aiService.optimizeExperiences(job.description, parsedJob, currentResume.work)
+        .then(result => {
+          const updatedSteps = {
+            ...steps,
+            [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.COMPLETED, result }
+          };
+          updateOptimizationSteps(task.id, updatedSteps);
+          return result;
+        })
+        .catch(error => {
+          const updatedSteps = {
+            ...steps,
+            [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.FAILED, error: error.message }
+          };
+          updateOptimizationSteps(task.id, updatedSteps);
+          throw error;
+        }),
+
+      // Projects optimization
+      aiService.optimizeProjects(job.description, parsedJob, currentResume.projects)
+        .then(result => {
+          const updatedSteps = {
+            ...steps,
+            [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.COMPLETED, result }
+          };
+          updateOptimizationSteps(task.id, updatedSteps);
+          return result;
+        })
+        .catch(error => {
+          const updatedSteps = {
+            ...steps,
+            [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.FAILED, error: error.message }
+          };
+          updateOptimizationSteps(task.id, updatedSteps);
+          throw error;
+        }),
+
+      // Skills optimization
+      aiService.optimizeSkills(job.description, parsedJob, currentResume)
+        .then(result => {
+          const updatedSteps = {
+            ...steps,
+            [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.COMPLETED, result }
+          };
+          updateOptimizationSteps(task.id, updatedSteps);
+          return result;
+        })
+        .catch(error => {
+          const updatedSteps = {
+            ...steps,
+            [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.FAILED, error: error.message }
+          };
+          updateOptimizationSteps(task.id, updatedSteps);
+          throw error;
+        }),
+
+      // Summary optimization
+      aiService.optimizeSummary(job.description, parsedJob, currentResume)
+        .then(result => {
+          const updatedSteps = {
+            ...(task.optimizationSteps || steps),
+            [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.COMPLETED, result }
+          };
+          updateOptimizationSteps(task.id, updatedSteps);
+          return result;
+        })
+        .catch(error => {
+          const updatedSteps = {
+            ...steps,
+            [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.FAILED, error: error.message }
+          };
+          updateOptimizationSteps(task.id, updatedSteps);
+          throw error;
+        })
+    ]);
+    
+    // Get results or fallbacks
+    const optimizedExperiences = experienceResult.status === 'fulfilled' ? experienceResult.value : currentResume.work;
+    const optimizedProjects = projectsResult.status === 'fulfilled' ? projectsResult.value : currentResume.projects;
+    const optimizedSkills = skillsResult.status === 'fulfilled' ? skillsResult.value : currentResume.skills;
+    const optimizedSummary = summaryResult.status === 'fulfilled' ? summaryResult.value : currentResume.basics?.summary || '';
+    
+    // Create the final optimization steps object
+    const finalSteps = {
+      ...steps,
+      [OPTIMIZATION_STEPS.EXPERIENCE]: {
+        status: experienceResult.status === 'fulfilled' ? TASK_STATUS.COMPLETED : TASK_STATUS.FAILED,
+        ...(experienceResult.status === 'fulfilled' ? { result: optimizedExperiences } : { error: experienceResult.reason?.message })
+      },
+      [OPTIMIZATION_STEPS.PROJECTS]: {
+        status: projectsResult.status === 'fulfilled' ? TASK_STATUS.COMPLETED : TASK_STATUS.FAILED,
+        ...(projectsResult.status === 'fulfilled' ? { result: optimizedProjects } : { error: projectsResult.reason?.message })
+      },
+      [OPTIMIZATION_STEPS.SKILLS]: {
+        status: skillsResult.status === 'fulfilled' ? TASK_STATUS.COMPLETED : TASK_STATUS.FAILED,
+        ...(skillsResult.status === 'fulfilled' ? { result: optimizedSkills } : { error: skillsResult.reason?.message })
+      },
+      [OPTIMIZATION_STEPS.SUMMARY]: {
+        status: summaryResult.status === 'fulfilled' ? TASK_STATUS.COMPLETED : TASK_STATUS.FAILED,
+        ...(summaryResult.status === 'fulfilled' ? { result: optimizedSummary } : { error: summaryResult.reason?.message })
+      }
+    };
+    
+    await updateOptimizationSteps(task.id, finalSteps);
+    
+    return { 
+      steps: finalSteps,
+      optimizedData: {
+        optimizedExperiences,
+        optimizedProjects,
+        optimizedSkills,
+        optimizedSummary
+      }
+    };
+  };
+
+  // Process a single task
+  const processTask = async (task) => {
+    const job = jobs.find((j) => j.id === task.jobId);
+    const currentResume = isPrefer ? preferResume : resume;
+    
+    // Initialize optimization steps tracking
+    let steps = resumeOptimizationUtils.initializeSteps();
+    
+    // Update in the store first for immediate UI update
+    await updateOptimizationSteps(task.id, steps);
+    await taskService.updateTaskStatus(task.id, TASK_STATUS.PROCESSING);
+    
+    try {
+      // Step 1: Parse job description
+      const { parsedJob, steps: updatedSteps, error } = await parseJobDescription(job, task, steps);
+      
+      // If parsing failed, stop the process
+      if (error) return;
+      
+      steps = updatedSteps;
+      
+      // Step 2: Run optimization steps in parallel
+      const { steps: finalSteps, optimizedData } = await runOptimizationSteps(
+        job, parsedJob, currentResume, task, steps
+      );
+      
+      steps = finalSteps;
+      
+      // Step 3: Check if all steps are completed
+      const allStepsCompleted = resumeOptimizationUtils.areAllStepsFinished(steps);
+      const taskStatus = allStepsCompleted ? TASK_STATUS.COMPLETED : TASK_STATUS.PROCESSING;
+      
+      // Step 4: Create optimized resume
+      const optimizedResume = resumeOptimizationUtils.createOptimizedResume(currentResume, optimizedData);
+      
+      // Step 5: Add metadata to the optimized resume
+      optimizedResume.metadata = {
+        jobId: job.id,
+        optimizationDate: new Date().toISOString(),
+        originalResumeId: currentResume.id || null
+      };
+      
+      // Step 6: Store the optimized resume
+      const resumeId = await dbService.add(STORES.RESUMES, optimizedResume);
+      await updateTask(task.id, 'resumeId', resumeId);
+      await taskService.updateTaskStatus(task.id, taskStatus, {
+        resumeId: resumeId,
+      });
+      
+      messageApi.open({
+        type: 'success',
+        content: `Task ${task.title} finished!`,
+        duration: 0
+      });
+    } catch (error) {
+      console.error('Error in resume optimization process:', error);
+      await taskService.failTask(task.id, error.message);
+    }
+  };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -210,227 +482,9 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
     }
 
     try {
-      // Create tasks for each selected job
+      // Process each selected task
       for (const task of selectedRows) {
-        const job = jobs.find((j) => j.id === task.jobId);
-        const currentResume = isPrefer ? preferResume : resume;
-        
-        // Initialize optimization steps tracking
-        let steps = {
-          [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.PENDING },
-          [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.WAITING },
-          [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.WAITING },
-          [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.WAITING },
-          [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.WAITING }
-        };
-        
-        // Update in the store first for immediate UI update
-        await updateOptimizationSteps(task.id, steps);
-        await taskService.updateTaskStatus(task.id, TASK_STATUS.PROCESSING);
-        
-        try {
-          // Step 1: Parse job description
-          steps = {
-            ...steps,
-            [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.PROCESSING }
-          };
-          await updateOptimizationSteps(task.id, steps);
-
-
-          let parsedJob;
-          try {
-            parsedJob = await aiService.parseJobDescription(job);
-            // Update step status to completed
-            steps = {
-              ...steps,
-              [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.COMPLETED, result: parsedJob }
-            };
-            await updateOptimizationSteps(task.id, steps);
-          } catch (error) {
-            steps = {
-              ...steps,
-              [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.FAILED, error: error.message }
-            };
-            await updateOptimizationSteps(task.id, steps);
-            parsedJob = job.parsedData || {};
-            return;
-          }
-
-          // Run the remaining steps in parallel
-          // Update all steps to processing status
-          steps = {
-            ...steps,
-            [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.PROCESSING },
-            [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.PROCESSING },
-            [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.PROCESSING },
-            [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.PROCESSING }
-          };
-          await updateOptimizationSteps(task.id, steps);
-
-          // Run all optimization steps in parallel
-          const [
-            experienceResult,
-            projectsResult,
-            skillsResult,
-            summaryResult
-          ] = await Promise.allSettled([
-            aiService.optimizeExperiences(job.description, parsedJob, currentResume.work)
-              .then(result => {
-                steps = {
-                  ...steps,
-                  [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.COMPLETED, result }
-                };
-                updateOptimizationSteps(task.id, steps);
-                return result;
-              })
-              .catch(error => {
-                steps = {
-                  ...steps,
-                  [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.FAILED, error: error.message }
-                };
-                updateOptimizationSteps(task.id, steps);
-                throw error;
-              }),
-
-            // Projects optimization
-            aiService.optimizeProjects(job.description, parsedJob, currentResume.projects)
-              .then(result => {
-                steps = {
-                  ...steps,
-                  [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.COMPLETED, result }
-                };
-                updateOptimizationSteps(task.id, steps);
-                return result;
-              })
-              .catch(error => {
-                steps = {
-                  ...steps,
-                  [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.FAILED, error: error.message }
-                };
-                updateOptimizationSteps(task.id, steps);
-                throw error;
-              }),
-
-            // Skills optimization
-            aiService.optimizeSkills(job.description, parsedJob, currentResume)
-              .then(result => {
-                steps = {
-                  ...steps,
-                  [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.COMPLETED, result }
-                };
-                updateOptimizationSteps(task.id, steps);
-                return result;
-              })
-              .catch(error => {
-                steps = {
-                  ...steps,
-                  [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.FAILED, error: error.message }
-                };
-                updateOptimizationSteps(task.id, steps);
-                throw error;
-              }),
-
-            // Summary optimization
-            aiService.optimizeSummary(job.description, parsedJob, currentResume)
-              .then(result => {
-                steps = {
-                  ...(task.optimizationSteps || steps),
-                  [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.COMPLETED, result }
-                };
-                updateOptimizationSteps(task.id, steps);
-                return result;
-              })
-              .catch(error => {
-                steps = {
-                  ...steps,
-                  [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.FAILED, error: error.message }
-                };
-                updateOptimizationSteps(task.id, steps);
-                throw error;
-              })
-          ]);
-
-          console.log("============ experienceResult ============", experienceResult);
-          console.log("============ projectsResult ============", projectsResult);
-          console.log("============ skillsResult ============", skillsResult);
-          console.log("============ summaryResult ============", summaryResult);
-
-          // Get results or fallbacks
-          const optimizedExperiences = experienceResult.status === 'fulfilled' ? experienceResult.value : currentResume.work;
-          const optimizedProjects = projectsResult.status === 'fulfilled' ? projectsResult.value : currentResume.projects;
-          const optimizedSkills = skillsResult.status === 'fulfilled' ? skillsResult.value : currentResume.skills;
-          const optimizedSummary = summaryResult.status === 'fulfilled' ? summaryResult.value : currentResume.basics?.summary || '';
-
-          // Create the final optimization steps object
-          steps = {
-            ...steps,
-            [OPTIMIZATION_STEPS.EXPERIENCE]: {
-              status: experienceResult.status === 'fulfilled' ? TASK_STATUS.COMPLETED : TASK_STATUS.FAILED,
-              ...(experienceResult.status === 'fulfilled' ? { result: optimizedExperiences } : { error: experienceResult.reason?.message })
-            },
-            [OPTIMIZATION_STEPS.PROJECTS]: {
-              status: projectsResult.status === 'fulfilled' ? TASK_STATUS.COMPLETED : TASK_STATUS.FAILED,
-              ...(projectsResult.status === 'fulfilled' ? { result: optimizedProjects } : { error: projectsResult.reason?.message })
-            },
-            [OPTIMIZATION_STEPS.SKILLS]: {
-              status: skillsResult.status === 'fulfilled' ? TASK_STATUS.COMPLETED : TASK_STATUS.FAILED,
-              ...(skillsResult.status === 'fulfilled' ? { result: optimizedSkills } : { error: skillsResult.reason?.message })
-            },
-            [OPTIMIZATION_STEPS.SUMMARY]: {
-              status: summaryResult.status === 'fulfilled' ? TASK_STATUS.COMPLETED : TASK_STATUS.FAILED,
-              ...(summaryResult.status === 'fulfilled' ? { result: optimizedSummary } : { error: summaryResult.reason?.message })
-            }
-          };
-
-          // Check if all steps are completed
-          const allStepsCompleted = Object.entries(steps).every(
-            ([_, stepStatus]) => {
-              return stepStatus.status === TASK_STATUS.COMPLETED || stepStatus.status === TASK_STATUS.FAILED;
-            }
-          );
-          const taskStatus = allStepsCompleted ? TASK_STATUS.COMPLETED : TASK_STATUS.PROCESSING;
-          await updateOptimizationSteps(task.id, steps);
-
-          // Combine all optimized sections into a single resume object
-          const optimizedResume = {
-            ...currentResume,
-            work: optimizedExperiences,
-            projects: optimizedProjects,
-            skills: optimizedSkills,
-          };
-
-          // Update summary in basics section
-          if (optimizedSummary) {
-            optimizedResume.basics = {
-              ...optimizedResume.basics,
-              summary: optimizedSummary
-            };
-          }
-
-          // Add metadata to the optimized resume
-          optimizedResume.metadata = {
-            jobId: job.id,
-            optimizationDate: new Date().toISOString(),
-            originalResumeId: currentResume.id || null
-          };
-
-          // Store the optimized resume in the resumes store
-          const resumeId = await dbService.add(STORES.RESUMES, optimizedResume);
-          console.log("============= resumeId ==============", resumeId);
-          await updateTask(task.id,  'resumeId', resumeId);
-          await taskService.updateTaskStatus(task.id, taskStatus, {
-            resumeId: resumeId,
-          });
-
-          messageApi.open({
-            type: 'success',
-            content: `Task ${task.title} finished!`,
-            duration: 0
-          });
-        } catch (error) {
-          console.error('Error in resume optimization process:', error);
-          await taskService.failTask(task.id, error.message);
-        }
+        await processTask(task);
       }
       setSelectedRowKeys([]);
       setSelectedTasks([]);
