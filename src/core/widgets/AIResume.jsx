@@ -526,7 +526,7 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
           
           // If all steps are completed, show a success tag
           if (allStepsCompleted) {
-            return <Tag icon={getIcon('check')} color="success">Completed</Tag>;
+            return <Tag icon={getIcon('check')} color="success"/>;
           }
           
           // Otherwise show the progress component
@@ -583,14 +583,14 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
         return (
           <>
             <Space>
-              {/* Show View Resume button if task is completed or all steps are completed */}
-              <Tooltip title="View Resume">
-                <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
-              </Tooltip>
+              {allStepsCompleted || hasFailedSteps ? (
+                <Tooltip title="View Resume">
+                  <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
+                </Tooltip>
+              ) : ""}
               <Tooltip title="Reset Task">
                 <a onClick={() => resetTask(record)}>{getIcon('reset')}</a>
               </Tooltip>
-              {/* <a onClick={() => applyStatusHandle(record)} style={{ color: record.isApply ? '#52c41a' : '' }}>{getIcon('apply')}</a> */}
             </Space>
           </>
         );
