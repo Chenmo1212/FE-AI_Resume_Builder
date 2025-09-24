@@ -45,12 +45,14 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
           task,
           isPrefer ? preferResume : resume,
           job,
+          messageApi
         );
       }
 
       messageApi.open({
         type: 'success',
         content: 'Submit task successfully!',
+        duration: 0
       });
       setSelectedRowKeys([]);
       setSelectedTasks([]);

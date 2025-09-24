@@ -20,9 +20,10 @@ class AIService {
    * @param {Object} task - Task data
    * @param {Object} resume - Resume data
    * @param {Object} job - Job description
+   * @param {Function} messageApi - Callback function
    * @returns {Promise<string>} Task ID
    */
-  async improveResume(task, resume, job) {
+  async improveResume(task, resume, job, messageApi) {
     // Skip processing if not in browser environment
     if (!isBrowser) {
       console.warn('AI service called in non-browser environment');
@@ -128,6 +129,11 @@ class AIService {
         resumeId,
         jobId: job.id,
         optimizationDate: new Date().toISOString()
+      });
+      messageApi.open({
+        type: 'success',
+        content: `Task '${task.title} finished!'`,
+        duration: 0
       });
       return task.id;
     } catch (error) {
