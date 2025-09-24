@@ -2,8 +2,57 @@ import create from 'zustand';
 import {arrayMoveImmutable} from 'array-move';
 import {persist} from 'zustand/middleware';
 import produce from 'immer';
-import userData from '../../src/stores/data.json';
-import preferUserData from '../../src/stores/data.json';
+import defaultData from '../../src/stores/data.json';
+
+export const usePreferData = create(
+  persist(
+    () => ({
+      basics: defaultData.basics,
+      education: defaultData.education,
+      awards: defaultData.awards,
+      volunteer: defaultData.volunteer,
+      skills: defaultData.skills,
+      activities: defaultData.activities,
+      projects: defaultData.projects,
+      work: defaultData.work,
+
+      getResume: function() {
+        return {
+          basics: this.basics,
+          education: this.education,
+          awards: this.awards,
+          volunteer: this.volunteer,
+          skills: this.skills,
+          activities: this.activities,
+          projects: this.projects,
+          work: this.work,
+        };
+      }
+    }),
+
+    {
+      name: 'sprb-prefer',
+    }
+  )
+);
+
+// Function to get user data from preferData or fall back to defaultData
+const getUserData = () => {
+  const preferStore = usePreferData.getState();
+  if (preferStore && Object.keys(preferStore).length > 0) {
+    return {
+      basics: preferStore.basics || defaultData.basics,
+      education: preferStore.education || defaultData.education,
+      awards: preferStore.awards || defaultData.awards,
+      volunteer: preferStore.volunteer || defaultData.volunteer,
+      skills: preferStore.skills || defaultData.skills,
+      activities: preferStore.activities || defaultData.activities,
+      projects: preferStore.projects || defaultData.projects,
+      work: preferStore.work || defaultData.work,
+    };
+  }
+  return defaultData;
+};
 
 const labels = [
   'Experience',
@@ -22,42 +71,14 @@ const labels = [
   'References',
 ];
 
-export const usePreferData = create(
-  persist(
-    () => ({
-      basics: preferUserData.basics,
-      education: preferUserData.education,
-      awards: preferUserData.awards,
-      volunteer: preferUserData.volunteer,
-      skills: preferUserData.skills,
-      activities: preferUserData.activities,
-      projects: preferUserData.projects,
-      work: preferUserData.work,
-
-      getResume: () => ({
-        basics: preferUserData.basics,
-        education: preferUserData.education,
-        awards: preferUserData.awards,
-        volunteer: preferUserData.volunteer,
-        skills: preferUserData.skills,
-        activities: preferUserData.activities,
-        projects: preferUserData.projects,
-        work: preferUserData.work,
-      })
-    }),
-
-    {
-      name: 'sprb-prefer',
-    }
-  )
-);
+// This section was removed as it was a duplicate of the usePreferData store
 
 export const useIntro = create(
   persist(
     (set) => ({
-      intro: userData.basics,
+      intro: getUserData().basics,
 
-      reset: (data = userData.basics) => {
+      reset: (data = getUserData().basics) => {
         set({intro: data});
       },
 
@@ -94,12 +115,12 @@ export const useIntro = create(
 export const useSkills = create(
   persist(
     (set) => ({
-      languages: userData.skills.languages,
-      technologies: userData.skills.technologies,
-      practices: userData.skills.practices,
-      tools: userData.skills.tools,
+      languages: getUserData().skills.languages,
+      technologies: getUserData().skills.technologies,
+      practices: getUserData().skills.practices,
+      tools: getUserData().skills.tools,
 
-      reset: (data = userData.skills) => {
+      reset: (data = getUserData().skills) => {
         set({
           languages: data.languages,
           technologies: data.technologies,
@@ -143,12 +164,12 @@ export const useSkills = create(
 export const useWork = create(
   persist(
     (set) => ({
-      companies: userData.work,
+      companies: getUserData().work,
       workConfig: {
         isShowLocation: false,
       },
 
-      reset: (data = userData.work) => {
+      reset: (data = getUserData().work) => {
         set({
           companies: data,
           workConfig: {
@@ -211,14 +232,14 @@ export const useWork = create(
 export const useEducation = create(
   persist(
     (set) => ({
-      education: userData.education,
+      education: getUserData().education,
       eduConfig: {
         isShowDissertation: false,
         isShowCourses: false,
         isShowHighlights: false
       },
 
-      reset: (data = userData.education) => {
+      reset: (data = getUserData().education) => {
         set({
           education: data,
           eduConfig: {
@@ -283,9 +304,9 @@ export const useEducation = create(
 export const useProjects = create(
   persist(
     (set) => ({
-      projects: userData.projects,
+      projects: getUserData().projects,
 
-      reset: (data = userData.projects) => {
+      reset: (data = getUserData().projects) => {
         set({projects: data});
       },
 
@@ -329,10 +350,10 @@ export const useProjects = create(
 export const useActivities = create(
   persist(
     (set) => ({
-      involvements: userData.activities.involvements,
-      achievements: userData.activities.achievements,
+      involvements: getUserData().activities.involvements,
+      achievements: getUserData().activities.achievements,
 
-      reset: (data = userData.activities) => {
+      reset: (data = getUserData().activities) => {
         set({
           involvements: data.involvements,
           achievements: data.achievements,
@@ -358,7 +379,7 @@ export const useActivities = create(
 export const useVolunteer = create(
   persist(
     (set) => ({
-      volunteer: userData.volunteer,
+      volunteer: getUserData().volunteer,
 
       add: () =>
         set(
@@ -392,7 +413,7 @@ export const useVolunteer = create(
           volunteer: arrayMoveImmutable(state.volunteer, oldIndex, newIndex),
         })),
 
-      reset: (data = userData.volunteer) => {
+      reset: (data = getUserData().volunteer) => {
         set({volunteer: data});
       },
     }),
@@ -405,7 +426,7 @@ export const useVolunteer = create(
 export const useAwards = create(
   persist(
     (set) => ({
-      awards: userData.awards,
+      awards: getUserData().awards,
 
       add: () =>
         set(
@@ -436,7 +457,7 @@ export const useAwards = create(
           awards: arrayMoveImmutable(state.awards, oldIndex, newIndex),
         })),
 
-      reset: (data = userData.awards) => {
+      reset: (data = getUserData().awards) => {
         set({awards: data});
       },
     }),
