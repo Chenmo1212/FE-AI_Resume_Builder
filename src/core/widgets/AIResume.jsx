@@ -140,9 +140,6 @@ const OptimizationProgress = ({ steps, taskId, messageApi, resume, job }) => {
     }
   };
 
-  // Debug: Log the steps being received
-  console.log("===========OptimizationProgress steps:", steps);
-
   return (
     <div style={{ display: 'flex', gap: '4px' }}>
       {Object.entries(stepIcons).map(([step, iconName]) => {
@@ -197,6 +194,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
   const [isLoading, setLoading] = useState(false);
   const [isPrefer, setIsPrefer] = useState(false);
   const jobs = useJobs((state) => state.jobs);
+  const updateTask = useTasks((state) => state.update, shallow);
   const preferResume = usePreferData((state) => state.getResume(), shallow);
   const updateOptimizationSteps = useTasks(state => state.updateOptimizationSteps);
 
@@ -218,7 +216,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
         const currentResume = isPrefer ? preferResume : resume;
         
         // Initialize optimization steps tracking
-        const initialSteps = {
+        let steps = {
           [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.PENDING },
           [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.WAITING },
           [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.WAITING },
@@ -227,49 +225,47 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
         };
         
         // Update in the store first for immediate UI update
-        await updateOptimizationSteps(task.id, initialSteps);
+        await updateOptimizationSteps(task.id, steps);
         await taskService.updateTaskStatus(task.id, TASK_STATUS.PROCESSING);
         
         try {
           // Step 1: Parse job description
-          const parseJobProcessingSteps = {
-            ...task.optimizationSteps,
+          steps = {
+            ...steps,
             [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.PROCESSING }
           };
-          await updateOptimizationSteps(task.id, parseJobProcessingSteps);
+          await updateOptimizationSteps(task.id, steps);
 
 
           let parsedJob;
           try {
             parsedJob = await aiService.parseJobDescription(job);
             // Update step status to completed
-            const parseJobCompletedSteps = {
-              ...task.optimizationSteps,
+            steps = {
+              ...steps,
               [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.COMPLETED, result: parsedJob }
             };
-            await updateOptimizationSteps(task.id, parseJobCompletedSteps);
+            await updateOptimizationSteps(task.id, steps);
           } catch (error) {
-            console.log("=========== ParseJobDescription error: ", error);
-            const parseJobFailedSteps = {
-              ...(task.optimizationSteps || initialSteps),
+            steps = {
+              ...steps,
               [OPTIMIZATION_STEPS.PARSED_JOB]: { status: TASK_STATUS.FAILED, error: error.message }
             };
-            await updateOptimizationSteps(task.id, parseJobFailedSteps);
+            await updateOptimizationSteps(task.id, steps);
             parsedJob = job.parsedData || {};
             return;
           }
-          console.log("=========== End parsing job description ============");
 
           // Run the remaining steps in parallel
           // Update all steps to processing status
-          const processingSteps = {
-            ...(task.optimizationSteps || initialSteps),
+          steps = {
+            ...steps,
             [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.PROCESSING },
             [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.PROCESSING },
             [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.PROCESSING },
             [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.PROCESSING }
           };
-          await updateOptimizationSteps(task.id, processingSteps);
+          await updateOptimizationSteps(task.id, steps);
 
           // Run all optimization steps in parallel
           const [
@@ -280,78 +276,76 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
           ] = await Promise.allSettled([
             aiService.optimizeExperiences(job.description, parsedJob, currentResume.work)
               .then(result => {
-                const updatedSteps = {
-                  ...(task.optimizationSteps || initialSteps),
+                steps = {
+                  ...steps,
                   [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.COMPLETED, result }
                 };
-                updateOptimizationSteps(task.id, updatedSteps);
+                updateOptimizationSteps(task.id, steps);
                 return result;
               })
               .catch(error => {
-                const updatedSteps = {
-                  ...(task.optimizationSteps || initialSteps),
+                steps = {
+                  ...steps,
                   [OPTIMIZATION_STEPS.EXPERIENCE]: { status: TASK_STATUS.FAILED, error: error.message }
                 };
-                updateOptimizationSteps(task.id, updatedSteps);
+                updateOptimizationSteps(task.id, steps);
                 throw error;
               }),
 
             // Projects optimization
             aiService.optimizeProjects(job.description, parsedJob, currentResume.projects)
               .then(result => {
-                const updatedSteps = {
-                  ...(task.optimizationSteps || initialSteps),
+                steps = {
+                  ...steps,
                   [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.COMPLETED, result }
                 };
-                updateOptimizationSteps(task.id, updatedSteps);
+                updateOptimizationSteps(task.id, steps);
                 return result;
               })
               .catch(error => {
-                const updatedSteps = {
-                  ...(task.optimizationSteps || initialSteps),
+                steps = {
+                  ...steps,
                   [OPTIMIZATION_STEPS.PROJECTS]: { status: TASK_STATUS.FAILED, error: error.message }
                 };
-                updateOptimizationSteps(task.id, updatedSteps);
+                updateOptimizationSteps(task.id, steps);
                 throw error;
               }),
 
             // Skills optimization
             aiService.optimizeSkills(job.description, parsedJob, currentResume)
               .then(result => {
-                const updatedSteps = {
-                  ...(task.optimizationSteps || initialSteps),
+                steps = {
+                  ...steps,
                   [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.COMPLETED, result }
                 };
-                updateOptimizationSteps(task.id, updatedSteps);
+                updateOptimizationSteps(task.id, steps);
                 return result;
               })
               .catch(error => {
-                console.error('Error optimizing skills:', error);
-                const updatedSteps = {
-                  ...(task.optimizationSteps || initialSteps),
+                steps = {
+                  ...steps,
                   [OPTIMIZATION_STEPS.SKILLS]: { status: TASK_STATUS.FAILED, error: error.message }
                 };
-                updateOptimizationSteps(task.id, updatedSteps);
+                updateOptimizationSteps(task.id, steps);
                 throw error;
               }),
 
             // Summary optimization
             aiService.optimizeSummary(job.description, parsedJob, currentResume)
               .then(result => {
-                const updatedSteps = {
-                  ...(task.optimizationSteps || initialSteps),
+                steps = {
+                  ...(task.optimizationSteps || steps),
                   [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.COMPLETED, result }
                 };
-                updateOptimizationSteps(task.id, updatedSteps);
+                updateOptimizationSteps(task.id, steps);
                 return result;
               })
               .catch(error => {
-                console.error('Error optimizing summary:', error);
-                const updatedSteps = {
-                  ...(task.optimizationSteps || initialSteps),
+                steps = {
+                  ...steps,
                   [OPTIMIZATION_STEPS.SUMMARY]: { status: TASK_STATUS.FAILED, error: error.message }
                 };
-                updateOptimizationSteps(task.id, updatedSteps);
+                updateOptimizationSteps(task.id, steps);
                 throw error;
               })
           ]);
@@ -368,8 +362,8 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
           const optimizedSummary = summaryResult.status === 'fulfilled' ? summaryResult.value : currentResume.basics?.summary || '';
 
           // Create the final optimization steps object
-          const finalOptimizationSteps = {
-            ...(task.optimizationSteps || initialSteps),
+          steps = {
+            ...steps,
             [OPTIMIZATION_STEPS.EXPERIENCE]: {
               status: experienceResult.status === 'fulfilled' ? TASK_STATUS.COMPLETED : TASK_STATUS.FAILED,
               ...(experienceResult.status === 'fulfilled' ? { result: optimizedExperiences } : { error: experienceResult.reason?.message })
@@ -388,17 +382,14 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
             }
           };
 
-          console.log("============ finalOptimizationSteps =============", finalOptimizationSteps);
-
           // Check if all steps are completed
-          const allStepsCompleted = Object.entries(finalOptimizationSteps).every(
+          const allStepsCompleted = Object.entries(steps).every(
             ([_, stepStatus]) => {
               return stepStatus.status === TASK_STATUS.COMPLETED || stepStatus.status === TASK_STATUS.FAILED;
             }
           );
           const taskStatus = allStepsCompleted ? TASK_STATUS.COMPLETED : TASK_STATUS.PROCESSING;
-          await updateOptimizationSteps(task.id, finalOptimizationSteps);
-          await taskService.updateTaskStatus(task.id, taskStatus);
+          await updateOptimizationSteps(task.id, steps);
 
           // Combine all optimized sections into a single resume object
           const optimizedResume = {
@@ -425,7 +416,9 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
 
           // Store the optimized resume in the resumes store
           const resumeId = await dbService.add(STORES.RESUMES, optimizedResume);
-          await taskService.updateTaskStatus(task.id, task.status, {
+          console.log("============= resumeId ==============", resumeId);
+          await updateTask(task.id,  'resumeId', resumeId);
+          await taskService.updateTaskStatus(task.id, taskStatus, {
             resumeId: resumeId,
           });
 
@@ -473,6 +466,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
 
 const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, messageApi, resume}) => {
   const [tasks] = useTasks((state) => [state.tasks]);
+  const [updateTask] = useTasks((state) => [state.update]);
   const [isLoading, setLoading] = useState(false);
   const fetch = useTasks((state) => state.fetch, shallow);
   const jobs = useJobs((state) => state.jobs);
@@ -578,7 +572,6 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
     {
       title: 'Action',
       render: (record) => {
-        console.log("======= record", record);
         // Check if all optimization steps are completed
         const allStepsCompleted = record.optimizationSteps &&
           Object.values(record.optimizationSteps).every(step => step.status === TASK_STATUS.COMPLETED);
@@ -593,6 +586,9 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
               {/* Show View Resume button if task is completed or all steps are completed */}
               <Tooltip title="View Resume">
                 <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
+              </Tooltip>
+              <Tooltip title="Reset Task">
+                <a onClick={() => resetTask(record)}>{getIcon('reset')}</a>
               </Tooltip>
               {/* <a onClick={() => applyStatusHandle(record)} style={{ color: record.isApply ? '#52c41a' : '' }}>{getIcon('apply')}</a> */}
             </Space>
@@ -645,127 +641,16 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
     }
   };
 
-  const retryTask = async (record) => {
-    if (!record.id) {
-      messageApi.open({
-        type: 'error',
-        content: 'No task ID found!',
-      });
-      return;
-    }
+  const resetTask = async (record) => {
+    await updateTask(record.id, "optimizationSteps", null);
+    await updateTask(record.id, "resumeId", null);
+    await updateTask(record.id, "status", TASK_STATUS.PENDING);
 
-    try {
-      setLoading(true);
-      
-      // Get the job data
-      const job = jobs.find((j) => j.id === record.jobId);
-      if (!job) {
-        throw new Error('Job not found');
-      }
-      
-      // Get the updateOptimizationSteps function from the store
-      const updateOptimizationSteps = useTasks.getState().updateOptimizationSteps;
-      
-      // Check if we have optimization steps
-      if (record.optimizationSteps) {
-        // Reset only the failed steps to pending
-        const updatedSteps = { ...record.optimizationSteps };
-        
-        Object.keys(updatedSteps).forEach(step => {
-          if (updatedSteps[step].status === TASK_STATUS.FAILED) {
-            updatedSteps[step].status = TASK_STATUS.PENDING;
-            delete updatedSteps[step].error;
-          }
-        });
-        
-        // Check if all steps are completed (none are failed or pending)
-        const allStepsCompleted = Object.entries(updatedSteps).every(
-          ([key, stepStatus]) => {
-            // Skip the duplicate parsedJob entry if both exist
-            if (key === 'parsedJob' && updatedSteps[OPTIMIZATION_STEPS.PARSED_JOB]) {
-              return true;
-            }
-            return stepStatus.status === TASK_STATUS.COMPLETED;
-          }
-        );
-        
-        // Determine the appropriate task status
-        const taskStatus = allStepsCompleted ?
-          TASK_STATUS.COMPLETED :
-          TASK_STATUS.PROCESSING;
-        
-        // Update in the store first for immediate UI update
-        updateOptimizationSteps(record.id, updatedSteps);
-        
-        // Then update in the database
-        await taskService.updateTaskStatus(record.id, taskStatus, {
-          optimizationSteps: updatedSteps
-        });
-        
-        messageApi.open({
-          type: 'success',
-          content: 'Failed steps will be retried. Check the status indicators.'
-        });
-      } else {
-        // Legacy retry for tasks without optimization steps
-        await taskService.retryTask(record.id);
-        
-        // Re-submit to AI service
-        await aiService.improveResume(
-          record,
-          resume,
-          job
-        );
-        
-        messageApi.open({
-          type: 'success',
-          content: 'Task resubmitted successfully!'
-        });
-      }
-      
-      // Refresh tasks to update the UI
-      fetch();
-    } catch (error) {
-      console.error('Error retrying task:', error);
-      messageApi.open({
-        type: 'error',
-        content: 'Failed to retry task: ' + error.message,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const applyStatusHandle = async (record) => {
-    if (!record.taskId) {
-      messageApi.open({
-        type: 'error',
-        content: 'No task associated with this job!',
-      });
-      return;
-    }
-
-    try {
-      await taskService.updateTaskStatus(record.taskId, record.task.status, {
-        isApply: !record.isApply,
-        applyTime: new Date().toISOString()
-      });
-      
-      messageApi.open({
-        type: 'success',
-        content: !record.isApply ? 'Successfully applied!' : "Waiting to apply!",
-      });
-      
-      // Refresh jobs to update the UI
-      fetch();
-    } catch (error) {
-      console.error('Error updating apply status:', error);
-      messageApi.open({
-        type: 'error',
-        content: 'Failed to update apply status: ' + error.message,
-      });
-    }
-  };
+    await dbService.update(STORES.TASKS, record.id, {
+      resumeId: null,
+      status: TASK_STATUS.PENDING
+    });
+  }
 
   return (
     <div>
