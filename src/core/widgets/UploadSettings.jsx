@@ -63,15 +63,9 @@ export function UploadSettings() {
   }
 
   function setAsDefaultResume(userJSoN) {
-    // Update the default resume data
-    preferData.basics = userJSoN.basics;
-    preferData.education = userJSoN.education;
-    preferData.awards = userJSoN.awards;
-    preferData.volunteer = userJSoN.volunteer;
-    preferData.skills = userJSoN.skills;
-    preferData.activities = userJSoN.activities;
-    preferData.projects = userJSoN.projects;
-    preferData.work = userJSoN.work;
+    // Use the proper setter method to update the default resume data
+    // This will ensure changes are properly persisted to localStorage
+    preferData.setPreferredResume(userJSoN);
     
     console.log('Resume set as default successfully');
   }

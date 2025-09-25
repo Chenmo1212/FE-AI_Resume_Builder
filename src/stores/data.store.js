@@ -6,7 +6,7 @@ import defaultData from '../../src/stores/data.json';
 
 export const usePreferData = create(
   persist(
-    () => ({
+    (set) => ({
       basics: defaultData.basics,
       education: defaultData.education,
       awards: defaultData.awards,
@@ -15,6 +15,18 @@ export const usePreferData = create(
       activities: defaultData.activities,
       projects: defaultData.projects,
       work: defaultData.work,
+
+      // Add a setter method to properly update the state
+      setPreferredResume: (resumeData) => set({
+        basics: resumeData.basics,
+        education: resumeData.education,
+        awards: resumeData.awards,
+        volunteer: resumeData.volunteer,
+        skills: resumeData.skills,
+        activities: resumeData.activities,
+        projects: resumeData.projects,
+        work: resumeData.work,
+      }),
 
       getResume: function() {
         return {
@@ -29,7 +41,6 @@ export const usePreferData = create(
         };
       }
     }),
-
     {
       name: 'sprb-prefer',
     }
