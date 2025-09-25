@@ -524,10 +524,13 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
   const [updateTask] = useTasks((state) => [state.update]);
   const [isLoading, setLoading] = useState(false);
   const [isComparisonModalVisible, setComparisonModalVisible] = useState(false);
+  const [isResetModalVisible, setResetModalVisible] = useState(false);
   const [currentOptimizedResume, setCurrentOptimizedResume] = useState(null);
   const [currentRecord, setCurrentRecord] = useState(null);
+  const [recordToReset, setRecordToReset] = useState(null);
   const fetch = useTasks((state) => state.fetch, shallow);
   const jobs = useJobs((state) => state.jobs);
+  const { Modal } = require('antd');
   const resetBasics = useIntro((state) => state.reset);
   const resetSkills = useSkills((state) => state.reset);
   const resetWork = useWork((state) => state.reset);
@@ -652,7 +655,7 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
                 </>
               ) : ""}
               <Tooltip title="Reset Task">
-                <a onClick={() => resetTask(record)}>{getIcon('reset')}</a>
+                <a onClick={() => showResetConfirmation(record)}>{getIcon('reset')}</a>
               </Tooltip>
             </Space>
           </>
@@ -796,16 +799,50 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
     }
   };
 
-  const resetTask = async (record) => {
-    await updateTask(record.id, "optimizationSteps", null);
-    await updateTask(record.id, "resumeId", null);
-    await updateTask(record.id, "status", TASK_STATUS.PENDING);
+  // Function to show the reset confirmation modal
+  const showResetConfirmation = (record) => {
+    setRecordToReset(record);
+    setResetModalVisible(true);
+  };
 
-    await dbService.update(STORES.TASKS, record.id, {
-      resumeId: null,
-      status: TASK_STATUS.PENDING
-    });
-  }
+  // Function to handle the actual reset after confirmation
+  const handleResetConfirm = async () => {
+    if (!recordToReset) return;
+    
+    try {
+      setLoading(true);
+      
+      await updateTask(recordToReset.id, "optimizationSteps", null);
+      await updateTask(recordToReset.id, "resumeId", null);
+      await updateTask(recordToReset.id, "status", TASK_STATUS.PENDING);
+
+      await dbService.update(STORES.TASKS, recordToReset.id, {
+        resumeId: null,
+        status: TASK_STATUS.PENDING
+      });
+      
+      messageApi.open({
+        type: 'success',
+        content: 'Task has been reset successfully',
+      });
+    } catch (error) {
+      console.error('Error resetting task:', error);
+      messageApi.open({
+        type: 'error',
+        content: 'Failed to reset task: ' + error.message,
+      });
+    } finally {
+      setLoading(false);
+      setResetModalVisible(false);
+      setRecordToReset(null);
+    }
+  };
+  
+  // Function to cancel the reset operation
+  const handleResetCancel = () => {
+    setResetModalVisible(false);
+    setRecordToReset(null);
+  };
 
   console.log("TaskTable render - Modal visibility:", isComparisonModalVisible);
   console.log("TaskTable render - Current optimized resume:", currentOptimizedResume);
@@ -834,6 +871,22 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
         originalResume={resume}
         optimizedResume={currentOptimizedResume}
       />
+      
+      {/* Reset Confirmation Modal */}
+      <Modal
+        title="Confirm Reset"
+        visible={isResetModalVisible}
+        onOk={handleResetConfirm}
+        onCancel={handleResetCancel}
+        okText="Reset"
+        cancelText="Cancel"
+        okButtonProps={{ danger: true }}
+      >
+        <p>Are you sure you want to reset this task?</p>
+        <p style={{ color: '#ff4d4f' }}>
+          <strong>Warning:</strong> This will delete the optimized resume associated with this task. This action cannot be undone.
+        </p>
+      </Modal>
     </div>
   );
 };
