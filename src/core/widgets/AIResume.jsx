@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {Table, Button, message, Tag, Space, Spin, Tooltip} from 'antd';
+import ResumeComparisonModal from '../components/resume/ResumeComparisonModal';
 import {useTasks} from '../../stores/tasks.store';
 import { TASK_STATUS, taskService } from '../../services/task.service';
 import { dbService, STORES } from '../../services/db.service';
@@ -522,6 +523,9 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
   const [tasks] = useTasks((state) => [state.tasks]);
   const [updateTask] = useTasks((state) => [state.update]);
   const [isLoading, setLoading] = useState(false);
+  const [isComparisonModalVisible, setComparisonModalVisible] = useState(false);
+  const [currentOptimizedResume, setCurrentOptimizedResume] = useState(null);
+  const [currentRecord, setCurrentRecord] = useState(null);
   const fetch = useTasks((state) => state.fetch, shallow);
   const jobs = useJobs((state) => state.jobs);
   const resetBasics = useIntro((state) => state.reset);
@@ -638,9 +642,14 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
           <>
             <Space>
               {allStepsCompleted || hasFailedSteps ? (
-                <Tooltip title="View Resume">
-                  <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
-                </Tooltip>
+                <>
+                  <Tooltip title="View Resume">
+                    <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
+                  </Tooltip>
+                  <Tooltip title="Compare Changes">
+                    <a onClick={() => compareResume(record)}>{getIcon('diff')}</a>
+                  </Tooltip>
+                </>
               ) : ""}
               <Tooltip title="Reset Task">
                 <a onClick={() => resetTask(record)}>{getIcon('reset')}</a>
@@ -657,28 +666,28 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
     try {
       setLoading(true);
       // Fetch the resume from the resumes store using the resumeId
-      const newResume = await dbService.getById(STORES.RESUMES, record.resumeId);
-      if (!newResume) {
+      const optimizedResume = await dbService.getById(STORES.RESUMES, record.resumeId);
+      if (!optimizedResume) {
         throw new Error('Resume not found in database');
       }
-      console.log("====== newResume ======", newResume);
+      console.log("====== optimizedResume ======", optimizedResume);
       
-      // Update all resume sections
-      resetBasics(newResume.basics);
+      // Directly apply the optimized resume
+      resetBasics(optimizedResume.basics);
       resetSkills({
         ...resume.skills,
-        ...newResume.skills,
+        ...optimizedResume.skills,
       });
-      resetWork(newResume.work.map((company) => ({
+      resetWork(optimizedResume.work.map((company) => ({
         ...company,
         // Add * before highlights if they don't start with it
         summary: company.highlights.map(h => h.startsWith('*') ? h : `* ${h}`).join('\n'),
       })));
-      resetEducation(newResume.education);
-      resetActivities(newResume.activities);
-      resetProjects(newResume.projects);
-      resetVolunteer(newResume.volunteer);
-      resetAwards(newResume.awards);
+      resetEducation(optimizedResume.education);
+      resetActivities(optimizedResume.activities);
+      resetProjects(optimizedResume.projects);
+      resetVolunteer(optimizedResume.volunteer);
+      resetAwards(optimizedResume.awards);
       
       messageApi.open({
         type: 'success',
@@ -694,6 +703,98 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
       setLoading(false);
     }
   };
+  
+  // Function to compare the original resume with the optimized resume
+  const compareResume = async (record) => {
+    console.log("====== compareResume ======", record);
+    try {
+      setLoading(true);
+      // Fetch the resume from the resumes store using the resumeId
+      const optimizedResume = await dbService.getById(STORES.RESUMES, record.resumeId);
+      if (!optimizedResume) {
+        throw new Error('Resume not found in database');
+      }
+      console.log("====== optimizedResume for comparison ======", optimizedResume);
+      
+      // Store the current record and optimized resume for the modal
+      setCurrentRecord(record);
+      setCurrentOptimizedResume(optimizedResume);
+      
+      // Show the comparison modal
+      console.log("Setting modal visible to true");
+      setComparisonModalVisible(true);
+      console.log("Modal visibility state after setting:", true);
+    } catch (error) {
+      console.error('Error loading resume for comparison:', error);
+      messageApi.open({
+        type: 'error',
+        content: 'Failed to load resume for comparison: ' + error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Function to apply the optimized resume after user confirms in the modal
+  const applyOptimizedResume = (selectedOptimizations) => {
+    try {
+      // Apply selected optimizations to the resume
+      if (selectedOptimizations.basics) {
+        resetBasics(selectedOptimizations.basics);
+      }
+      
+      if (selectedOptimizations.skills) {
+        resetSkills({
+          ...resume.skills,
+          ...selectedOptimizations.skills,
+        });
+      }
+      
+      if (selectedOptimizations.work) {
+        resetWork(selectedOptimizations.work.map((company) => ({
+          ...company,
+          // Add * before highlights if they don't start with it
+          summary: company.highlights.map(h => h.startsWith('*') ? h : `* ${h}`).join('\n'),
+        })));
+      }
+      
+      if (selectedOptimizations.projects) {
+        resetProjects(selectedOptimizations.projects);
+      }
+      
+      if (selectedOptimizations.education) {
+        resetEducation(selectedOptimizations.education);
+      }
+      
+      if (selectedOptimizations.activities) {
+        resetActivities(selectedOptimizations.activities);
+      }
+      
+      if (selectedOptimizations.volunteer) {
+        resetVolunteer(selectedOptimizations.volunteer);
+      }
+      
+      if (selectedOptimizations.awards) {
+        resetAwards(selectedOptimizations.awards);
+      }
+      
+      // Close the modal
+      setComparisonModalVisible(false);
+      setCurrentOptimizedResume(null);
+      setCurrentRecord(null);
+      
+      messageApi.open({
+        type: 'success',
+        content: 'Resume optimizations applied successfully!',
+      });
+    } catch (error) {
+      console.error('Error applying optimized resume:', error);
+      messageApi.open({
+        type: 'error',
+        content: 'Failed to apply optimizations: ' + error.message,
+      });
+    }
+  };
 
   const resetTask = async (record) => {
     await updateTask(record.id, "optimizationSteps", null);
@@ -706,6 +807,9 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
     });
   }
 
+  console.log("TaskTable render - Modal visibility:", isComparisonModalVisible);
+  console.log("TaskTable render - Current optimized resume:", currentOptimizedResume);
+  
   return (
     <div>
       <Table
@@ -716,6 +820,19 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, m
         columns={columns}
         dataSource={tasks}
         loading={isLoading}
+      />
+      
+      {/* Resume Comparison Modal */}
+      <ResumeComparisonModal
+        visible={isComparisonModalVisible}
+        onCancel={() => {
+          setComparisonModalVisible(false);
+          setCurrentOptimizedResume(null);
+          setCurrentRecord(null);
+        }}
+        onApply={applyOptimizedResume}
+        originalResume={resume}
+        optimizedResume={currentOptimizedResume}
       />
     </div>
   );

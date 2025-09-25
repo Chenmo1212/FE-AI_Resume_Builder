@@ -60,7 +60,7 @@ import {
   FaPaperPlane,
 } from 'react-icons/fa';
 import { IoGitBranch, IoReload } from 'react-icons/io5';
-import { GoVerified } from 'react-icons/go';
+import { GoVerified, GoDiff } from 'react-icons/go';
 import { GrDrag } from 'react-icons/gr';
 
 const icons = new Map([
@@ -122,6 +122,7 @@ const icons = new Map([
   ['save', <MdSave />],
   ['upload', <MdCloudUpload />],
   ['reset', <IoReload />],
+  ['diff', <GoDiff />],
 ]);
 
 export function getIcon(iconName) {
