@@ -18,27 +18,29 @@ const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 export function ProjectHeader({ project }) {
   return (
-    <>
-      <Flex jc="space-between" ai="flex-end" style={{ lineHeight: 'initial' }}>
-        <ProjectName>{project.title}</ProjectName>
-        <ProjectLink>
-          {project.demoUrl ? (
-            <a href={project.demoUrl} key={project.demoUrl}>
-              {getIcon(project.demoIcon)}
-            </a>
-          ) : (
-            ''
-          )}
-          &nbsp;
-          {project.githubUrl ? (
-            <a href={project.githubUrl} key={project.githubUrl}>
-              {getIcon(project.githubIcon)}
-            </a>
-          ) : (
-            ''
-          )}
-        </ProjectLink>
-      </Flex>
+    <> {
+      project.title || project.demoUrl || project.githubUrl ? (
+        <Flex jc="space-between" ai="flex-end" style={{ lineHeight: 'initial' }}>
+          <ProjectName>{project.title}</ProjectName>
+          <ProjectLink>
+            {project.demoUrl ? (
+              <a href={project.demoUrl} key={project.demoUrl}>
+                {getIcon(project.demoIcon)}
+              </a>
+            ) : (
+              ''
+            )}
+            &nbsp;
+            {project.githubUrl ? (
+              <a href={project.githubUrl} key={project.githubUrl}>
+                {getIcon(project.githubIcon)}
+              </a>
+            ) : (
+              ''
+            )}
+          </ProjectLink>
+        </Flex>
+      ) : ""}
     </>
   );
 }

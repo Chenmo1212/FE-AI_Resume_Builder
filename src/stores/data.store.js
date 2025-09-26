@@ -350,7 +350,7 @@ export const useProjects = create(
 
       changeOrder: ({oldIndex, newIndex}) =>
         set((state) => ({
-          project: arrayMoveImmutable(state.projects, oldIndex, newIndex),
+          projects: arrayMoveImmutable(state.projects, oldIndex, newIndex),
         })),
     }),
     {
