@@ -58,6 +58,11 @@ export const INTRO_METADATA = [
 
 export const SOCIAL_METADATA = [
   {
+    label: 'Personal',
+    type: 'Input',
+    value: 'globe',
+  },
+  {
     label: 'Linkedin',
     type: 'Input',
     value: 'linkedin',
