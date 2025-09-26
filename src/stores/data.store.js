@@ -77,7 +77,7 @@ const labels = [
   'Tools',
   'Education',
   'Biography',
-  'Total Experience',
+  'Labels',
   'Involvements',
   'References',
 ];

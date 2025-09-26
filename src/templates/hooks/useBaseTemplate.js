@@ -48,6 +48,9 @@ export function useBaseTemplate(customSectionOrder = null) {
         case labels[13]:
           navIndex = leftNavList.findIndex((e) => e.title === 'Intro');
           break;
+        case labels[11]:
+          navIndex = leftNavList.findIndex((e) => e.title === 'Label');
+          break;
         default:
           navIndex = leftNavList.findIndex((e) => e.title === type);
       }

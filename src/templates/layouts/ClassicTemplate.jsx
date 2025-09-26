@@ -74,7 +74,7 @@ export default function ClassicTemplate() {
           .filter(section => section.id !== 'intro')
           .map(section => (
             <div key={section.id}>
-              <SectionTitle>{section.title}</SectionTitle>
+              <SectionTitle onClick={(e) => baseTemplate.clickHandler(e, "Labels")}>{section.title}</SectionTitle>
               <div onClick={(e) => baseTemplate.clickHandler(e, section.navKey)}>
                 {section.id === 'skills' ? (
                   <>
