@@ -55,9 +55,9 @@ export function Intro({ intro }) {
           </>
         )}
         
-        <span>{intro.email}</span>
+        <span><a href={"mailto:" + intro.email}>{intro.email}</a></span>
         <span>|</span>
-        <span>{intro.phone}</span>
+        <span><a href={"tel:" + intro.phone}>{intro.phone}</a></span>
         <span>|</span>
         <span>{intro.location.address}</span>
       </FlexHC>

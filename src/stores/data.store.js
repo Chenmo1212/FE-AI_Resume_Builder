@@ -216,6 +216,7 @@ export const useWork = create(
         set((state) =>
           produce(state, (draftState) => {
             draftState.companies[index][field] = value;
+            if (field === 'summary') draftState.companies[index].highlights = value.split("\n");
           })),
 
       purge: (index) =>

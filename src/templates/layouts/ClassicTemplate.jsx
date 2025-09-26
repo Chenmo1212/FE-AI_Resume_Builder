@@ -50,7 +50,10 @@ export default function ClassicTemplate() {
       <Exp companies={companies} config={config} isShowTimeline={false} />
     ),
     renderSkills: (items) => (
-      <UnratedTabsText label="Skills" items={items} />
+      <UnratedTabsText label="Technologies" items={items} />
+    ),
+    renderLanguages: (items) => (
+      <UnratedTabsText label="Languages" items={items} />
     ),
     renderPractices: (items) => (
       <UnratedTabsText label="Methodologies" items={items} />
@@ -59,7 +62,7 @@ export default function ClassicTemplate() {
   
   // Custom container renderer for this template
   const renderContainer = (sections, components, baseTemplate) => {
-    const { intro, practices } = baseTemplate;
+    const { intro, practices, languages } = baseTemplate;
     
     return (
       <ResumeContainer>
@@ -73,10 +76,20 @@ export default function ClassicTemplate() {
             <div key={section.id}>
               <SectionTitle>{section.title}</SectionTitle>
               <div onClick={(e) => baseTemplate.clickHandler(e, section.navKey)}>
-                {section.component({ ...components })}
-                {section.id === 'skills' && practices.length > 0 &&
-                  components.renderPractices(practices)
-                }
+                {section.id === 'skills' ? (
+                  <>
+                    {languages.length > 0 ? (<>
+                        {components.renderLanguages(languages)}
+                        {section.component({ ...components })}
+                      </>
+                    ) : (
+                      section.component({ ...components })
+                    )}
+                    {practices.length > 0 && components.renderPractices(practices)}
+                  </>
+                ) : (
+                  section.component({ ...components })
+                )}
               </div>
             </div>
           ))
