@@ -13,6 +13,7 @@ import { useActivities, useEducation, useIntro, useProjects, useSkills, useWork 
 import { SideDrawer } from '../widgets/SideDrawer';
 import { SideMenu } from '../widgets/SideMenu';
 import { PrintSettings } from '../widgets/PrintSettings';
+import { SettingsModal } from '../widgets/SettingsModal';
 import { getIcon } from '../../styles/icons';
 
 const Wrapper = styled.div`
@@ -71,6 +72,7 @@ const IconButton = styled.button`
 `;
 
 export const Sidebar = () => {
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useRightDrawer((state) => [state.activeTab, state.update]);
   const zoom = useZoom((state) => state.zoom);
   const updateZoom = useZoom((state) => state.update);
@@ -135,7 +137,13 @@ export const Sidebar = () => {
         <UploadSettings />
         <SaveSettings />
         <PrintSettings />
+        <IconWrapper onClick={() => setSettingsOpen(true)}>
+          <Tooltip placement="left" title="Settings">
+            <IconButton>{getIcon('settings')}</IconButton>
+          </Tooltip>
+        </IconWrapper>
       </SideMenu>
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <SideBackground isShown={activeTab !== -1} update={setActiveTab} />
     </Wrapper>
   );
