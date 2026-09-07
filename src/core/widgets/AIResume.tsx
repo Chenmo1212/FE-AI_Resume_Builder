@@ -6,6 +6,7 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import {getIcon} from 'src/styles/icons';
 import {useTasks, Task, Resume} from '../../stores/jobs.store';
 import shallow from 'zustand/shallow';
+import { useAIStore } from '../../stores/ai.store';
 import {
   useActivities,
   useAwards,
@@ -23,6 +24,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
   const [isLoading, setLoading] = useState(false);
   const [isPrefer, setIsPrefer] = useState(true);
   const preferResume = usePreferData((state: any) => state.getResume(), shallow);
+  const getAIConfig = useAIStore((state) => state.getConfig);
 
   const handleSubmit = () => {
     setLoading(true)
@@ -38,6 +40,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
     create({
       task_list: selectedRows,
       resume: isPrefer ? preferResume : resume,
+      ai_config: getAIConfig(),
     });
     messageApi.open({
       type: 'success',
