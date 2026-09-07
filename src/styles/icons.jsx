@@ -35,6 +35,7 @@ import {
   MdLanguage,
   MdPets,
   MdOutlinePersonPin,
+  MdSettings,
 } from 'react-icons/md';
 import {
   SiBehance,
@@ -122,6 +123,7 @@ const icons = new Map([
   ['save', <MdSave />],
   ['upload', <MdCloudUpload />],
   ['reset', <IoReload />],
+  ['settings', <MdSettings />],
 ]);
 
 export function getIcon(iconName) {
