@@ -39,3 +39,11 @@ export function updateTask(id, data) {
 export function addTasks(data) {
   return api.post('/tasks/run', JSON.stringify(data));
 }
+
+export function getPromptTemplates() {
+  return api.get('/prompt-templates');
+}
+
+export function updatePromptTemplate(id: string, messages: Array<{ role: string; content: string }>) {
+  return api.put('/prompt-templates/' + id, JSON.stringify({ messages }));
+}
