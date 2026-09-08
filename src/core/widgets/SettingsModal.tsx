@@ -3,6 +3,7 @@ import { Modal, Select, Slider, Checkbox } from 'antd';
 import styled from 'styled-components';
 import { useAIStore } from '../../stores/ai.store';
 import type { AIModel, AISection } from '../../stores/ai.store';
+import { PromptStudioPane } from './PromptStudioPane';
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 
@@ -89,9 +90,12 @@ const CheckboxGrid = styled.div`
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-type CategoryKey = 'ai';
+type CategoryKey = 'ai' | 'prompt-studio';
 
-const CATEGORIES: { key: CategoryKey; label: string }[] = [{ key: 'ai', label: 'AI' }];
+const CATEGORIES: { key: CategoryKey; label: string }[] = [
+  { key: 'ai', label: 'AI' },
+  { key: 'prompt-studio', label: 'Prompts' },
+];
 
 const AI_MODELS: { label: string; value: AIModel }[] = [
   { label: 'gpt-4o', value: 'gpt-4o' },
@@ -171,6 +175,7 @@ const AIPane: React.FC = () => {
 
 const PANE_MAP: Record<CategoryKey, React.ReactNode> = {
   ai: <AIPane />,
+  'prompt-studio': <PromptStudioPane />,
 };
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
