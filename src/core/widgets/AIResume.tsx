@@ -123,12 +123,17 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       title: 'Status',
       dataIndex: 'status',
       render: (status: number) => {
+        if (status === -2) return <Tag icon={getIcon('delete')} color="error">Failed</Tag>;
         if (status === -1) return <Tag icon={getIcon('cloud')} color="default"/>;
-        else if (status === 0) return <Tag icon={getIcon('clock')} color="default"/>;
-        else if (status === 1) return <Tag icon={getIcon('sync')} color="processing"/>;
-        else if (status === 2) return <Tag icon={getIcon('check')} color="success"/>;
+        if (status === 0) return <Tag icon={getIcon('clock')} color="default"/>;
+        if (status === 1) return <Tag icon={getIcon('sync')} color="processing"/>;
+        if (status === 2) return <Tag icon={getIcon('check')} color="success"/>;
       },
       filters: [
+        {
+          text: 'Failed',
+          value: -2,
+        },
         {
           text: 'Default',
           value: -1,
