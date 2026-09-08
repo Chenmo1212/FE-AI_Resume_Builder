@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Progress, Typography } from 'antd';
 import { getTaskProgressUrl } from '../../axios/api';
 
 const { Text } = Typography;
 
-interface ProgressEvent {
+interface SSEProgressEvent {
   step: string;
   pct: number;
   status: 'running' | 'done' | 'error';
@@ -31,27 +31,31 @@ export const TaskProgressBar: React.FC<TaskProgressBarProps> = ({ taskId, title,
   const [pct, setPct] = useState<number>(0);
   const [step, setStep] = useState<string>('Waiting...');
   const [statusType, setStatusType] = useState<'normal' | 'success' | 'exception'>('normal');
-  const esRef = useRef<EventSource | null>(null);
+  // Store onDone in a ref so the EventSource closure always calls the latest version
+  // without needing to reconnect the stream when only the callback changes.
+  const onDoneRef = useRef(onDone);
+  useEffect(() => { onDoneRef.current = onDone; }, [onDone]);
+
+  const formatStep = useCallback(() => step, [step]);
 
   useEffect(() => {
     const url = getTaskProgressUrl(taskId);
     const es = new EventSource(url);
-    esRef.current = es;
 
     es.onmessage = (e: MessageEvent) => {
       try {
-        const data: ProgressEvent = JSON.parse(e.data);
+        const data: SSEProgressEvent = JSON.parse(e.data);
         setPct(data.pct);
         setStep(STEP_LABELS[data.step] ?? data.step);
 
         if (data.status === 'done') {
           setStatusType('success');
           es.close();
-          onDone?.();
+          onDoneRef.current?.();
         } else if (data.status === 'error') {
           setStatusType('exception');
           es.close();
-          onDone?.();
+          onDoneRef.current?.();
         }
       } catch {
         // Ignore malformed events (e.g. keep-alive comments)
@@ -62,7 +66,7 @@ export const TaskProgressBar: React.FC<TaskProgressBarProps> = ({ taskId, title,
       setStatusType('exception');
       setStep('Connection error');
       es.close();
-      onDone?.();
+      onDoneRef.current?.();
     };
 
     return () => {
@@ -77,7 +81,7 @@ export const TaskProgressBar: React.FC<TaskProgressBarProps> = ({ taskId, title,
         percent={pct}
         status={statusType}
         size="small"
-        format={() => step}
+        format={formatStep}
         style={{ marginTop: 2 }}
       />
     </div>
