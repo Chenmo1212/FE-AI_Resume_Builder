@@ -53,9 +53,10 @@ export const TaskProgressBar: React.FC<TaskProgressBarProps> = ({ taskId, title,
           es.close();
           onDoneRef.current?.();
         } else if (data.status === 'error') {
+          // Keep the bar visible so the user sees the red failure state.
+          // onDone is NOT called on error — the bar stays until next submission.
           setStatusType('exception');
           es.close();
-          onDoneRef.current?.();
         }
       } catch {
         // Ignore malformed events (e.g. keep-alive comments)
@@ -63,10 +64,10 @@ export const TaskProgressBar: React.FC<TaskProgressBarProps> = ({ taskId, title,
     };
 
     es.onerror = () => {
+      // Connection dropped — keep bar visible with error state.
       setStatusType('exception');
       setStep('Connection error');
       es.close();
-      onDoneRef.current?.();
     };
 
     return () => {
