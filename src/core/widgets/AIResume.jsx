@@ -17,8 +17,11 @@ import { getIcon } from '../../styles/icons';
 import { Container } from '@mui/material';
 import { Heading } from '../components/editor/Editor';
 
+import { useAIStore } from '../../stores/ai.store';
+
 const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
   const create = useTasks((state) => state.create, shallow);
+  const getAIConfig = useAIStore((state) => state.getConfig);
   const [isLoading, setLoading] = useState(false);
   const [isPrefer, setIsPrefer] = useState(true);
   const preferResume = usePreferData((state) => state.getResume(), shallow);
@@ -37,6 +40,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
     create({
       task_list: selectedRows,
       resume: isPrefer ? preferResume : resume,
+      ai_config: getAIConfig(),
     });
     messageApi.open({
       type: 'success',

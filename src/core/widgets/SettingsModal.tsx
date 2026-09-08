@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Select, Slider, Checkbox } from 'antd';
 import styled from 'styled-components';
-import { useAIStore, AIModel, AISection } from '../../stores/ai.store';
+import { useAIStore } from '../../stores/ai.store';
+import type { AIModel, AISection } from '../../stores/ai.store';
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 
@@ -182,6 +183,7 @@ export const SettingsModal: React.FC<{ open: boolean; onClose: () => void }> = (
 
   return (
     <Modal
+      visible={open}
       open={open}
       onCancel={onClose}
       footer={null}
