@@ -205,16 +205,18 @@ export const useTasks = create(
         })
       },
 
-      create: (data: any) => {
+      create: (data: any, onSuccess?: (taskIds: string[]) => void) => {
         useTasks.getState().updateLoading(true);
         addTasks(data)
           .then((res) => {
-            console.log(res)
+            const taskIds: string[] = res.data?.task_ids ?? [];
+            if (onSuccess) onSuccess(taskIds);
             useTasks.getState().updateLoading(false);
             useTasks.getState().fetch();
           })
           .catch((err) => {
             console.log(err);
+            useTasks.getState().updateLoading(false);
           });
       },
 

@@ -18,8 +18,9 @@ import {
   useWork,
 } from '../../stores/data.store';
 import {updateResume, updateTask} from "../../axios/api";
+import { TaskProgressBar } from './TaskProgressBar';
 
-const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
+const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi, onTasksSubmitted}) => {
   const create = useTasks((state: any) => state.create, shallow);
   const [isLoading, setLoading] = useState(false);
   const [isPrefer, setIsPrefer] = useState(true);
@@ -37,11 +38,21 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
       return;
     }
 
-    create({
-      task_list: selectedRows,
-      resume: isPrefer ? preferResume : resume,
-      ai_config: getAIConfig(),
-    });
+    create(
+      {
+        task_list: selectedRows,
+        resume: isPrefer ? preferResume : resume,
+        ai_config: getAIConfig(),
+      },
+      (taskIds: string[]) => {
+        const rows = selectedRows as any[];
+        const tasks = taskIds.map((id, idx) => ({
+          taskId: id,
+          title: rows[idx]?.title ?? `Task ${idx + 1}`,
+        }));
+        onTasksSubmitted(tasks);
+      }
+    );
     messageApi.open({
       type: 'success',
       content: 'Submit task successfully!',
@@ -235,6 +246,7 @@ export const AIResume = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [progressTasks, setProgressTasks] = useState<Array<{ taskId: string; title: string }>>([]);
   const basics = useIntro((state: any) => state.intro);
   const skills = useSkills((state: any) => state);
   const work = useWork((state: any) => state.companies);
@@ -274,7 +286,22 @@ export const AIResume = () => {
             setSelectedTasks={setSelectedTasks}
             resume={resume}
             messageApi={messageApi}
+            onTasksSubmitted={(tasks) => setProgressTasks((prev) => [...prev, ...tasks])}
           />
+          {progressTasks.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              {progressTasks.map(({ taskId, title }) => (
+                <TaskProgressBar
+                  key={taskId}
+                  taskId={taskId}
+                  title={title}
+                  onDone={() =>
+                    setProgressTasks((prev) => prev.filter((t) => t.taskId !== taskId))
+                  }
+                />
+              ))}
+            </div>
+          )}
         </Container>
       </Spin>
     </>
