@@ -39,3 +39,20 @@ export function updateTask(id, data) {
 export function addTasks(data) {
   return api.post('/tasks/run', JSON.stringify(data));
 }
+
+export function getPromptTemplates() {
+  return api.get('/prompt-templates');
+}
+
+export function updatePromptTemplate(id, messages) {
+  return api.put('/prompt-templates/' + id, JSON.stringify({ messages }));
+}
+
+/**
+ * Returns the absolute URL for the SSE progress stream of a task.
+ * Cannot use axios for SSE — caller uses this URL with native EventSource.
+ */
+export function getTaskProgressUrl(taskId) {
+  const base = (api.defaults.baseURL ?? '').replace(/\/$/, '');
+  return `${base}/tasks/${taskId}/progress`;
+}
