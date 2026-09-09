@@ -10,31 +10,37 @@ export const useAIStore = create(
       model: 'gpt-4o-mini',
       temperature: 0.7,
       sections: ALL_SECTIONS,
+      provider: 'openai',
+      apiKey: '',
+      baseUrl: '',
 
       setModel: (model) =>
-        set(
-          produce((state) => {
-            state.model = model;
-          })
-        ),
+        set(produce((state) => { state.model = model; })),
 
       setTemperature: (temperature) =>
-        set(
-          produce((state) => {
-            state.temperature = temperature;
-          })
-        ),
+        set(produce((state) => { state.temperature = temperature; })),
 
       setSections: (sections) =>
-        set(
-          produce((state) => {
-            state.sections = sections;
-          })
-        ),
+        set(produce((state) => { state.sections = sections; })),
+
+      setProvider: (provider) =>
+        set(produce((state) => { state.provider = provider; })),
+
+      setApiKey: (apiKey) =>
+        set(produce((state) => { state.apiKey = apiKey; })),
+
+      clearApiKey: () =>
+        set(produce((state) => { state.apiKey = ''; })),
+
+      setBaseUrl: (baseUrl) =>
+        set(produce((state) => { state.baseUrl = baseUrl; })),
+
+      clearBaseUrl: () =>
+        set(produce((state) => { state.baseUrl = ''; })),
 
       getConfig: () => {
-        const { model, temperature, sections } = get();
-        return { model, temperature, sections };
+        const { model, temperature, sections, provider, apiKey, baseUrl } = get();
+        return { model, temperature, sections, provider, apiKey, baseUrl };
       },
     }),
     { name: 'sprb-ai-config' }
