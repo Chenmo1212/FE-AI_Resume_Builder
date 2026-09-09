@@ -119,13 +119,14 @@ const CheckboxGrid = styled.div`
 
 const AI_MODELS_BY_PROVIDER = {
   openai: [
-    { value: 'gpt-4o', label: 'GPT-4o' },
-    { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+    { value: 'gpt-5.6',      label: 'GPT-5.6 (智能/成本平衡)' },
+    { value: 'gpt-5.6-terra', label: 'GPT-5.6 Terra (性价比)' },
+    { value: 'gpt-5.6-luna',  label: 'GPT-5.6 Luna (低成本)' },
+    { value: 'gpt-6-astra',   label: 'GPT-6 Astra (最强)' },
   ],
   deepseek: [
-    { value: 'deepseek-chat', label: 'DeepSeek Chat' },
-    { value: 'deepseek-reasoner', label: 'DeepSeek Reasoner' },
+    { value: 'deepseek-v4-flash', label: 'DeepSeek V4 Flash (高性价比)' },
+    { value: 'deepseek-v4-pro',   label: 'DeepSeek V4 Pro (高性能)' },
   ],
 };
 
@@ -149,23 +150,17 @@ const AIPane = () => {
   const sections    = useAIStore((state) => state.sections);
   const provider    = useAIStore((state) => state.provider);
   const apiKey      = useAIStore((state) => state.apiKey);
-  const baseUrl     = useAIStore((state) => state.baseUrl);
   const setModel       = useAIStore((state) => state.setModel);
   const setTemperature = useAIStore((state) => state.setTemperature);
   const setSections    = useAIStore((state) => state.setSections);
   const setProvider    = useAIStore((state) => state.setProvider);
   const setApiKey      = useAIStore((state) => state.setApiKey);
   const clearApiKey    = useAIStore((state) => state.clearApiKey);
-  const setBaseUrl     = useAIStore((state) => state.setBaseUrl);
-  const clearBaseUrl   = useAIStore((state) => state.clearBaseUrl);
 
   // When provider changes, reset model to first option for that provider
   const handleProviderChange = (val) => {
     setProvider(val);
     setModel(AI_MODELS_BY_PROVIDER[val][0].value);
-    if (val === 'openai') {
-      clearBaseUrl();
-    }
   };
 
   const handleSectionChange = (sectionKey, checked) => {
@@ -202,7 +197,6 @@ const AIPane = () => {
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
             placeholder={`Enter your ${provider === 'openai' ? 'OpenAI' : 'DeepSeek'} API key`}
-            style={{ flex: 1, background: '#1a1a1a', borderColor: '#444', color: '#ccc' }}
           />
           <Button
             size="small"
@@ -215,34 +209,9 @@ const AIPane = () => {
           </Button>
         </div>
         <div style={{ color: '#666', fontSize: 11, marginTop: 4 }}>
-          Stored locally. Leave blank to use the server default key.
+          Stored locally in your browser only — never stored in any server.
         </div>
       </ControlGroup>
-
-      {/* Base URL — DeepSeek only */}
-      {provider === 'deepseek' && (
-        <ControlGroup>
-          <SectionTitle>Base URL</SectionTitle>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Input
-              size="small"
-              value={baseUrl}
-              onChange={(e) => setBaseUrl(e.target.value)}
-              placeholder="https://api.deepseek.com"
-              style={{ flex: 1, background: '#1a1a1a', borderColor: '#444', color: '#ccc' }}
-            />
-            <Button
-              size="small"
-              danger
-              disabled={!baseUrl}
-              onClick={clearBaseUrl}
-              title="Clear base URL"
-            >
-              Clear
-            </Button>
-          </div>
-        </ControlGroup>
-      )}
 
       {/* Model */}
       <ControlGroup>
