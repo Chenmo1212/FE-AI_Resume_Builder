@@ -10,6 +10,7 @@ import {
   AiOutlineCloud,
   AiOutlineEye,
   AiOutlineCloudUpload,
+  AiOutlineStop,
 } from 'react-icons/ai';
 import {
   MdVpnKey,
@@ -123,6 +124,7 @@ const icons = new Map([
   ['save', <MdSave />],
   ['upload', <MdCloudUpload />],
   ['reset', <IoReload />],
+  ['stop', <AiOutlineStop />],
   ['settings', <MdSettings />],
 ]);
 

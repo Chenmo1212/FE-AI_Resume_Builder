@@ -9,7 +9,8 @@ import {
   purgeJob,
   addTasks,
   addTask,
-  getTasks
+  getTasks,
+  cancelTask,
 } from '../axios/api';
 
 const JOBS_DATA = [];
@@ -202,7 +203,17 @@ export const useTasks = create(
         set(produce((state) => {
           state.loading = bool;
         }));
-      }
+      },
+
+      cancel: (taskId) => {
+        cancelTask(taskId)
+          .then(() => {
+            useTasks.getState().fetch();
+          })
+          .catch((err) => {
+            console.error('Failed to cancel task:', err);
+          });
+      },
     }),
     {
       name: 'sprb-tasks',
