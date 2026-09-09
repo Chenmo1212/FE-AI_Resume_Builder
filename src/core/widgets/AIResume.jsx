@@ -77,7 +77,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
 const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, resume, messageApi}) => {
   const [tasks] = useTasks((state) => [state.tasks]);
   const [isLoading, setLoading] = useState(false);
-  const fetch = useTasks((state) => state.fetch, shallow);
+  const [fetch, cancel] = useTasks((state) => [state.fetch, state.cancel], shallow);
   const resetBasics = useIntro((state) => state.reset);
   const resetSkills = useSkills((state) => state.reset);
   const resetWork = useWork((state) => state.reset);
@@ -161,6 +161,9 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
             <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
             <a onClick={() => uploadResume(record)}>{getIcon('upload')}</a>
             <a onClick={() => applyStatusHandle(record)} style={{ color: record.isApply ? '#52c41a' : '' }}>{getIcon('apply')}</a>
+            {(record.status === 0 || record.status === 1) && (
+              <a onClick={() => handleCancel(record)} style={{ color: '#ff4d4f' }}>{getIcon('stop')}</a>
+            )}
           </Space>
         </>
       ),
@@ -215,6 +218,14 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       setLoading(false);
     })
   }
+
+  const handleCancel = (record) => {
+    cancel(record.id);
+    messageApi.open({
+      type: 'info',
+      content: 'Cancellation requested.',
+    });
+  };
 
   return (
     <div>
