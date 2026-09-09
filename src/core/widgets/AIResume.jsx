@@ -18,8 +18,9 @@ import { Container } from '@mui/material';
 import { Heading } from '../components/editor/Editor';
 
 import { useAIStore } from '../../stores/ai.store';
+import { TaskProgressBar } from './TaskProgressBar';
 
-const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
+const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi, onTasksSubmitted}) => {
   const create = useTasks((state) => state.create, shallow);
   const getAIConfig = useAIStore((state) => state.getConfig);
   const [isLoading, setLoading] = useState(false);
@@ -37,11 +38,21 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
       return;
     }
 
-    create({
-      task_list: selectedRows,
-      resume: isPrefer ? preferResume : resume,
-      ai_config: getAIConfig(),
-    });
+    create(
+      {
+        task_list: selectedRows,
+        resume: isPrefer ? preferResume : resume,
+        ai_config: getAIConfig(),
+      },
+      (taskIds) => {
+        const rows = selectedRows;
+        const tasks = taskIds.map((id, idx) => ({
+          taskId: id,
+          title: rows[idx]?.title ?? `Task ${idx + 1}`,
+        }));
+        onTasksSubmitted(tasks);
+      }
+    );
     messageApi.open({
       type: 'success',
       content: 'Submit task successfully!',
@@ -123,12 +134,17 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       title: 'Status',
       dataIndex: 'status',
       render: (status) => {
+        if (status === -2) return <Tag icon={getIcon('delete')} color="error">Failed</Tag>;
         if (status === -1) return <Tag icon={getIcon('cloud')} color="default"/>;
         else if (status === 0) return <Tag icon={getIcon('clock')} color="default"/>;
         else if (status === 1) return <Tag icon={getIcon('sync')} color="processing"/>;
         else if (status === 2) return <Tag icon={getIcon('check')} color="success"/>;
       },
       filters: [
+        {
+          text: 'Failed',
+          value: -2,
+        },
         {
           text: 'Default',
           value: -1,
@@ -230,6 +246,7 @@ export const AIResume = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [progressTasks, setProgressTasks] = useState([]);
   const basics = useIntro((state) => state.intro);
   const skills = useSkills((state) => state);
   const work = useWork((state) => state.companies);
@@ -269,7 +286,22 @@ export const AIResume = () => {
             setSelectedTasks={setSelectedTasks}
             resume={resume}
             messageApi={messageApi}
+            onTasksSubmitted={(tasks) => setProgressTasks((prev) => [...prev, ...tasks])}
           />
+          {progressTasks.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              {progressTasks.map(({ taskId, title }) => (
+                <TaskProgressBar
+                  key={taskId}
+                  taskId={taskId}
+                  title={title}
+                  onDone={() =>
+                    setProgressTasks((prev) => prev.filter((t) => t.taskId !== taskId))
+                  }
+                />
+              ))}
+            </div>
+          )}
         </Container>
       </Spin>
     </>

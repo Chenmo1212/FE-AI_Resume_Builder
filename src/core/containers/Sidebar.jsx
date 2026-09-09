@@ -45,7 +45,7 @@ const sideBarList = [
     key: 2,
     title: 'Robot',
     icon: 'robot',
-    disabled: true,
+    disabled: false,
     component: <AIResume />,
   },
 ];

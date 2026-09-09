@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Modal, Select, Slider, Checkbox } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Modal, Select, Slider, Checkbox, Menu, Spin } from 'antd';
 import styled from 'styled-components';
 import { useAIStore } from '../../stores/ai.store';
+import { usePromptTemplatesStore } from '../../stores/promptTemplates.store';
 import { PromptStudioPane } from './PromptStudioPane';
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
@@ -11,33 +12,68 @@ const ModalBody = styled.div`
   min-height: 300px;
 `;
 
-const CategoryList = styled.ul`
-  width: 130px;
+const StyledMenu = styled(Menu)`
+  width: 160px;
   flex-shrink: 0;
-  margin: 0;
-  padding: 8px 0;
-  list-style: none;
-  border-right: 1px solid #3a3a3a;
-`;
-
-const CategoryItem = styled.li`
-  padding: 8px 16px;
-  cursor: pointer;
-  border-radius: 4px 0 0 4px;
+  background: #2a2a2a !important;
+  border-right: 1px solid #3a3a3a !important;
   font-size: 13px;
-  color: ${({ active }) => (active ? '#fff' : '#aaa')};
-  background: ${({ active }) => (active ? '#3a3a3a' : 'transparent')};
-  transition: background 0.15s, color 0.15s;
 
-  &:hover {
-    color: #fff;
-    background: #333;
+  /* top-level items & submenu titles */
+  .ant-menu-item,
+  .ant-menu-submenu-title {
+    font-size: 13px;
+    height: 36px;
+    line-height: 36px;
+    margin: 0 !important;
+    padding-left: 16px !important;
+    border-radius: 4px 0 0 4px;
+  }
+
+  /* sub-items (indented) */
+  .ant-menu-sub .ant-menu-item {
+    padding-left: 28px !important;
+    font-size: 12px;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  /* sub-menu background */
+  .ant-menu-sub.ant-menu-inline {
+    background: #2a2a2a !important;
+  }
+
+  /* selected item */
+  .ant-menu-item-selected,
+  .ant-menu-item-selected:hover {
+    background: #3a3a3a !important;
+    color: #fff !important;
+  }
+
+  /* hover */
+  .ant-menu-item:hover,
+  .ant-menu-submenu-title:hover {
+    background: #333 !important;
+    color: #fff !important;
+  }
+
+  /* arrow */
+  .ant-menu-submenu-arrow::before,
+  .ant-menu-submenu-arrow::after {
+    background: #666 !important;
+  }
+  .ant-menu-submenu-open > .ant-menu-submenu-title .ant-menu-submenu-arrow::before,
+  .ant-menu-submenu-open > .ant-menu-submenu-title .ant-menu-submenu-arrow::after,
+  .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::before,
+  .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::after {
+    background: #aaa !important;
   }
 `;
 
 const ContentPane = styled.div`
   flex: 1;
   padding: 8px 24px 8px 20px;
+  overflow: auto;
 `;
 
 const SectionTitle = styled.div`
@@ -93,11 +129,6 @@ const SECTION_OPTIONS = [
   { key: 'summary', label: 'Summary' },
 ];
 
-const CATEGORIES = [
-  { key: 'ai', label: 'AI' },
-  { key: 'prompt-studio', label: 'Prompts' },
-];
-
 // ─── AI Pane ─────────────────────────────────────────────────────────────────
 
 const AIPane = () => {
@@ -117,7 +148,6 @@ const AIPane = () => {
     } else {
       next = sections.filter((s) => s !== sectionKey);
     }
-    // At least 1 section must remain checked
     if (next.length === 0) return;
     setSections(next);
   };
@@ -132,7 +162,6 @@ const AIPane = () => {
           onChange={setModel}
           options={AI_MODELS}
           style={{ width: 160 }}
-          dropdownStyle={{ background: '#2a2a2a' }}
         />
       </ControlGroup>
 
@@ -170,18 +199,29 @@ const AIPane = () => {
   );
 };
 
-const PANE_MAP = {
-  ai: <AIPane />,
-  'prompt-studio': <PromptStudioPane />,
-};
-
 // ─── Modal ───────────────────────────────────────────────────────────────────
 
-export const SettingsModal = ({
-  open,
-  onClose,
-}) => {
-  const [activeCategory, setActiveCategory] = useState('ai');
+export const SettingsModal = ({ open, onClose }) => {
+  const [selectedKey, setSelectedKey] = useState('ai');
+
+  const { templates, loading, fetchTemplates, isDirty } = usePromptTemplatesStore();
+
+  useEffect(() => {
+    if (open && templates.length === 0) {
+      fetchTemplates();
+    }
+  }, [open]);
+
+  // Derive active prompt template id from selected key
+  const activePromptId = selectedKey.startsWith('prompt:')
+    ? selectedKey.slice('prompt:'.length)
+    : null;
+
+  const renderContent = () => {
+    if (selectedKey === 'ai') return <AIPane />;
+    if (activePromptId) return <PromptStudioPane activeId={activePromptId} />;
+    return null;
+  };
 
   return (
     <Modal
@@ -190,23 +230,43 @@ export const SettingsModal = ({
       onCancel={onClose}
       footer={null}
       title="Settings"
-      width={560}
+      width={'60%'}
       bodyStyle={{ padding: '8px 0', background: '#2a2a2a' }}
       style={{ top: 80 }}
     >
       <ModalBody>
-        <CategoryList>
-          {CATEGORIES.map(({ key, label }) => (
-            <CategoryItem
-              key={key}
-              active={activeCategory === key}
-              onClick={() => setActiveCategory(key)}
-            >
-              {label}
-            </CategoryItem>
-          ))}
-        </CategoryList>
-        <ContentPane>{PANE_MAP[activeCategory]}</ContentPane>
+        <StyledMenu
+          mode="inline"
+          theme="dark"
+          selectedKeys={[selectedKey]}
+          defaultOpenKeys={['prompt-studio']}
+          onClick={({ key }) => {
+            if (key !== '__loading__') setSelectedKey(key);
+          }}
+        >
+          <Menu.Item key="ai">AI</Menu.Item>
+          <Menu.SubMenu key="prompt-studio" title="Prompts">
+            {loading ? (
+              <Menu.Item key="__loading__" disabled>
+                <Spin size="small" />
+              </Menu.Item>
+            ) : (
+              templates.map((tpl) => (
+                <Menu.Item key={`prompt:${tpl.id}`}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {tpl.name.replace(/_/g, ' ')}
+                    </span>
+                    {isDirty(tpl.id) && (
+                      <span style={{ color: '#faad14', fontSize: 14, lineHeight: 1 }}>•</span>
+                    )}
+                  </span>
+                </Menu.Item>
+              ))
+            )}
+          </Menu.SubMenu>
+        </StyledMenu>
+        <ContentPane>{renderContent()}</ContentPane>
       </ModalBody>
     </Modal>
   );
