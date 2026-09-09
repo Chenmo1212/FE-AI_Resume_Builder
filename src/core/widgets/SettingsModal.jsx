@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Select, Slider, Checkbox } from 'antd';
 import styled from 'styled-components';
 import { useAIStore } from '../../stores/ai.store';
+import { PromptStudioPane } from './PromptStudioPane';
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 
@@ -94,6 +95,7 @@ const SECTION_OPTIONS = [
 
 const CATEGORIES = [
   { key: 'ai', label: 'AI' },
+  { key: 'prompt-studio', label: 'Prompts' },
 ];
 
 // ─── AI Pane ─────────────────────────────────────────────────────────────────
@@ -170,6 +172,7 @@ const AIPane = () => {
 
 const PANE_MAP = {
   ai: <AIPane />,
+  'prompt-studio': <PromptStudioPane />,
 };
 
 // ─── Modal ───────────────────────────────────────────────────────────────────
