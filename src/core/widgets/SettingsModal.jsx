@@ -111,6 +111,7 @@ const CheckboxGrid = styled.div`
 
   .ant-checkbox-wrapper {
     color: #ccc;
+    margin-left: 0 !important;
   }
 `;
 
@@ -231,7 +232,7 @@ export const SettingsModal = ({ open, onClose }) => {
       footer={null}
       title="Settings"
       width={'60%'}
-      bodyStyle={{ padding: '8px 0', background: '#2a2a2a' }}
+      bodyStyle={{ padding: '8px 0', background: '#2a2a2a', height: '1100px' }}
       style={{ top: 80 }}
     >
       <ModalBody>
