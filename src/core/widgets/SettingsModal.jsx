@@ -163,6 +163,9 @@ const AIPane = () => {
   const handleProviderChange = (val) => {
     setProvider(val);
     setModel(AI_MODELS_BY_PROVIDER[val][0].value);
+    if (val === 'openai') {
+      clearBaseUrl();
+    }
   };
 
   const handleSectionChange = (sectionKey, checked) => {
