@@ -9,6 +9,7 @@ import { PromptStudioPane } from './PromptStudioPane';
 
 const ModalBody = styled.div`
   display: flex;
+  height: 100%;
   min-height: 300px;
 `;
 
