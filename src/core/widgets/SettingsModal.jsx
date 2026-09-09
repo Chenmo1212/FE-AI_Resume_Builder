@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Select, Slider, Checkbox, Menu, Spin } from 'antd';
+import { Modal, Select, Slider, Checkbox, Menu, Spin, Input, Button } from 'antd';
 import styled from 'styled-components';
 import { useAIStore } from '../../stores/ai.store';
 import { usePromptTemplatesStore } from '../../stores/promptTemplates.store';
@@ -117,10 +117,21 @@ const CheckboxGrid = styled.div`
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const AI_MODELS = [
-  { value: 'gpt-4o', label: 'GPT-4o' },
-  { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-  { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+const AI_MODELS_BY_PROVIDER = {
+  openai: [
+    { value: 'gpt-4o', label: 'GPT-4o' },
+    { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+  ],
+  deepseek: [
+    { value: 'deepseek-chat', label: 'DeepSeek Chat' },
+    { value: 'deepseek-reasoner', label: 'DeepSeek Reasoner' },
+  ],
+};
+
+const PROVIDER_OPTIONS = [
+  { value: 'openai', label: 'OpenAI' },
+  { value: 'deepseek', label: 'DeepSeek' },
 ];
 
 const SECTION_OPTIONS = [
@@ -133,19 +144,31 @@ const SECTION_OPTIONS = [
 // ─── AI Pane ─────────────────────────────────────────────────────────────────
 
 const AIPane = () => {
-  const model = useAIStore((state) => state.model);
+  const model       = useAIStore((state) => state.model);
   const temperature = useAIStore((state) => state.temperature);
-  const sections = useAIStore((state) => state.sections);
-  const setModel = useAIStore((state) => state.setModel);
+  const sections    = useAIStore((state) => state.sections);
+  const provider    = useAIStore((state) => state.provider);
+  const apiKey      = useAIStore((state) => state.apiKey);
+  const baseUrl     = useAIStore((state) => state.baseUrl);
+  const setModel       = useAIStore((state) => state.setModel);
   const setTemperature = useAIStore((state) => state.setTemperature);
-  const setSections = useAIStore((state) => state.setSections);
+  const setSections    = useAIStore((state) => state.setSections);
+  const setProvider    = useAIStore((state) => state.setProvider);
+  const setApiKey      = useAIStore((state) => state.setApiKey);
+  const clearApiKey    = useAIStore((state) => state.clearApiKey);
+  const setBaseUrl     = useAIStore((state) => state.setBaseUrl);
+  const clearBaseUrl   = useAIStore((state) => state.clearBaseUrl);
+
+  // When provider changes, reset model to first option for that provider
+  const handleProviderChange = (val) => {
+    setProvider(val);
+    setModel(AI_MODELS_BY_PROVIDER[val][0].value);
+  };
 
   const handleSectionChange = (sectionKey, checked) => {
     let next;
     if (checked) {
-      next = sections.includes(sectionKey)
-        ? sections
-        : [...sections, sectionKey];
+      next = sections.includes(sectionKey) ? sections : [...sections, sectionKey];
     } else {
       next = sections.filter((s) => s !== sectionKey);
     }
@@ -155,19 +178,84 @@ const AIPane = () => {
 
   return (
     <div>
+      {/* Provider */}
+      <ControlGroup>
+        <SectionTitle>Provider</SectionTitle>
+        <Select
+          size="small"
+          value={provider}
+          onChange={handleProviderChange}
+          options={PROVIDER_OPTIONS}
+          style={{ width: 160 }}
+        />
+      </ControlGroup>
+
+      {/* API Key */}
+      <ControlGroup>
+        <SectionTitle>API Key</SectionTitle>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Input.Password
+            size="small"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            placeholder={`Enter your ${provider === 'openai' ? 'OpenAI' : 'DeepSeek'} API key`}
+            style={{ flex: 1, background: '#1a1a1a', borderColor: '#444', color: '#ccc' }}
+          />
+          <Button
+            size="small"
+            danger
+            disabled={!apiKey}
+            onClick={clearApiKey}
+            title="Clear API key"
+          >
+            Clear
+          </Button>
+        </div>
+        <div style={{ color: '#666', fontSize: 11, marginTop: 4 }}>
+          Stored locally. Leave blank to use the server default key.
+        </div>
+      </ControlGroup>
+
+      {/* Base URL — DeepSeek only */}
+      {provider === 'deepseek' && (
+        <ControlGroup>
+          <SectionTitle>Base URL</SectionTitle>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <Input
+              size="small"
+              value={baseUrl}
+              onChange={(e) => setBaseUrl(e.target.value)}
+              placeholder="https://api.deepseek.com"
+              style={{ flex: 1, background: '#1a1a1a', borderColor: '#444', color: '#ccc' }}
+            />
+            <Button
+              size="small"
+              danger
+              disabled={!baseUrl}
+              onClick={clearBaseUrl}
+              title="Clear base URL"
+            >
+              Clear
+            </Button>
+          </div>
+        </ControlGroup>
+      )}
+
+      {/* Model */}
       <ControlGroup>
         <SectionTitle>Model</SectionTitle>
         <Select
           size="small"
           value={model}
           onChange={setModel}
-          options={AI_MODELS}
+          options={AI_MODELS_BY_PROVIDER[provider] ?? AI_MODELS_BY_PROVIDER.openai}
           style={{ width: 160 }}
         />
       </ControlGroup>
 
+      {/* Temperature */}
       <ControlGroup>
-        <SectionTitle>Generation</SectionTitle>
+        <SectionTitle>Temperature</SectionTitle>
         <SliderRow>
           <Slider
             min={0}
@@ -182,6 +270,7 @@ const AIPane = () => {
         </SliderRow>
       </ControlGroup>
 
+      {/* Sections */}
       <ControlGroup>
         <SectionTitle>Optimize Sections</SectionTitle>
         <CheckboxGrid>
