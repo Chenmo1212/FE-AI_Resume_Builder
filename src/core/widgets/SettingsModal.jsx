@@ -378,7 +378,7 @@ export const SettingsModal = ({ open, onClose }) => {
       footer={null}
       title="Settings"
       width={'60%'}
-      bodyStyle={{ padding: '8px 0', background: '#2a2a2a', height: '1100px' }}
+      bodyStyle={{ padding: '8px 0', background: '#2a2a2a', height: '80vh' }}
       style={{ top: 80 }}
     >
       <ModalBody>
