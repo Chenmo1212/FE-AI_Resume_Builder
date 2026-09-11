@@ -89,6 +89,16 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
 
   useEffect(() => {
     fetch();
+
+    const intervalId = setInterval(() => {
+      const { tasks } = useTasks.getState();
+      const hasPending = tasks.some((t) => t.status === 0 || t.status === 1);
+      if (hasPending) {
+        fetch();
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   // rowSelection object indicates the need for row selection
@@ -171,6 +181,13 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
   ];
 
   const displayResume = (record) => {
+    if (!record['resume'] || !record['resume'].basics) {
+      messageApi.open({
+        type: 'warning',
+        content: 'Resume not ready yet, please wait.',
+      });
+      return;
+    }
     const resume = {...record['resume']};
     resetBasics(resume.basics);
     resetSkills(resume.skills);

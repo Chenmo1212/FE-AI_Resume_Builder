@@ -142,21 +142,57 @@ export const useTasks = create(
   persist(
     (set) => ({
       tasks: TASK_DATA,
-      loading: true,
+      loading: false,
 
       fetch: async () => {
         useTasks.getState().updateLoading(true);
         try {
           const rawTasks = await db.tasks.toArray();
+
+          // For any tasks still in-progress, fetch their latest status from the
+          // backend once (no polling) so reopening the panel always shows fresh data.
+          const pendingIds = rawTasks
+            .filter((t) => t.status === 0 || t.status === 1 || (t.status === 2 && !t.new_resume_id))
+            .map((t) => t.id);
+          if (pendingIds.length) {
+            try {
+              const pollRes = await checkTasksStatus({ task_ids: pendingIds });
+              const results = (pollRes.data.tasks || []).filter(Boolean);
+              await Promise.all(
+                results.map(async (result) => {
+                  await db.tasks.update(result.id, { status: result.status });
+                  if (result.status === 2 && result.new_resume_id && result.resume) {
+                    await db.resumes.put({ id: result.new_resume_id, ...result.resume, update_time: Date.now() });
+                  }
+                })
+              );
+              // Merge updated statuses into rawTasks before building enriched list
+              const updatedMap = Object.fromEntries(results.map((r) => [r.id, r]));
+              rawTasks.forEach((t) => {
+                if (updatedMap[t.id]) {
+                  t.status = updatedMap[t.id].status;
+                  if (updatedMap[t.id].new_resume_id) t.new_resume_id = updatedMap[t.id].new_resume_id;
+                }
+              });
+            } catch (err) {
+              console.log('Failed to sync task status from backend:', err);
+            }
+          }
+
           const enriched = await Promise.all(
             rawTasks.map(async (task) => {
               const job = task.job_id ? await db.jobs.get(task.job_id) : null;
+              const resume = (task.status === 2 && task.new_resume_id)
+                ? await db.resumes.get(task.new_resume_id) ?? {}
+                : undefined;
               return {
                 ...underscoreToCamel(task),
                 key: task.id,
                 title: job ? job.title : '',
                 company: job ? job.company : '',
                 link: job ? job.link : '',
+                description: job ? job.description : '',
+                resume,
               };
             })
           );
@@ -191,7 +227,7 @@ export const useTasks = create(
           if (data.task_list && data.task_list.length) {
             await Promise.all(
               data.task_list.map((task) =>
-                db.tasks.put({ ...task, status: 0 })
+                db.tasks.put({ ...task, job_id: task.job_id || task.jobId, status: 0 })
               )
             );
           }
@@ -204,42 +240,8 @@ export const useTasks = create(
           });
           console.log(res);
 
-          // Poll until all tasks are done or failed
-          const taskIds = data.task_list.map((t) => t.id).filter(Boolean);
-          if (taskIds.length) {
-            const poll = async () => {
-              try {
-                const pollRes = await checkTasksStatus({ task_ids: taskIds });
-                const results = pollRes.data;
-                let allDone = true;
-                await Promise.all(
-                  results.map(async (result) => {
-                    await db.tasks.update(result.id, { status: result.status });
-                    if (result.status === 2 && result.new_resume_id && result.resume) {
-                      await db.resumes.put({ id: result.new_resume_id, ...result.resume, update_time: Date.now() });
-                    }
-                    if (result.status !== 2 && result.status !== -2) {
-                      allDone = false;
-                    }
-                  })
-                );
-                // Refresh state
-                await useTasks.getState().fetch();
-                if (!allDone) {
-                  setTimeout(poll, 3000);
-                } else {
-                  useTasks.getState().updateLoading(false);
-                }
-              } catch (err) {
-                console.log(err);
-                useTasks.getState().updateLoading(false);
-              }
-            };
-            await poll();
-          } else {
-            useTasks.getState().updateLoading(false);
-            await useTasks.getState().fetch();
-          }
+          useTasks.getState().updateLoading(false);
+          await useTasks.getState().fetch();
         } catch (err) {
           console.log(err);
           useTasks.getState().updateLoading(false);
@@ -279,6 +281,7 @@ export const useTasks = create(
     }),
     {
       name: 'sprb-tasks',
+      partialize: (state) => ({ tasks: state.tasks }),
     }
   )
 );
