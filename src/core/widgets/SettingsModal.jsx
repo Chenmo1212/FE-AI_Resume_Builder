@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useAIStore } from '../../stores/ai.store';
 import { usePromptTemplatesStore } from '../../stores/promptTemplates.store';
 import { PromptStudioPane } from './PromptStudioPane';
+import { exportAllData, importAllData } from '../../db/backup';
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 
@@ -262,6 +263,88 @@ const AIPane = () => {
   );
 };
 
+// ─── Data Pane ────────────────────────────────────────────────────────────────
+
+const DataPane = () => {
+  const [importing, setImporting] = React.useState(false);
+  const [status, setStatus] = React.useState('');
+
+  const handleExport = async () => {
+    try {
+      const json = await exportAllData();
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resume-builder-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setStatus('Backup exported successfully.');
+    } catch (err) {
+      setStatus('Export failed: ' + err.message);
+    }
+  };
+
+  const handleImport = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    setStatus('');
+    try {
+      const text = await file.text();
+      await importAllData(text);
+      setStatus('Backup imported successfully. Reload the page to see the restored data.');
+    } catch (err) {
+      setStatus('Import failed: ' + err.message);
+    } finally {
+      setImporting(false);
+      e.target.value = '';
+    }
+  };
+
+  return (
+    <div>
+      <ControlGroup>
+        <SectionTitle>Export Backup</SectionTitle>
+        <Button size="small" onClick={handleExport}>
+          Export Backup (.json)
+        </Button>
+        <div style={{ color: '#666', fontSize: 11, marginTop: 4 }}>
+          Downloads all your resumes, jobs, tasks, and prompt templates as a single JSON file.
+        </div>
+      </ControlGroup>
+
+      <ControlGroup>
+        <SectionTitle>Import Backup</SectionTitle>
+        <input
+          type="file"
+          accept=".json"
+          style={{ display: 'none' }}
+          id="backup-file-input"
+          onChange={handleImport}
+          disabled={importing}
+        />
+        <Button
+          size="small"
+          loading={importing}
+          onClick={() => document.getElementById('backup-file-input').click()}
+        >
+          {importing ? 'Importing…' : 'Import Backup (.json)'}
+        </Button>
+        <div style={{ color: '#666', fontSize: 11, marginTop: 4 }}>
+          ⚠️ This will <strong style={{ color: '#ff7875' }}>replace all current data</strong> with the backup contents.
+        </div>
+      </ControlGroup>
+
+      {status && (
+        <div style={{ marginTop: 12, fontSize: 12, color: status.startsWith('✗') || status.startsWith('Import failed') || status.startsWith('Export failed') ? '#ff7875' : '#95d075' }}>
+          {status}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── Modal ───────────────────────────────────────────────────────────────────
 
 export const SettingsModal = ({ open, onClose }) => {
@@ -282,6 +365,7 @@ export const SettingsModal = ({ open, onClose }) => {
 
   const renderContent = () => {
     if (selectedKey === 'ai') return <AIPane />;
+    if (selectedKey === 'data') return <DataPane />;
     if (activePromptId) return <PromptStudioPane activeId={activePromptId} />;
     return null;
   };
@@ -308,6 +392,7 @@ export const SettingsModal = ({ open, onClose }) => {
           }}
         >
           <Menu.Item key="ai">AI</Menu.Item>
+          <Menu.Item key="data">Data & Backup</Menu.Item>
           <Menu.SubMenu key="prompt-studio" title="Prompts">
             {loading ? (
               <Menu.Item key="__loading__" disabled>
