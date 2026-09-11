@@ -92,7 +92,8 @@ export const useIntro = create(
           id: 'active',
           update_time: Date.now(),
           basics: intro,
-          skills: useSkills.getState(),
+          skills: (({ languages, frameworks, libraries, databases, technologies, practices, tools }) =>
+            ({ languages, frameworks, libraries, databases, technologies, practices, tools }))(useSkills.getState()),
           work: useWork.getState().companies,
           education: useEducation.getState().education,
           projects: useProjects.getState().projects,
