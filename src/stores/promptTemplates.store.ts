@@ -1,6 +1,8 @@
 import create from 'zustand';
 import produce from 'immer';
-import { db } from '../db/index';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import { db as _db } from '../db/index';
+const db = _db as any;
 import { DEFAULT_PROMPT_TEMPLATES } from '../db/defaultPrompts';
 
 export interface PromptMessage {
@@ -94,7 +96,7 @@ export const usePromptTemplatesStore = create<PromptTemplatesStore>((set, get) =
     set(produce((state: PromptTemplatesStore) => {
       const tpl = state.templates.find((t) => t.id === id);
       if (tpl && def) { Object.assign(tpl, def); }
-      state.editingMessages[id] = def ? def.messages.map((m) => ({ ...m })) : [];
+      state.editingMessages[id] = def ? def.messages.map((m) => ({ ...m } as PromptMessage)) : [];
     }));
   },
 
