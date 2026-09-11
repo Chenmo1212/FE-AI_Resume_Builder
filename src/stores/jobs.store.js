@@ -3,15 +3,11 @@ import {debounce} from 'lodash';
 import {persist} from 'zustand/middleware';
 import produce from 'immer';
 import {
-  getJobs,
-  addJob,
-  updateJob,
-  purgeJob,
   addTasks,
-  addTask,
-  getTasks,
   cancelTask,
+  checkTasksStatus,
 } from '../axios/api';
+import { db } from '../db/index';
 
 const JOBS_DATA = [];
 
@@ -20,12 +16,9 @@ const TASK_DATA = [];
 const debouncedUpdateJob = debounce(async (index) => {
   try {
     const currentState = useJobs.getState();
-    const updatedJob = {...currentState.jobs[index]};
-    const jobId = updatedJob['id'];
-    updatedJob['raw'] = updatedJob['description'];
-    delete updatedJob['description'];
-    delete updatedJob['id'];
-    await updateJob(jobId, updatedJob);
+    const job = currentState.jobs[index];
+    if (!job) return;
+    await db.jobs.update(job.id, { company: job.company, title: job.title, link: job.link, description: job.description, update_time: Date.now() });
   } catch (err) {
     console.log(err);
   }
@@ -37,49 +30,59 @@ export const useJobs = create(
       jobs: JOBS_DATA,
       loading: true,
 
-      fetch: () => {
+      fetch: async () => {
         useJobs.getState().updateLoading(true);
-        getJobs()
-          .then((res) => {
-            set(
-              produce((state) => {
-                state.jobs = res.data.jobs.map((job) => ({
-                  id: job.id,
-                  company: job.company,
-                  title: job.title,
-                  link: job.link,
-                  description: job.raw,
-                }));
-                state.loading = false;
-              })
-            );
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        try {
+          const rawJobs = await db.jobs.where('is_delete').equals(0).toArray();
+          set(
+            produce((state) => {
+              state.jobs = rawJobs.map((job) => ({
+                id: job.id,
+                company: job.company || '',
+                title: job.title || '',
+                link: job.link || '',
+                description: job.description || '',
+              }));
+              state.loading = false;
+            })
+          );
+        } catch (err) {
+          console.log(err);
+          useJobs.getState().updateLoading(false);
+        }
       },
 
-      add: () => {
+      add: async () => {
         useJobs.getState().updateLoading(true);
-        addJob({title: 'job title'}).then(res => {
+        try {
+          const newJob = {
+            id: crypto.randomUUID(),
+            title: 'job title',
+            company: '',
+            link: '',
+            description: '',
+            create_time: Date.now(),
+            is_delete: 0,
+          };
+          await db.jobs.put(newJob);
           set(
             produce((state) => {
               const job = {
-                id: res.data['job_id'],
-                company: '',
-                title: 'job title',
-                link: '',
-                description: '',
+                id: newJob.id,
+                company: newJob.company,
+                title: newJob.title,
+                link: newJob.link,
+                description: newJob.description,
               };
               state.jobs.push(job);
               useTasks.getState().add({job_id: job.id});
               state.loading = false;
             })
           );
-        }).catch(err => {
+        } catch (err) {
           console.error(err);
-          set((state) => state.loading = false);
-        })
+          useJobs.getState().updateLoading(false);
+        }
       },
 
       update: (index, key, value) =>
@@ -93,7 +96,7 @@ export const useJobs = create(
           set((state) => state.loading = true);
           const currentState = useJobs.getState();
           const delJobId = currentState.jobs[index].id;
-          await purgeJob(delJobId);
+          await db.jobs.update(delJobId, { is_delete: 1, delete_time: Date.now() });
           set(
             produce((state) => {
               state.jobs = state.jobs.filter((_, ind) => ind !== index);
@@ -141,47 +144,106 @@ export const useTasks = create(
       tasks: TASK_DATA,
       loading: true,
 
-      fetch: () => {
+      fetch: async () => {
         useTasks.getState().updateLoading(true);
-        let jobIds = [];
-        useJobs.getState().jobs.forEach((job, idx) => {
-          if (job.id) jobIds.push(job.id);
-        });
-        getTasks({job_ids: jobIds})
-          .then((res) => {
-            const tasks = res.data.data;
-            set(produce((state) => {
-              let camelTasks = tasks.map(e => underscoreToCamel(e))
-              camelTasks.forEach(task => task.key = task.id)
-              state.tasks = camelTasks
-              state.loading = false
-            }));
-          })
-          .catch((err) => {
-            console.log(err);
-            useTasks.getState().updateLoading(false);
-          });
+        try {
+          const rawTasks = await db.tasks.toArray();
+          const enriched = await Promise.all(
+            rawTasks.map(async (task) => {
+              const job = task.job_id ? await db.jobs.get(task.job_id) : null;
+              return {
+                ...underscoreToCamel(task),
+                key: task.id,
+                title: job ? job.title : '',
+                company: job ? job.company : '',
+                link: job ? job.link : '',
+              };
+            })
+          );
+          set(produce((state) => {
+            state.tasks = enriched;
+            state.loading = false;
+          }));
+        } catch (err) {
+          console.log(err);
+          useTasks.getState().updateLoading(false);
+        }
       },
 
-      add: (data) => {
-        addTask(data).then(res => {
-          console.log(res)
-        }).catch(err => {
-          console.error(err)
-        })
+      add: async (data) => {
+        try {
+          const newTask = {
+            id: crypto.randomUUID(),
+            job_id: data.job_id,
+            status: -1,
+            create_time: Date.now(),
+          };
+          await db.tasks.put(newTask);
+        } catch (err) {
+          console.error(err);
+        }
       },
 
-      create: (data) => {
+      create: async (data) => {
         useTasks.getState().updateLoading(true);
-        addTasks(data)
-          .then((res) => {
-            console.log(res)
-            useTasks.getState().updateLoading(false);
-            useTasks.getState().fetch();
-          })
-          .catch((err) => {
-            console.log(err);
+        try {
+          // Upsert all tasks in Dexie with status = 0
+          if (data.task_list && data.task_list.length) {
+            await Promise.all(
+              data.task_list.map((task) =>
+                db.tasks.put({ ...task, status: 0 })
+              )
+            );
+          }
+
+          // POST to backend to run the LLM pipeline
+          const res = await addTasks({
+            resume: data.resume,
+            task_list: data.task_list,
+            ai_config: data.ai_config,
           });
+          console.log(res);
+
+          // Poll until all tasks are done or failed
+          const taskIds = data.task_list.map((t) => t.id).filter(Boolean);
+          if (taskIds.length) {
+            const poll = async () => {
+              try {
+                const pollRes = await checkTasksStatus({ task_ids: taskIds });
+                const results = pollRes.data;
+                let allDone = true;
+                await Promise.all(
+                  results.map(async (result) => {
+                    await db.tasks.update(result.id, { status: result.status });
+                    if (result.status === 2 && result.new_resume_id && result.resume) {
+                      await db.resumes.put({ id: result.new_resume_id, ...result.resume, update_time: Date.now() });
+                    }
+                    if (result.status !== 2 && result.status !== -2) {
+                      allDone = false;
+                    }
+                  })
+                );
+                // Refresh state
+                await useTasks.getState().fetch();
+                if (!allDone) {
+                  setTimeout(poll, 3000);
+                } else {
+                  useTasks.getState().updateLoading(false);
+                }
+              } catch (err) {
+                console.log(err);
+                useTasks.getState().updateLoading(false);
+              }
+            };
+            await poll();
+          } else {
+            useTasks.getState().updateLoading(false);
+            await useTasks.getState().fetch();
+          }
+        } catch (err) {
+          console.log(err);
+          useTasks.getState().updateLoading(false);
+        }
       },
 
       update: (index, key, value) =>
@@ -205,14 +267,14 @@ export const useTasks = create(
         }));
       },
 
-      cancel: (taskId) => {
-        cancelTask(taskId)
-          .then(() => {
-            useTasks.getState().fetch();
-          })
-          .catch((err) => {
-            console.error('Failed to cancel task:', err);
-          });
+      cancel: async (taskId) => {
+        try {
+          await cancelTask(taskId);
+          await db.tasks.update(taskId, { status: -1 });
+          await useTasks.getState().fetch();
+        } catch (err) {
+          console.error('Failed to cancel task:', err);
+        }
       },
     }),
     {

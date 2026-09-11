@@ -1,6 +1,7 @@
 import create from 'zustand';
 import produce from 'immer';
-import { getPromptTemplates, updatePromptTemplate } from '../axios/api';
+import { db } from '../db/index';
+import { DEFAULT_PROMPT_TEMPLATES } from '../db/defaultPrompts';
 
 export interface PromptMessage {
   role: 'system' | 'human' | 'ai';
@@ -23,6 +24,7 @@ export interface PromptTemplatesStore {
   fetchTemplates: () => Promise<void>;
   setEditingMessages: (id: string, messages: PromptMessage[]) => void;
   saveTemplate: (id: string) => Promise<void>;
+  resetTemplate: (id: string) => Promise<void>;
   isDirty: (id: string) => boolean;
 }
 
@@ -35,13 +37,15 @@ export const usePromptTemplatesStore = create<PromptTemplatesStore>((set, get) =
   fetchTemplates: async () => {
     set(produce((state: PromptTemplatesStore) => { state.loading = true; }));
     try {
-      const res = await getPromptTemplates();
-      const templates: PromptTemplate[] = res.data;
+      const stored = await db.prompt_templates.toArray();
+      const storedMap = Object.fromEntries(stored.map((t: PromptTemplate) => [t.id, t]));
+      const merged: PromptTemplate[] = DEFAULT_PROMPT_TEMPLATES.map(
+        (def) => (storedMap[def.id] ?? def) as PromptTemplate
+      );
       set(produce((state: PromptTemplatesStore) => {
-        state.templates = templates;
+        state.templates = merged;
         state.loading = false;
-        // Initialise editing state with current messages
-        templates.forEach((t) => {
+        merged.forEach((t) => {
           if (!state.editingMessages[t.id]) {
             state.editingMessages[t.id] = t.messages.map((m) => ({ ...m }));
           }
@@ -63,8 +67,14 @@ export const usePromptTemplatesStore = create<PromptTemplatesStore>((set, get) =
     if (!messages) return;
     set(produce((state: PromptTemplatesStore) => { state.saving[id] = true; }));
     try {
-      const res = await updatePromptTemplate(id, messages);
-      const newVersion: number = res.data.version;
+      const existing = await db.prompt_templates.get(id);
+      const defaultTpl = DEFAULT_PROMPT_TEMPLATES.find((t) => t.id === id);
+      const newVersion = (existing?.version ?? defaultTpl?.version ?? 0) + 1;
+      await db.prompt_templates.put({
+        ...(existing ?? defaultTpl ?? { id, name: id, description: '' }),
+        messages,
+        version: newVersion,
+      });
       set(produce((state: PromptTemplatesStore) => {
         state.saving[id] = false;
         const tpl = state.templates.find((t) => t.id === id);
@@ -76,6 +86,16 @@ export const usePromptTemplatesStore = create<PromptTemplatesStore>((set, get) =
     } catch {
       set(produce((state: PromptTemplatesStore) => { state.saving[id] = false; }));
     }
+  },
+
+  resetTemplate: async (id: string) => {
+    await db.prompt_templates.delete(id);
+    const def = DEFAULT_PROMPT_TEMPLATES.find((t) => t.id === id);
+    set(produce((state: PromptTemplatesStore) => {
+      const tpl = state.templates.find((t) => t.id === id);
+      if (tpl && def) { Object.assign(tpl, def); }
+      state.editingMessages[id] = def ? def.messages.map((m) => ({ ...m })) : [];
+    }));
   },
 
   isDirty: (id: string) => {

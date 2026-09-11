@@ -4,6 +4,7 @@ import {persist} from 'zustand/middleware';
 import produce from 'immer';
 import userData from '../../src/stores/data.json';
 import preferUserData from '../../src/stores/data.json';
+import { db } from '../db/index';
 
 const labels = [
   'Experience',
@@ -54,7 +55,7 @@ export const usePreferData = create(
 
 export const useIntro = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       intro: userData.basics,
 
       reset: (data = userData.basics) => {
@@ -84,6 +85,40 @@ export const useIntro = create(
             state.intro.profiles.push({network: type, [field]: value});
           })
         ),
+
+      saveToDb: async () => {
+        const { intro } = get();
+        const record = {
+          id: 'active',
+          update_time: Date.now(),
+          basics: intro,
+          skills: useSkills.getState(),
+          work: useWork.getState().companies,
+          education: useEducation.getState().education,
+          projects: useProjects.getState().projects,
+          activities: {
+            involvements: useActivities.getState().involvements,
+            achievements: useActivities.getState().achievements,
+          },
+          volunteer: useVolunteer.getState().volunteer,
+          awards: useAwards.getState().awards,
+        };
+        await db.resumes.put(record);
+      },
+
+      loadFromDb: async () => {
+        const record = await db.resumes.get('active');
+        if (!record) return;
+        set({ intro: record.basics });
+        if (record.skills) useSkills.getState().reset(record.skills);
+        if (record.work) useWork.getState().reset(record.work);
+        if (record.education) useEducation.getState().reset(record.education);
+        if (record.projects) useProjects.getState().reset(record.projects);
+        if (record.activities) useActivities.getState().update('involvements', record.activities.involvements);
+        if (record.activities) useActivities.getState().update('achievements', record.activities.achievements);
+        if (record.volunteer) useVolunteer.getState().reset(record.volunteer);
+        if (record.awards) useAwards.getState().reset(record.awards);
+      },
     }),
     {
       name: 'sprb-intro',
