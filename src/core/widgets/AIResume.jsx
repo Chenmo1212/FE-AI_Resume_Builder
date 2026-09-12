@@ -25,43 +25,99 @@ const PanelHeader = styled.div`
   margin-bottom: 12px;
 `;
 
+const Divider = styled.div`
+  height: 2px;
+  background: white;
+  margin: 20px 0;
+`;
+
+const ConfigSection = styled.div`
+  margin: 8px 0;
+`;
+
+const ConfigTopic = styled.p`
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 7px;
+`;
+
+const ConfigRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+
+  .ant-checkbox-wrapper {
+    color: #fff;
+    font-size: 0.7rem;
+  }
+`;
+
 const Footer = styled.div`
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #333;
 `;
 
 const DarkTable = styled(Table)`
-  .ant-table,
-  .ant-table-container,
-  .ant-table-content,
-  .ant-table-thead > tr > th,
-  .ant-table-tbody > tr > td,
-  .ant-table-tbody > tr.ant-table-row:hover > td,
-  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
-    background: transparent;
-    color: #e6e6e6;
-    border-color: #444;
-  }
-  .ant-table-thead > tr > th {
-    color: #aaa;
-  }
-  .ant-pagination-item a,
-  .ant-pagination-prev button,
-  .ant-pagination-next button {
-    color: #aaa;
-  }
-  .ant-pagination-item-active {
-    border-color: #1890ff;
-  }
-  .ant-pagination-item-active a {
-    color: #1890ff;
-  }
-  .ant-checkbox-inner {
-    background: transparent;
-    border-color: #555;
+  && {
+    .ant-table,
+    .ant-table-container,
+    .ant-table-content,
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td,
+    .ant-table-tbody > tr.ant-table-row:hover > td,
+    .ant-table-tbody > tr > td.ant-table-cell-row-hover,
+    .ant-table-cell {
+      background: transparent !important;
+      color: #e6e6e6 !important;
+      border-color: #444 !important;
+    }
+    .ant-table-thead > tr > th {
+      color: #aaa !important;
+      background: transparent !important;
+      border-bottom: 1px solid #444 !important;
+    }
+    .ant-table-tbody > tr > td {
+      border-bottom: 1px solid #333 !important;
+    }
+    .ant-table-tbody > tr:hover > td {
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+    .ant-pagination-item,
+    .ant-pagination-prev .ant-pagination-item-link,
+    .ant-pagination-next .ant-pagination-item-link {
+      background: transparent !important;
+      border-color: #444 !important;
+      color: #aaa !important;
+    }
+    .ant-pagination-item a,
+    .ant-pagination-prev button,
+    .ant-pagination-next button {
+      color: #aaa !important;
+    }
+    .ant-pagination-item-active {
+      border-color: #1890ff !important;
+      background: transparent !important;
+    }
+    .ant-pagination-item-active a {
+      color: #1890ff !important;
+    }
+    .ant-pagination-disabled .ant-pagination-item-link {
+      color: #555 !important;
+      border-color: #333 !important;
+    }
+    .ant-checkbox-inner {
+      background: transparent !important;
+      border-color: #555 !important;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner {
+      background-color: #1890ff !important;
+      border-color: #1890ff !important;
+    }
   }
 `;
 
@@ -345,7 +401,12 @@ export const AIResume = ({ onOpenSettings }) => {
       <Container>
         {contextHolder}
         <PanelHeader>
-          <Heading>AI Resume</Heading>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Heading>AI Resume</Heading>
+            <Tooltip title="Add jobs below, select them, and click Generate to create a tailored resume for each. Use the Configure section to control which resume the AI starts from.">
+              <QuestionCircleOutlined style={{ color: '#666', cursor: 'help', fontSize: 14 }} />
+            </Tooltip>
+          </div>
           <Button
             type="primary"
             size="small"
@@ -379,28 +440,32 @@ export const AIResume = ({ onOpenSettings }) => {
           size="small"
           pagination={{ pageSize: 10, size: 'small' }}
         />
-        <Footer>
-          <Space>
-            <Checkbox onChange={(e) => setIsPrefer(e.target.checked)} checked={isPrefer} style={{ color: '#ccc' }}>
+        <Divider />
+        <ConfigSection>
+          <ConfigTopic>Configure</ConfigTopic>
+          <ConfigRow>
+            <Checkbox onChange={(e) => setIsPrefer(e.target.checked)} checked={isPrefer}>
               Use Base Resume as AI input
             </Checkbox>
             <Tooltip title="When checked, AI generates resumes starting from your Base Resume. Uncheck to use the resume currently on screen instead.">
-              <QuestionCircleOutlined style={{ color: '#aaa', cursor: 'help' }} />
+              <QuestionCircleOutlined style={{ color: '#666', cursor: 'help' }} />
             </Tooltip>
-          </Space>
-          <Space>
-            <Popconfirm
-              title="Save the resume currently on screen as your Base Resume? This will replace the existing Base Resume."
-              onConfirm={handleSetCurrentAsBase}
-              okText="Confirm"
-              cancelText="Cancel"
-            >
+          </ConfigRow>
+        </ConfigSection>
+        <Footer>
+          <Popconfirm
+            title="Save the resume currently on screen as your Base Resume? This will replace the existing Base Resume."
+            onConfirm={handleSetCurrentAsBase}
+            okText="Confirm"
+            cancelText="Cancel"
+          >
+            <Tooltip title="Saves the resume currently visible on screen as your Base Resume, replacing the previous one.">
               <Button size="small">Set Current as Base</Button>
-            </Popconfirm>
-            <Button type="primary" onClick={handleGenerate} disabled={missingApiKey || hasActiveTasks}>
-              Generate Selected
-            </Button>
-          </Space>
+            </Tooltip>
+          </Popconfirm>
+          <Button type="primary" size="small" onClick={handleGenerate} disabled={missingApiKey || hasActiveTasks}>
+            Generate Selected
+          </Button>
         </Footer>
         <JobModal
           open={modalOpen}
