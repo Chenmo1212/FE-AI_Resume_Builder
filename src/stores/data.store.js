@@ -25,7 +25,7 @@ const labels = [
 
 export const usePreferData = create(
   persist(
-    () => ({
+    (setState, get) => ({
       basics: preferUserData.basics,
       education: preferUserData.education,
       awards: preferUserData.awards,
@@ -35,18 +35,31 @@ export const usePreferData = create(
       projects: preferUserData.projects,
       work: preferUserData.work,
 
-      getResume: () => ({
-        basics: preferUserData.basics,
-        education: preferUserData.education,
-        awards: preferUserData.awards,
-        volunteer: preferUserData.volunteer,
-        skills: preferUserData.skills,
-        activities: preferUserData.activities,
-        projects: preferUserData.projects,
-        work: preferUserData.work,
-      })
-    }),
+      set: (resume) => setState({
+        basics: resume.basics,
+        education: resume.education,
+        awards: resume.awards,
+        volunteer: resume.volunteer,
+        skills: resume.skills,
+        activities: resume.activities,
+        projects: resume.projects,
+        work: resume.work,
+      }),
 
+      getResume: () => {
+        const s = get();
+        return {
+          basics: s.basics,
+          education: s.education,
+          awards: s.awards,
+          volunteer: s.volunteer,
+          skills: s.skills,
+          activities: s.activities,
+          projects: s.projects,
+          work: s.work,
+        };
+      },
+    }),
     {
       name: 'sprb-prefer',
     }
