@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
   Table, Button, message, Tag, Space, Spin,
-  Checkbox, Tooltip, Dropdown, Menu, Alert, Popconfirm,
+  Tooltip, Dropdown, Menu, Alert, Popconfirm,
 } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { useTasks, useJobs } from '../../stores/jobs.store';
 import shallow from 'zustand/shallow';
 import {
@@ -39,18 +41,13 @@ const ConfigTopic = styled.p`
   font-weight: 600;
   color: #fff;
   margin-bottom: 7px;
+  font-size: 0.875rem;
 `;
 
 const ConfigRow = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.7rem;
-
-  .ant-checkbox-wrapper {
-    color: #fff;
-    font-size: 0.7rem;
-  }
 `;
 
 const Footer = styled.div`
@@ -407,15 +404,27 @@ export const AIResume = ({ onOpenSettings }) => {
               <QuestionCircleOutlined style={{ color: '#666', cursor: 'help', fontSize: 14 }} />
             </Tooltip>
           </div>
-          <Button
-            type="primary"
-            size="small"
-            icon={getIcon('add')}
-            onClick={openAddModal}
-            style={{ display: 'inline-flex', alignItems: 'center' }}
-          >
-            Add Job
-          </Button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Popconfirm
+              title="Save the resume currently on screen as your Base Resume? This will replace the existing Base Resume."
+              onConfirm={handleSetCurrentAsBase}
+              okText="Confirm"
+              cancelText="Cancel"
+            >
+              <Tooltip title="Saves the resume currently visible on screen as your Base Resume, replacing the previous one.">
+                <Button size="small">Set Current as Base</Button>
+              </Tooltip>
+            </Popconfirm>
+            <Button
+              type="primary"
+              size="small"
+              icon={getIcon('add')}
+              onClick={openAddModal}
+              style={{ display: 'inline-flex', alignItems: 'center' }}
+            >
+              Add Job
+            </Button>
+          </div>
         </PanelHeader>
         {missingApiKey && (
           <Alert
@@ -440,33 +449,22 @@ export const AIResume = ({ onOpenSettings }) => {
           size="small"
           pagination={{ pageSize: 10, size: 'small' }}
         />
+        <Button type="primary" size="small" onClick={handleGenerate} disabled={missingApiKey || hasActiveTasks}>
+          Generate Selected
+        </Button>
         <Divider />
         <ConfigSection>
           <ConfigTopic>Configure</ConfigTopic>
           <ConfigRow>
-            <Checkbox onChange={(e) => setIsPrefer(e.target.checked)} checked={isPrefer}>
-              Use Base Resume as AI input
-            </Checkbox>
             <Tooltip title="When checked, AI generates resumes starting from your Base Resume. Uncheck to use the resume currently on screen instead.">
-              <QuestionCircleOutlined style={{ color: '#666', cursor: 'help' }} />
+              <FormControlLabel
+                control={<Switch checked={isPrefer} onChange={(e) => setIsPrefer(e.target.checked)} />}
+                label="Use Base Resume as AI input"
+                sx={{ color: '#fff', fontSize: '0.7rem', margin: 0 }}
+              />
             </Tooltip>
           </ConfigRow>
         </ConfigSection>
-        <Footer>
-          <Popconfirm
-            title="Save the resume currently on screen as your Base Resume? This will replace the existing Base Resume."
-            onConfirm={handleSetCurrentAsBase}
-            okText="Confirm"
-            cancelText="Cancel"
-          >
-            <Tooltip title="Saves the resume currently visible on screen as your Base Resume, replacing the previous one.">
-              <Button size="small">Set Current as Base</Button>
-            </Tooltip>
-          </Popconfirm>
-          <Button type="primary" size="small" onClick={handleGenerate} disabled={missingApiKey || hasActiveTasks}>
-            Generate Selected
-          </Button>
-        </Footer>
         <JobModal
           open={modalOpen}
           mode={modalMode}
