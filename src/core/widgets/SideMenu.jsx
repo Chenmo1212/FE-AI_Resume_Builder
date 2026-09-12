@@ -57,3 +57,4 @@ export const SideMenu = ({ children, menuList, onClick, bottomSlot, activeKey })
     {bottomSlot && <BottomSlot>{bottomSlot}</BottomSlot>}
   </Sider>
 );
+

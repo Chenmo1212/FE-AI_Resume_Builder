@@ -165,7 +165,7 @@ export const Sidebar = () => {
       />
       <SideBackground
         isShown={activeTab !== -1 || aiOpen}
-        update={() => { setActiveTab(-1); setAiOpen(false); }}
+        onDismiss={() => { setActiveTab(-1); setAiOpen(false); }}
       />
     </Wrapper>
   );

@@ -16,6 +16,6 @@ const Wrapper = styled.div`
   }
 `;
 
-export function SideBackground({ isShown, update }) {
-  return <Wrapper className={isShown ? '' : 'hide'} onClick={() => update(-1)} />;
+export function SideBackground({ isShown, onDismiss }) {
+  return <Wrapper className={isShown ? '' : 'hide'} onClick={onDismiss} />;
 }

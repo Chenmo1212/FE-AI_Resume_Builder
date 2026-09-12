@@ -91,17 +91,18 @@ export const LeftNav = () => {
 
   const clickHandler = useCallback(
     (event) => {
-      if (activeTab === event.currentTarget.dataset.id) setActiveTab(-1);
-      else setActiveTab(event.currentTarget.dataset.id);
+      const currId = Number(event.currentTarget.dataset.id);
+      if (activeTab === currId) setActiveTab(-1);
+      else setActiveTab(currId);
     },
     [activeTab, setActiveTab]
   );
 
   return (
     <Wrapper>
-      <SideMenu menuList={leftNavList} onClick={clickHandler} activeKey={Number(activeTab)} />
+      <SideMenu menuList={leftNavList} onClick={clickHandler} activeKey={activeTab} />
       <SideDrawer isShown={activeTab !== -1}>{leftNavList[activeTab]?.component}</SideDrawer>
-      <SideBackground isShown={activeTab !== -1} update={setActiveTab} />
+      <SideBackground isShown={activeTab !== -1} onDismiss={() => setActiveTab(-1)} />
     </Wrapper>
   );
 };
