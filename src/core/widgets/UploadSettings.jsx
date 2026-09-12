@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Upload, Tooltip } from 'antd';
+import { Upload, Tooltip, Modal, Typography } from 'antd';
 import {
   useActivities,
   useAwards,
   useEducation,
   useIntro,
+  usePreferData,
   useSkills,
   useVolunteer,
   useWork,
@@ -44,22 +45,41 @@ export function UploadSettings() {
   const resetProjects = useProjects((state) => state.reset);
   const resetVolunteer = useVolunteer((state) => state.reset);
   const resetAwards = useAwards((state) => state.reset);
+  const setBaseResume = usePreferData((state) => state.set);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pendingResume, setPendingResume] = useState(null);
 
   function beforeUpload(file) {
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function (e) {
-      const userJSoN = JSON.parse(e.target.result);
-      resetBasics(userJSoN.basics);
-      resetSkills(userJSoN.skills);
-      resetWork(userJSoN.work);
-      resetEducation(userJSoN.education);
-      resetActivities(userJSoN.activities);
-      resetProjects(userJSoN.projects);
-      resetVolunteer(userJSoN.volunteer);
-      resetAwards(userJSoN.awards);
+      const parsed = JSON.parse(e.target.result);
+      resetBasics(parsed.basics);
+      resetSkills(parsed.skills);
+      resetWork(parsed.work);
+      resetEducation(parsed.education);
+      resetActivities(parsed.activities);
+      resetProjects(parsed.projects);
+      resetVolunteer(parsed.volunteer);
+      resetAwards(parsed.awards);
+      setPendingResume(parsed);
+      setModalOpen(true);
     };
     reader.readAsText(file);
+    return false; // prevent antd from attempting an HTTP upload
   }
+
+  const handleSetAsBase = () => {
+    if (pendingResume) {
+      setBaseResume(pendingResume);
+    }
+    setModalOpen(false);
+    setPendingResume(null);
+  };
+
+  const handleSkipBase = () => {
+    setModalOpen(false);
+    setPendingResume(null);
+  };
 
   const props = {
     name: 'file',
@@ -70,12 +90,29 @@ export function UploadSettings() {
   };
 
   return (
-    <IconWrapper>
-      <Upload {...props}>
-        <Tooltip placement="left" title={'Upload'}>
-          <IconButton>{getIcon('upload')}</IconButton>
-        </Tooltip>
-      </Upload>
-    </IconWrapper>
+    <>
+      <IconWrapper>
+        <Upload {...props}>
+          <Tooltip placement="left" title={'Upload'}>
+            <IconButton>{getIcon('upload')}</IconButton>
+          </Tooltip>
+        </Upload>
+      </IconWrapper>
+      <Modal
+        open={modalOpen}
+        title="Set as Base Resume?"
+        okText="Yes, set as Base Resume"
+        cancelText="No, just load it"
+        onOk={handleSetAsBase}
+        onCancel={handleSkipBase}
+      >
+        <Typography.Paragraph>
+          Your <strong>Base Resume</strong> is your personal starting point. The AI uses it when generating tailored resumes, and you can reset any section back to it at any time.
+        </Typography.Paragraph>
+        <Typography.Paragraph>
+          Would you like to also save this uploaded resume as your Base Resume?
+        </Typography.Paragraph>
+      </Modal>
+    </>
   );
 }
