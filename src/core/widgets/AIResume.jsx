@@ -50,8 +50,8 @@ export const AIResume = ({ onOpenSettings }) => {
   const cancelTask = useTasks((state) => state.cancel, shallow);
 
   const jobs = useJobs((state) => state.jobs);
-  const [addJob, updateJob, purgeJob] = useJobs(
-    (state) => [state.add, state.update, state.purge],
+  const [addJob, updateJob, purgeJobById] = useJobs(
+    (state) => [state.add, state.update, state.purgeById],
     shallow
   );
 
@@ -127,8 +127,7 @@ export const AIResume = ({ onOpenSettings }) => {
   };
 
   const handleDelete = (record) => {
-    const jobIndex = jobs.findIndex((j) => j.id === record.jobId);
-    if (jobIndex !== -1) purgeJob(jobIndex);
+    purgeJobById(record.jobId);
   };
 
   const openAddModal = () => {

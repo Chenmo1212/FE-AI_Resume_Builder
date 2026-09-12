@@ -90,15 +90,19 @@ export const useJobs = create(
         })),
 
       purge: async (index) => {
+        const currentState = useJobs.getState();
+        const job = currentState.jobs[index];
+        if (job) await currentState.purgeById(job.id);
+      },
+
+      purgeById: async (jobId) => {
         try {
-          set((state) => state.loading = true);
-          const currentState = useJobs.getState();
-          const delJobId = currentState.jobs[index].id;
-          await db.jobs.update(delJobId, { is_delete: 1, delete_time: Date.now() });
+          useJobs.getState().updateLoading(true);
+          await db.jobs.update(jobId, { is_delete: 1, delete_time: Date.now() });
+          await useTasks.getState().purge(jobId);
           set(
             produce((state) => {
-              state.jobs = state.jobs.filter((_, ind) => ind !== index);
-              useTasks.getState().purge(delJobId);
+              state.jobs = state.jobs.filter((job) => job.id !== jobId);
               state.loading = false;
             })
           );
