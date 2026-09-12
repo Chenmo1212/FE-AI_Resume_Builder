@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Table, Button, message, Tag, Space, Spin, Checkbox} from 'antd';
+import {Table, Button, message, Tag, Space, Spin, Checkbox, Tooltip} from 'antd';
 import {useTasks} from '../../stores/jobs.store';
 import shallow from 'zustand/shallow';
 import {
@@ -12,7 +12,7 @@ import {
   useVolunteer,
   useWork,
 } from '../../stores/data.store';
-import {updateResume, updateTask} from "../../axios/api";
+import {updateTask} from "../../axios/api";
 import { getIcon } from '../../styles/icons';
 import { Container } from '@mui/material';
 import { Heading } from '../components/editor/Editor';
@@ -53,7 +53,7 @@ const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, 
 
   const handleStatus = () => {
     for (const row of selectedRows) {
-      if (row.status >= 0) {
+      if (row.status === 0 || row.status === 1) {
         return true;
       }
     }
@@ -109,7 +109,7 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       onSelectedRowsChange(selectedRows);
     },
     getCheckboxProps: (record) => ({
-      disabled: record.status >= 0,
+      disabled: record.status === 0 || record.status === 1,
     }),
   };
 
@@ -168,11 +168,16 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       render: (record) => (
         <>
           <Space>
-            <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
-            <a onClick={() => uploadResume(record)}>{getIcon('upload')}</a>
-            <a onClick={() => applyStatusHandle(record)} style={{ color: record.isApply ? '#52c41a' : '' }}>{getIcon('apply')}</a>
+            <Tooltip title="View generated resume">
+              <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
+            </Tooltip>
+            <Tooltip title={record.isApply ? 'Mark as not applied' : 'Mark as applied'}>
+              <a onClick={() => applyStatusHandle(record)} style={{ color: record.isApply ? '#52c41a' : '' }}>{getIcon('apply')}</a>
+            </Tooltip>
             {(record.status === 0 || record.status === 1) && (
-              <a onClick={() => handleCancel(record)} style={{ color: '#ff4d4f' }}>{getIcon('stop')}</a>
+              <Tooltip title="Cancel this task">
+                <a onClick={() => handleCancel(record)} style={{ color: '#ff4d4f' }}>{getIcon('stop')}</a>
+              </Tooltip>
             )}
           </Space>
         </>
@@ -201,22 +206,6 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
       type: 'success',
       content: 'Resume checkout successfully!',
     });
-  };
-
-  const uploadResume = (record) => {
-    setLoading(true)
-    updateResume(record.newResumeId, resume).then(res => {
-      if (res.status === 200) {
-        messageApi.open({
-          type: 'success',
-          content: 'Resume update successfully!',
-        });
-        setLoading(false);
-      }
-    }).catch(err=> {
-      console.log(err)
-      setLoading(false);
-    })
   };
 
   const applyStatusHandle = (record) => {
