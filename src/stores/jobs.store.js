@@ -230,12 +230,11 @@ export const useTasks = create(
           }
 
           // POST to backend to run the LLM pipeline
-          const res = await addTasks({
+          await addTasks({
             resume: data.resume,
             task_list: data.task_list,
             ai_config: data.ai_config,
           });
-          console.log(res);
 
           useTasks.getState().updateLoading(false);
           await useTasks.getState().fetch();
