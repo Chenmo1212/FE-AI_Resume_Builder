@@ -18,7 +18,6 @@ import { EduSection } from 'src/templates/components/education/EduSection';
 import {
   useIntro,
   useWork,
-  useSkills,
   useActivities,
   useEducation,
   useLabels,
@@ -70,10 +69,7 @@ export default function ProfessionalTemplate() {
     (state: any) => [state.involvements, state.achievements],
     shallow
   );
-  const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
-    (state: any) => [[], [], [], [], [], [], []],
-    shallow
-  );
+  // skills not used in this template
   const labels = useLabels((state: any) => state.labels);
   let leftSections = [
     {

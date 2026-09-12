@@ -15,16 +15,8 @@ export function useBaseTemplate(customSectionOrder = null) {
   const labels = useLabels((state) => state.labels);
   const [config] = useTemplates((state) => [state.currConfig()], shallow);
   const setLeftDrawer = useLeftDrawer((state) => state.update);
-  const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
-    (state) => [
-      state.languages,
-      state.frameworks,
-      state.libraries,
-      state.databases,
-      state.technologies,
-      state.practices,
-      state.tools,
-    ],
+  const [technical, nonTechnical] = useSkills(
+    (state) => [state.technical, state.nonTechnical],
     shallow
   );
 
@@ -145,20 +137,20 @@ export function useBaseTemplate(customSectionOrder = null) {
     skills: createSection(
       'skills',
       6,
-      config.isShowSkills && [...technologies, ...libraries, ...databases].length > 0,
+      config.isShowSkills && technical.length > 0,
       (props) => (
         <div onClick={(e) => clickHandler(e, labels[6])}>
-          {props.renderSkills ? props.renderSkills([...technologies, ...libraries, ...databases]) : null}
+          {props.renderSkills ? props.renderSkills(technical) : null}
         </div>
       )
     ),
     practices: createSection(
       'practices',
       7,
-      config.isShowPractices && practices.length > 0,
+      config.isShowPractices && nonTechnical.length > 0,
       (props) => (
         <div onClick={(e) => clickHandler(e, labels[7])}>
-          {props.renderPractices ? props.renderPractices(practices) : null}
+          {props.renderPractices ? props.renderPractices(nonTechnical) : null}
         </div>
       )
     ),
@@ -230,13 +222,8 @@ export function useBaseTemplate(customSectionOrder = null) {
     involvements,
     labels,
     config,
-    languages,
-    frameworks,
-    libraries,
-    databases,
-    technologies,
-    practices,
-    tools,
+    technical,
+    nonTechnical,
     
     // Functions
     clickHandler,

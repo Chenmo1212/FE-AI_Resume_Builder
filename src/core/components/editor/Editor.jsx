@@ -56,6 +56,9 @@ export const Heading = styled.h2`
   font-size: 1.5rem;
   line-height: 2.5rem;
   margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `;
 
 const Wrapper = styled.div`
@@ -304,7 +307,7 @@ export const ForteEditor = () => (
   </>
 );
 
-export const SkillEditor = ({ type, hasRating = false }) => {
+export const SkillEditor = ({ type, label }) => {
   const [skillList, add, update, purge, changeOrder] = useSkills(
     (state) => [state[type], state.add, state.update, state.purge, state.changeOrder],
     shallow
@@ -312,10 +315,10 @@ export const SkillEditor = ({ type, hasRating = false }) => {
 
   return (
     <Container>
-      <Heading>{type.toUpperCase()} {type === "languages" ? <PreferDataBtn content='skills'/> : ""}</Heading>
+      <Heading>{label} <PreferDataBtn content='skills'/></Heading>
       <SkillsEdit
         type={type}
-        hasRating={hasRating}
+        hasRating={false}
         skills={skillList}
         addSkill={add}
         updateSkill={update}
@@ -333,15 +336,8 @@ export const SkillsEditor = () => {
 
   return (
     <>
-      <SkillEditor type="languages" hasRating />
-      <SkillEditor type="frameworks" hasRating />
-      <SkillEditor type="technologies" hasRating={false} />
-      <SkillEditor type="libraries" hasRating={false} />
-      <SkillEditor type="databases" hasRating={false} />
-      <SkillEditor type="practices" hasRating={false} />
-      <SkillEditor type="tools" hasRating={false} />
-
-      <Divider />
+      <SkillEditor type="technical" label="Technical Skills" />
+      <SkillEditor type="nonTechnical" label="Non-Technical Skills" />
       {/* Configure */}
       <Wrapper style={configStyles}>
         <Topic>Configure</Topic>

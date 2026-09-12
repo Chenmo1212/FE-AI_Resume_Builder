@@ -37,7 +37,7 @@ const IconButton = styled.button`
 
 export function SaveSettings() {
   const basics = useIntro((state) => state.intro);
-  const skills = useSkills((state) => state);
+  const skills = useSkills(({ technical, nonTechnical }) => ({ technical, nonTechnical }));
   const work = useWork((state) => state.companies);
   const education = useEducation((state) => state.education);
   const activities = useActivities((state) => state);
@@ -49,8 +49,12 @@ export function SaveSettings() {
     const fileName = basics.name + '_' + new Date().toLocaleString();
     const exportType = exportFromJSON.types.json;
 
+    // Strip backend-derived / deprecated fields before export
+    const cleanWork = work.map(({ highlights, isWorkingHere, ...rest }) => rest);
+    const cleanProjects = projects.map(({ highlights, ...rest }) => rest);
+
     exportFromJSON({
-      data: { basics, skills, work, education, projects, activities, volunteer, awards },
+      data: { basics, skills, work: cleanWork, education, projects: cleanProjects, activities, volunteer, awards },
       fileName,
       exportType,
     });

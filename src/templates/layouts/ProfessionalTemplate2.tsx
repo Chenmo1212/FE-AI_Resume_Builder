@@ -72,16 +72,8 @@ export default function ProfessionalTemplate() {
     (state: any) => [state.involvements, state.achievements],
     shallow
   );
-  const [languages, frameworks, libraries, databases, technologies, practices, tools] = useSkills(
-    (state: any) => [
-      state.languages,
-      state.frameworks,
-      state.libraries,
-      state.databases,
-      state.technologies,
-      state.practices,
-      state.tools,
-    ],
+  const [technical, nonTechnical] = useSkills(
+    (state: any) => [state.technical, state.nonTechnical],
     shallow
   );
   const labels = useLabels((state: any) => state.labels);
@@ -123,14 +115,13 @@ export default function ProfessionalTemplate() {
     {
       title: labels[6],
       icon: labelsIcon[6],
-      component: <UnratedTabs items={[...technologies, ...libraries, ...databases]} />,
+      component: <UnratedTabs items={technical} />,
     },
     {
       title: labels[7],
       icon: labelsIcon[7],
-      component: <UnratedTabs items={practices} />,
+      component: <UnratedTabs items={nonTechnical} />,
     },
-    // { title: labels[8], icon: labelsIcon[8], component: <UnratedTabs items={tools} /> },
     {
       title: labels[9],
       icon: labelsIcon[9],

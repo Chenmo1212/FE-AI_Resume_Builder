@@ -105,8 +105,7 @@ export const useIntro = create(
           id: 'active',
           update_time: Date.now(),
           basics: intro,
-          skills: (({ languages, frameworks, libraries, databases, technologies, practices, tools }) =>
-            ({ languages, frameworks, libraries, databases, technologies, practices, tools }))(useSkills.getState()),
+          skills: (({ technical, nonTechnical }) => ({ technical, nonTechnical }))(useSkills.getState()),
           work: useWork.getState().companies,
           education: useEducation.getState().education,
           projects: useProjects.getState().projects,
@@ -143,32 +142,22 @@ export const useIntro = create(
 export const useSkills = create(
   persist(
     (set) => ({
-      languages: userData.skills.languages,
-      frameworks: userData.skills.frameworks,
-      libraries: userData.skills.libraries,
-      databases: userData.skills.databases,
-      technologies: userData.skills.technologies,
-      practices: userData.skills.practices,
-      tools: userData.skills.tools,
+      technical: userData.skills.technical,
+      nonTechnical: userData.skills.nonTechnical,
 
       reset: (data = userData.skills) => {
         set({
-          languages: data.languages,
-          frameworks: data.frameworks,
-          libraries: data.libraries,
-          databases: data.databases,
-          technologies: data.technologies,
-          practices: data.practices,
-          tools: data.tools,
+          technical: data.technical ?? [],
+          nonTechnical: data.nonTechnical ?? [],
         });
       },
 
-      add: (type, name = '', level = 1) =>
+      add: (type, name = '') =>
         set((state) => {
           if (state[type].some((skill) => skill.name === '')) return;
 
           state[type] = [...state[type]];
-          state[type].push({name, level});
+          state[type].push({name});
         }),
 
       update: (type, index, key, value) =>
@@ -190,7 +179,7 @@ export const useSkills = create(
         })),
     }),
     {
-      name: 'sprb-skills',
+      name: 'sprb-skills-v2',
     }
   )
 );

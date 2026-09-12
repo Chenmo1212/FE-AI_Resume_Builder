@@ -17,10 +17,10 @@ export const Button = styled.span`
   box-shadow: 0 2px 0 rgba(5,145,255,.1);
   font-size: 14px;
   height: 32px;
-  padding: 4px 15px;
+  line-height: 26px;
+  padding: 4px 10px;
   border-radius: 6px;
   cursor: pointer;
-  margin-left: 20px;
 `;
 
 
