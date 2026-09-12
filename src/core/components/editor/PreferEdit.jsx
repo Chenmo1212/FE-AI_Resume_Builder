@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 import styled from 'styled-components';
-import {message} from 'antd';
+import {message, Tooltip} from 'antd';
 import {
   useActivities, useAwards,
   useEducation,
@@ -58,15 +58,17 @@ export function PreferDataBtn({content}) {
 
     messageApi.open({
       type: 'success',
-      content: 'Use prefer data successfully!',
+      content: 'Section reset to Base Resume.',
     });
   };
   return (
     <>
       {contextHolder}
-      <Button onClick={handleSubmit}>
-        Choose Prefer Data
-      </Button>
+      <Tooltip title="Reset this section back to your Base Resume content">
+        <Button onClick={handleSubmit}>
+          Reset to Base
+        </Button>
+      </Tooltip>
     </>
   );
 }
