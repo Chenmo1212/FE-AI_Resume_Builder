@@ -28,28 +28,6 @@ const Wrapper = styled.div`
   }
 `;
 
-const sideBarList = [
-  {
-    key: 0,
-    title: 'Template',
-    icon: 'template',
-    component: <Templates />,
-  },
-  {
-    key: 1,
-    title: 'Theme',
-    icon: 'color',
-    component: <Themes />,
-  },
-  {
-    key: 2,
-    title: 'Robot',
-    icon: 'robot',
-    disabled: false,
-    component: <AIResume />,
-  },
-];
-
 const IconWrapper = styled.div`
   outline-color: transparent;
   margin-bottom: 1rem;
@@ -73,9 +51,37 @@ const IconButton = styled.button`
 
 export const Sidebar = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState('ai');
   const [activeTab, setActiveTab] = useRightDrawer((state) => [state.activeTab, state.update]);
   const zoom = useZoom((state) => state.zoom);
   const updateZoom = useZoom((state) => state.update);
+
+  const openSettingsOnAITab = () => {
+    setSettingsTab('ai');
+    setSettingsOpen(true);
+  };
+
+  const sideBarList = [
+    {
+      key: 0,
+      title: 'Template',
+      icon: 'template',
+      component: <Templates />,
+    },
+    {
+      key: 1,
+      title: 'Theme',
+      icon: 'color',
+      component: <Themes />,
+    },
+    {
+      key: 2,
+      title: 'Robot',
+      icon: 'robot',
+      disabled: false,
+      component: <AIResume onOpenSettings={openSettingsOnAITab} />,
+    },
+  ];
 
   const resetBasics = useIntro((state) => state.reset);
   const resetSkills = useSkills((state) => state.reset);
@@ -143,7 +149,11 @@ export const Sidebar = () => {
           </Tooltip>
         </IconWrapper>
       </SideMenu>
-      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SettingsModal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        defaultTab={settingsTab}
+      />
       <SideBackground isShown={activeTab !== -1} update={setActiveTab} />
     </Wrapper>
   );

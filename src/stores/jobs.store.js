@@ -50,15 +50,15 @@ export const useJobs = create(
         }
       },
 
-      add: async () => {
+      add: async (data = {}) => {
         useJobs.getState().updateLoading(true);
         try {
           const newJob = {
             id: crypto.randomUUID(),
-            title: 'job title',
-            company: '',
-            link: '',
-            description: '',
+            title: data.title || 'job title',
+            company: data.company || '',
+            link: data.link || '',
+            description: data.description || '',
             create_time: Date.now(),
             is_delete: 0,
           };

@@ -347,8 +347,8 @@ const DataPane = () => {
 
 // ─── Modal ───────────────────────────────────────────────────────────────────
 
-export const SettingsModal = ({ open, onClose }) => {
-  const [selectedKey, setSelectedKey] = useState('ai');
+export const SettingsModal = ({ open, onClose, defaultTab }) => {
+  const [selectedKey, setSelectedKey] = useState(defaultTab ?? 'ai');
 
   const { templates, loading, fetchTemplates, isDirty } = usePromptTemplatesStore();
 
@@ -357,6 +357,10 @@ export const SettingsModal = ({ open, onClose }) => {
       fetchTemplates();
     }
   }, [open]);
+
+  useEffect(() => {
+    if (open) setSelectedKey(defaultTab ?? 'ai');
+  }, [open, defaultTab]);
 
   // Derive active prompt template id from selected key
   const activePromptId = selectedKey.startsWith('prompt:')

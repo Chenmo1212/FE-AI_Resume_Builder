@@ -1,83 +1,62 @@
-import React, {useEffect, useState} from 'react';
-import {Table, Button, message, Tag, Space, Spin, Checkbox, Tooltip} from 'antd';
-import {useTasks} from '../../stores/jobs.store';
+import React, { useEffect, useState } from 'react';
+import {
+  Table, Button, message, Tag, Space, Spin,
+  Checkbox, Tooltip, Dropdown, Menu, Alert, Popconfirm,
+} from 'antd';
+import { useTasks, useJobs } from '../../stores/jobs.store';
 import shallow from 'zustand/shallow';
 import {
-  useActivities,
-  useAwards,
-  useEducation,
-  useIntro, usePreferData,
-  useProjects,
-  useSkills,
-  useVolunteer,
-  useWork,
+  useActivities, useAwards, useEducation, useIntro,
+  usePreferData, useProjects, useSkills, useVolunteer, useWork,
 } from '../../stores/data.store';
-import {updateTask} from "../../axios/api";
+import { updateTask } from '../../axios/api';
 import { getIcon } from '../../styles/icons';
+import { useAIStore } from '../../stores/ai.store';
+import { JobModal } from './JobModal';
 import { Container } from '@mui/material';
 import { Heading } from '../components/editor/Editor';
+import styled from 'styled-components';
 
-import { useAIStore } from '../../stores/ai.store';
+const PanelHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+`;
 
-const SubmitBtn = ({selectedRows, setSelectedRowKeys, setSelectedTasks, resume, messageApi}) => {
-  const create = useTasks((state) => state.create, shallow);
-  const getAIConfig = useAIStore((state) => state.getConfig);
-  const [isLoading, setLoading] = useState(false);
+const Footer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+`;
+
+export const AIResume = ({ onOpenSettings }) => {
+  const [messageApi, contextHolder] = message.useMessage();
+  const [selectedTasks, setSelectedTasks] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [isPrefer, setIsPrefer] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('add');
+  const [editingJob, setEditingJob] = useState(null);
+
+  const apiKey = useAIStore((state) => state.apiKey);
+  const getAIConfig = useAIStore((state) => state.getConfig);
+
+  const [tasks, tasksLoading] = useTasks((state) => [state.tasks, state.loading]);
+  const fetchTasks = useTasks((state) => state.fetch);
+  const createTask = useTasks((state) => state.create, shallow);
+  const cancelTask = useTasks((state) => state.cancel, shallow);
+
+  const jobs = useJobs((state) => state.jobs);
+  const [addJob, updateJob, purgeJob] = useJobs(
+    (state) => [state.add, state.update, state.purge],
+    shallow
+  );
+
   const preferResume = usePreferData((state) => state.getResume(), shallow);
 
-  const handleSubmit = () => {
-    setLoading(true)
-    if (!selectedRows.length) {
-      messageApi.open({
-        type: 'error',
-        content: 'Please select the task!',
-      });
-      setLoading(false)
-      return;
-    }
-
-    create({
-      task_list: selectedRows,
-      resume: isPrefer ? preferResume : resume,
-      ai_config: getAIConfig(),
-    });
-    messageApi.open({
-      type: 'success',
-      content: 'Submit task successfully!',
-    });
-    setSelectedRowKeys([]);
-    setSelectedTasks([]);
-    setLoading(false);
-  };
-
-  const handleStatus = () => {
-    for (const row of selectedRows) {
-      if (row.status === 0 || row.status === 1) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const onPreferChange = (e) => {
-    setIsPrefer(e.target.checked)
-  };
-
-  return (
-    <>
-      <Checkbox onChange={onPreferChange} style={{color: "#fff"}} checked={isPrefer}>Use Prefer Resume</Checkbox>
-      <Button type="primary" onClick={handleSubmit} disabled={handleStatus()} loading={isLoading}>
-        Submit
-      </Button>
-    </>
-  );
-};
-
-const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, resume, messageApi}) => {
-  const [tasks] = useTasks((state) => [state.tasks]);
-  const [isLoading, setLoading] = useState(false);
-  const [fetch, cancel] = useTasks((state) => [state.fetch, state.cancel], shallow);
   const resetBasics = useIntro((state) => state.reset);
   const resetSkills = useSkills((state) => state.reset);
   const resetWork = useWork((state) => state.reset);
@@ -87,171 +66,6 @@ const TaskTable = ({selectedRowKeys, onSelectedRowsChange, setSelectedRowKeys, r
   const resetVolunteer = useVolunteer((state) => state.reset);
   const resetAwards = useAwards((state) => state.reset);
 
-  useEffect(() => {
-    fetch();
-
-    const intervalId = setInterval(() => {
-      const { tasks } = useTasks.getState();
-      const hasPending = tasks.some((t) => t.status === 0 || t.status === 1);
-      if (hasPending) {
-        fetch();
-      }
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  // rowSelection object indicates the need for row selection
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys, selectedRows) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-      onSelectedRowsChange(selectedRows);
-    },
-    getCheckboxProps: (record) => ({
-      disabled: record.status === 0 || record.status === 1,
-    }),
-  };
-
-  const columns = [
-    {
-      title: 'Title',
-      dataIndex: 'title',
-      render: (title, record) => (
-        <>
-          <a href={record.link} target="_blank" rel="noreferrer">
-            {title}
-          </a>
-        </>
-      ),
-    },
-    {
-      title: 'Company',
-      dataIndex: 'company',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      render: (status) => {
-        if (status === -2) return <Tag icon={getIcon('delete')} color="error">Failed</Tag>;
-        if (status === -1) return <Tag icon={getIcon('cloud')} color="default"/>;
-        else if (status === 0) return <Tag icon={getIcon('clock')} color="default"/>;
-        else if (status === 1) return <Tag icon={getIcon('sync')} color="processing"/>;
-        else if (status === 2) return <Tag icon={getIcon('check')} color="success"/>;
-      },
-      filters: [
-        {
-          text: 'Failed',
-          value: -2,
-        },
-        {
-          text: 'Default',
-          value: -1,
-        },
-        {
-          text: 'Waiting',
-          value: 0,
-        },
-        {
-          text: 'Processing',
-          value: 1,
-        },
-        {
-          text: 'Success',
-          value: 2,
-        },
-      ],
-      onFilter: (value, record) => record.status === value,
-    },
-    {
-      title: 'Action',
-      render: (record) => (
-        <>
-          <Space>
-            <Tooltip title="View generated resume">
-              <a onClick={() => displayResume(record)}>{getIcon('eye')}</a>
-            </Tooltip>
-            <Tooltip title={record.isApply ? 'Mark as not applied' : 'Mark as applied'}>
-              <a onClick={() => applyStatusHandle(record)} style={{ color: record.isApply ? '#52c41a' : '' }}>{getIcon('apply')}</a>
-            </Tooltip>
-            {(record.status === 0 || record.status === 1) && (
-              <Tooltip title="Cancel this task">
-                <a onClick={() => handleCancel(record)} style={{ color: '#ff4d4f' }}>{getIcon('stop')}</a>
-              </Tooltip>
-            )}
-          </Space>
-        </>
-      ),
-    },
-  ];
-
-  const displayResume = (record) => {
-    if (!record['resume'] || !record['resume'].basics) {
-      messageApi.open({
-        type: 'warning',
-        content: 'Resume not ready yet, please wait.',
-      });
-      return;
-    }
-    const resume = {...record['resume']};
-    resetBasics(resume.basics);
-    resetSkills(resume.skills);
-    resetWork(resume.work);
-    resetEducation(resume.education);
-    resetActivities(resume.activities);
-    resetProjects(resume.projects);
-    resetVolunteer(resume.volunteer);
-    resetAwards(resume.awards);
-    messageApi.open({
-      type: 'success',
-      content: 'Resume checkout successfully!',
-    });
-  };
-
-  const applyStatusHandle = (record) => {
-    setLoading(true);
-    updateTask(record.id, {is_apply: !record.isApply, apply_time: new Date().toISOString()}).then(res => {
-      if (res.status === 201) {
-        messageApi.open({
-          type: 'success',
-          content: !record.isApply ? 'Successfully applied!' : "Waiting to apply!",
-        });
-        fetch();
-        setLoading(false);
-      }
-    }).catch(err=>{
-      console.log(err)
-      setLoading(false);
-    })
-  }
-
-  const handleCancel = (record) => {
-    cancel(record.id);
-    messageApi.open({
-      type: 'info',
-      content: 'Cancellation requested.',
-    });
-  };
-
-  return (
-    <div>
-      <Table
-        rowSelection={{
-          type: 'checkbox',
-          ...rowSelection,
-        }}
-        columns={columns}
-        dataSource={tasks}
-        loading={isLoading}
-      />
-    </div>
-  );
-};
-
-export const AIResume = () => {
-  const [messageApi, contextHolder] = message.useMessage();
-  const [selectedTasks, setSelectedTasks] = useState([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const basics = useIntro((state) => state.intro);
   const skills = useSkills((state) => state);
   const work = useWork((state) => state.companies);
@@ -260,40 +74,286 @@ export const AIResume = () => {
   const projects = useProjects((state) => state.projects);
   const volunteer = useVolunteer((state) => state.volunteer);
   const awards = useAwards((state) => state.awards);
-  const [loading] = useTasks((state) => [state.loading]);
-  const resume = {
-    basics,
-    skills,
-    work,
-    education,
-    projects,
-    activities,
-    volunteer,
-    awards,
+
+  const resume = { basics, skills, work, education, projects, activities, volunteer, awards };
+
+  useEffect(() => {
+    fetchTasks();
+    const intervalId = setInterval(() => {
+      const { tasks } = useTasks.getState();
+      const hasPending = tasks.some((t) => t.status === 0 || t.status === 1);
+      if (hasPending) fetchTasks();
+    }, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const displayResume = (record) => {
+    if (!record.resume?.basics) {
+      messageApi.open({ type: 'warning', content: 'Resume not ready yet, please wait.' });
+      return;
+    }
+    const r = { ...record.resume };
+    resetBasics(r.basics);
+    resetSkills(r.skills);
+    resetWork(r.work);
+    resetEducation(r.education);
+    resetActivities(r.activities);
+    resetProjects(r.projects);
+    resetVolunteer(r.volunteer);
+    resetAwards(r.awards);
+    messageApi.open({ type: 'success', content: 'Resume loaded successfully!' });
   };
 
+  const handleApplyToggle = (record) => {
+    updateTask(record.id, {
+      is_apply: !record.isApply,
+      apply_time: new Date().toISOString(),
+    })
+      .then((res) => {
+        if (res.status === 201) {
+          messageApi.open({
+            type: 'success',
+            content: !record.isApply ? 'Marked as applied!' : 'Marked as not applied.',
+          });
+          fetchTasks();
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleCancel = (record) => {
+    cancelTask(record.id);
+    messageApi.open({ type: 'info', content: 'Cancellation requested.' });
+  };
+
+  const handleDelete = (record) => {
+    const jobIndex = jobs.findIndex((j) => j.id === record.jobId);
+    if (jobIndex !== -1) purgeJob(jobIndex);
+  };
+
+  const openAddModal = () => {
+    setModalMode('add');
+    setEditingJob(null);
+    setModalOpen(true);
+  };
+
+  const openEditModal = (record) => {
+    const jobIndex = jobs.findIndex((j) => j.id === record.jobId);
+    setModalMode('edit');
+    setEditingJob({
+      index: jobIndex,
+      title: record.title,
+      company: record.company,
+      link: record.link,
+      description: record.description,
+    });
+    setModalOpen(true);
+  };
+
+  const handleModalSave = async (values) => {
+    if (modalMode === 'add') {
+      await addJob(values);
+      await fetchTasks();
+      messageApi.open({ type: 'success', content: 'Job added.' });
+    } else {
+      const { index } = editingJob;
+      if (values.title !== undefined) updateJob(index, 'title', values.title);
+      if (values.company !== undefined) updateJob(index, 'company', values.company);
+      if (values.link !== undefined) updateJob(index, 'link', values.link);
+      if (values.description !== undefined) updateJob(index, 'description', values.description);
+      setTimeout(() => fetchTasks(), 3500);
+      messageApi.open({ type: 'success', content: 'Job updated.' });
+    }
+    setModalOpen(false);
+  };
+
+  const handleGenerate = () => {
+    if (!selectedTasks.length) {
+      messageApi.open({ type: 'error', content: 'Please select at least one job.' });
+      return;
+    }
+    createTask({
+      task_list: selectedTasks,
+      resume: isPrefer ? preferResume : resume,
+      ai_config: getAIConfig(),
+    });
+    messageApi.open({ type: 'success', content: 'Task submitted successfully!' });
+    setSelectedRowKeys([]);
+    setSelectedTasks([]);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newKeys, newRows) => {
+      setSelectedRowKeys(newKeys);
+      setSelectedTasks(newRows);
+    },
+    getCheckboxProps: (record) => ({
+      disabled: record.status === 0 || record.status === 1,
+    }),
+  };
+
+  const renderStatus = (status, record) => {
+    if (status === -2) return <Tag icon={getIcon('delete')} color="error">Failed</Tag>;
+    if (status === -1) return <Tag color="default">—</Tag>;
+    if (status === 0) return <Tag icon={getIcon('clock')} color="default">Waiting</Tag>;
+    if (status === 1) return <Tag icon={getIcon('sync')} color="processing">Processing</Tag>;
+    if (status === 2) {
+      return (
+        <Space size={8}>
+          <Tooltip title="Done">
+            <Tag icon={getIcon('check')} color="success" />
+          </Tooltip>
+          <Tooltip title="View generated resume">
+            <a onClick={() => displayResume(record)} aria-label="View generated resume">
+              {getIcon('eye')}
+            </a>
+          </Tooltip>
+        </Space>
+      );
+    }
+  };
+
+  const buildMenu = (record) => {
+    const { status } = record;
+    const items = [];
+
+    if (status === 0 || status === 1) {
+      items.push(
+        <Menu.Item key="cancel" onClick={() => handleCancel(record)}>
+          Cancel
+        </Menu.Item>
+      );
+    }
+
+    if (status === 2) {
+      items.push(
+        <Menu.Item key="apply" onClick={() => handleApplyToggle(record)}>
+          {record.isApply ? 'Mark as not applied' : 'Mark as applied'}
+        </Menu.Item>
+      );
+    }
+
+    if (status !== 0 && status !== 1) {
+      items.push(
+        <Menu.Item key="edit" onClick={() => openEditModal(record)}>
+          Edit job
+        </Menu.Item>
+      );
+      items.push(
+        <Menu.Item key="delete">
+          <Popconfirm
+            title="Delete this job and its task?"
+            onConfirm={() => handleDelete(record)}
+            okText="Delete"
+            cancelText="Cancel"
+            okButtonProps={{ danger: true }}
+          >
+            <span style={{ color: '#ff4d4f' }}>Delete</span>
+          </Popconfirm>
+        </Menu.Item>
+      );
+    }
+
+    return <Menu>{items}</Menu>;
+  };
+
+  const columns = [
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      render: (title, record) =>
+        record.link ? (
+          <a href={record.link} target="_blank" rel="noreferrer">{title}</a>
+        ) : (
+          <span>{title}</span>
+        ),
+    },
+    { title: 'Company', dataIndex: 'company' },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      render: renderStatus,
+      filters: [
+        { text: 'Failed', value: -2 },
+        { text: 'Default', value: -1 },
+        { text: 'Waiting', value: 0 },
+        { text: 'Processing', value: 1 },
+        { text: 'Done', value: 2 },
+      ],
+      onFilter: (value, record) => record.status === value,
+    },
+    {
+      title: 'Actions',
+      width: 80,
+      render: (_, record) => (
+        <Space size={4}>
+          <Dropdown overlay={buildMenu(record)} trigger={['click']} placement="bottomRight">
+            <a style={{ color: '#ccc', fontSize: 18, lineHeight: 1 }}>···</a>
+          </Dropdown>
+        </Space>
+      ),
+    },
+  ];
+
+  const missingApiKey = !apiKey;
+  const hasActiveTasks = selectedTasks.some((r) => r.status === 0 || r.status === 1);
+
   return (
-    <>
-      <Spin spinning={loading} tip="Loading...">
-        <Container>
-          {contextHolder}
+    <Spin spinning={tasksLoading} tip="Loading...">
+      <Container>
+        {contextHolder}
+        <PanelHeader>
           <Heading>AI Resume</Heading>
-          <TaskTable
-            selectedRowKeys={selectedRowKeys}
-            onSelectedRowsChange={(selectedTasks) => setSelectedTasks(selectedTasks)}
-            setSelectedRowKeys={setSelectedRowKeys}
-            resume={resume}
-            messageApi={messageApi}
+          <Button
+            type="primary"
+            size="small"
+            icon={getIcon('add')}
+            onClick={openAddModal}
+            style={{ display: 'inline-flex', alignItems: 'center' }}
+          >
+            Add Job
+          </Button>
+        </PanelHeader>
+        {missingApiKey && (
+          <Alert
+            type="warning"
+            showIcon
+            style={{ marginBottom: 12 }}
+            message="No API key configured"
+            description={
+              <span>
+                Add your key in Settings to enable resume generation.{' '}
+                <a onClick={onOpenSettings} style={{ fontWeight: 500 }}>
+                  Open Settings →
+                </a>
+              </span>
+            }
           />
-          <SubmitBtn
-            selectedRows={selectedTasks}
-            setSelectedRowKeys={setSelectedRowKeys}
-            setSelectedTasks={setSelectedTasks}
-            resume={resume}
-            messageApi={messageApi}
-          />
-        </Container>
-      </Spin>
-    </>
+        )}
+        <Table
+          rowSelection={{ type: 'checkbox', ...rowSelection }}
+          columns={columns}
+          dataSource={tasks}
+          size="small"
+          pagination={{ pageSize: 10, size: 'small' }}
+        />
+        <Footer>
+          <Checkbox onChange={(e) => setIsPrefer(e.target.checked)} checked={isPrefer} style={{ color: '#ccc' }}>
+            Use Preferred Resume
+          </Checkbox>
+          <Button type="primary" onClick={handleGenerate} disabled={missingApiKey || hasActiveTasks}>
+            Generate Selected
+          </Button>
+        </Footer>
+        <JobModal
+          open={modalOpen}
+          mode={modalMode}
+          initialValues={editingJob}
+          onSave={handleModalSave}
+          onCancel={() => setModalOpen(false)}
+        />
+      </Container>
+    </Spin>
   );
 };
