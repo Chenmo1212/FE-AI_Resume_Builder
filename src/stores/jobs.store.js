@@ -248,7 +248,8 @@ export const useTasks = create(
           })
         ),
 
-      purge: (jobId) => {
+      purge: async (jobId) => {
+        await db.tasks.where('job_id').equals(jobId).delete();
         set(
           produce((state) => {
             state.tasks = state.tasks.filter((task) => task.jobId !== jobId && task.job_id !== jobId);

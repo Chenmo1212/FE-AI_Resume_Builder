@@ -161,9 +161,11 @@ export const AIResume = ({ onOpenSettings }) => {
         if (values.company !== undefined) updateJob(index, 'company', values.company);
         if (values.link !== undefined) updateJob(index, 'link', values.link);
         if (values.description !== undefined) updateJob(index, 'description', values.description);
+        setTimeout(() => fetchTasks(), 3500);
+        messageApi.open({ type: 'success', content: 'Job updated.' });
+      } else {
+        messageApi.open({ type: 'warning', content: 'Job is no longer available.' });
       }
-      setTimeout(() => fetchTasks(), 3500);
-      messageApi.open({ type: 'success', content: 'Job updated.' });
     }
     setModalOpen(false);
   };
