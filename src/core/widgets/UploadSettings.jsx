@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Upload, Tooltip, Modal, Typography } from 'antd';
+import { Upload, Tooltip, Modal, Typography, message } from 'antd';
 import {
   useActivities,
   useAwards,
@@ -52,17 +52,34 @@ export function UploadSettings() {
   function beforeUpload(file) {
     const reader = new FileReader();
     reader.onload = function (e) {
-      const parsed = JSON.parse(e.target.result);
-      resetBasics(parsed.basics);
-      resetSkills(parsed.skills);
-      resetWork(parsed.work);
-      resetEducation(parsed.education);
-      resetActivities(parsed.activities);
-      resetProjects(parsed.projects);
-      resetVolunteer(parsed.volunteer);
-      resetAwards(parsed.awards);
-      setPendingResume(parsed);
-      setModalOpen(true);
+      let parsed;
+      try {
+        parsed = JSON.parse(e.target.result);
+      } catch {
+        message.error('Invalid file: could not parse JSON.');
+        return;
+      }
+      if (!parsed || typeof parsed !== 'object' || !parsed.basics) {
+        message.error('Invalid resume format: missing required fields.');
+        return;
+      }
+      try {
+        resetBasics(parsed.basics);
+        resetSkills(parsed.skills);
+        resetWork(parsed.work);
+        resetEducation(parsed.education);
+        resetActivities(parsed.activities);
+        resetProjects(parsed.projects);
+        resetVolunteer(parsed.volunteer);
+        resetAwards(parsed.awards);
+        setPendingResume(parsed);
+        setModalOpen(true);
+      } catch (err) {
+        message.error('Failed to load resume: ' + err.message);
+      }
+    };
+    reader.onerror = function () {
+      message.error('Failed to read file.');
     };
     reader.readAsText(file);
     return false; // prevent antd from attempting an HTTP upload
