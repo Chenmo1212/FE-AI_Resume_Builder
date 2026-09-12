@@ -76,6 +76,41 @@ const ContentPane = styled.div`
   flex: 1;
   padding: 8px 24px 8px 20px;
   overflow: auto;
+
+  /* ── Unified dark input styles ── */
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-input-affix-wrapper input {
+    background: #424242;
+    color: #e6e6e6;
+    border-color: #555;
+  }
+  .ant-input:hover,
+  .ant-input-affix-wrapper:hover,
+  .ant-input-affix-wrapper-focused {
+    border-color: #1890ff;
+    background: #424242;
+  }
+  .ant-input::placeholder,
+  .ant-input-affix-wrapper input::placeholder {
+    color: #777;
+  }
+  .ant-input-password-icon {
+    color: #888;
+  }
+
+  .ant-select:not(.ant-select-disabled) .ant-select-selector {
+    background: #424242;
+    color: #e6e6e6;
+    border-color: #555;
+  }
+  .ant-select:not(.ant-select-disabled):hover .ant-select-selector,
+  .ant-select-focused:not(.ant-select-disabled) .ant-select-selector {
+    border-color: #1890ff;
+  }
+  .ant-select-arrow {
+    color: #888;
+  }
 `;
 
 const SectionTitle = styled.div`
@@ -210,7 +245,7 @@ const AIPane = () => {
             Clear
           </Button>
         </div>
-        <div style={{ color: '#666', fontSize: 11, marginTop: 4 }}>
+        <div style={{ color: '#aaa', fontSize: 11, marginTop: 4 }}>
           Stored locally in your browser only — never stored in any server.
         </div>
       </ControlGroup>
@@ -309,7 +344,7 @@ const DataPane = () => {
         <Button size="small" onClick={handleExport}>
           Export Backup (.json)
         </Button>
-        <div style={{ color: '#666', fontSize: 11, marginTop: 4 }}>
+        <div style={{ color: '#aaa', fontSize: 11, marginTop: 4 }}>
           Downloads all your resumes, jobs, tasks, and prompt templates as a single JSON file.
         </div>
       </ControlGroup>
@@ -331,7 +366,7 @@ const DataPane = () => {
         >
           {importing ? 'Importing…' : 'Import Backup (.json)'}
         </Button>
-        <div style={{ color: '#666', fontSize: 11, marginTop: 4 }}>
+        <div style={{ color: '#aaa', fontSize: 11, marginTop: 4 }}>
           ⚠️ This will <strong style={{ color: '#ff7875' }}>replace all current data</strong> with the backup contents.
         </div>
       </ControlGroup>

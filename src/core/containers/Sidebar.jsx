@@ -53,6 +53,7 @@ export const Sidebar = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState('ai');
   const [activeTab, setActiveTab] = useRightDrawer((state) => [state.activeTab, state.update]);
+  const [aiOpen, setAiOpen] = useState(false);
   const zoom = useZoom((state) => state.zoom);
   const updateZoom = useZoom((state) => state.update);
 
@@ -74,13 +75,6 @@ export const Sidebar = () => {
       icon: 'color',
       component: <Themes />,
     },
-    {
-      key: 2,
-      title: 'Robot',
-      icon: 'robot',
-      disabled: false,
-      component: <AIResume onOpenSettings={openSettingsOnAITab} />,
-    },
   ];
 
   const resetBasics = useIntro((state) => state.reset);
@@ -94,9 +88,9 @@ export const Sidebar = () => {
     (event) => {
       const currId = Number(event.currentTarget.dataset.id);
       if (activeTab === currId) setActiveTab(-1);
-      else setActiveTab(currId);
+      else { setActiveTab(currId); setAiOpen(false); }
     },
-    [activeTab, setActiveTab]
+    [activeTab, setActiveTab, setAiOpen]
   );
 
   const zoomout = useCallback(() => {
@@ -116,12 +110,32 @@ export const Sidebar = () => {
     resetProjects();
   };
 
+  const bottomSlot = (
+    <>
+      <IconWrapper onClick={() => { setAiOpen((v) => !v); setActiveTab(-1); }}>
+        <Tooltip placement="left" title="AI Resume">
+          <IconButton style={aiOpen ? { color: '#1890ff' } : undefined}>
+            {getIcon('robot')}
+          </IconButton>
+        </Tooltip>
+      </IconWrapper>
+      <IconWrapper onClick={() => setSettingsOpen(true)}>
+        <Tooltip placement="left" title="Settings">
+          <IconButton>{getIcon('settings')}</IconButton>
+        </Tooltip>
+      </IconWrapper>
+    </>
+  );
+
   return (
     <Wrapper>
-      <SideDrawer isShown={activeTab !== -1} width={activeTab === 2 ? '600px' : ''}>
+      <SideDrawer isShown={activeTab !== -1} width=''>
         {sideBarList[activeTab]?.component}
       </SideDrawer>
-      <SideMenu menuList={sideBarList} onClick={clickHandler}>
+      <SideDrawer isShown={aiOpen} width='600px'>
+        <AIResume onOpenSettings={openSettingsOnAITab} />
+      </SideDrawer>
+      <SideMenu menuList={sideBarList} onClick={clickHandler} bottomSlot={bottomSlot} activeKey={activeTab}>
         <IconWrapper onClick={zoomout}>
           <Tooltip placement="left" title={'Zoom Out'}>
             <IconButton>{getIcon('zoomout')}</IconButton>
@@ -143,18 +157,16 @@ export const Sidebar = () => {
         <UploadSettings />
         <SaveSettings />
         <PrintSettings />
-        <IconWrapper onClick={() => setSettingsOpen(true)}>
-          <Tooltip placement="left" title="Settings">
-            <IconButton>{getIcon('settings')}</IconButton>
-          </Tooltip>
-        </IconWrapper>
       </SideMenu>
       <SettingsModal
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         defaultTab={settingsTab}
       />
-      <SideBackground isShown={activeTab !== -1} update={setActiveTab} />
+      <SideBackground
+        isShown={activeTab !== -1 || aiOpen}
+        update={() => { setActiveTab(-1); setAiOpen(false); }}
+      />
     </Wrapper>
   );
 };

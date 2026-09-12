@@ -37,11 +37,15 @@ const StyledModal = styled(Modal)`
   }
 
   .ant-input,
+  .ant-input-affix-wrapper,
   .ant-input:hover,
-  .ant-input:focus {
+  .ant-input:focus,
+  .ant-input-affix-wrapper:hover,
+  .ant-input-affix-wrapper:focus,
+  .ant-input-affix-wrapper-focused {
     color: #fff;
-    background: #222;
-    border-color: #3a3a3a;
+    background: #424242;
+    border-color: #555;
   }
 
   .ant-input:hover,

@@ -32,6 +32,38 @@ const Footer = styled.div`
   margin-top: 12px;
 `;
 
+const DarkTable = styled(Table)`
+  .ant-table,
+  .ant-table-container,
+  .ant-table-content,
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td,
+  .ant-table-tbody > tr.ant-table-row:hover > td,
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+    background: transparent;
+    color: #e6e6e6;
+    border-color: #444;
+  }
+  .ant-table-thead > tr > th {
+    color: #aaa;
+  }
+  .ant-pagination-item a,
+  .ant-pagination-prev button,
+  .ant-pagination-next button {
+    color: #aaa;
+  }
+  .ant-pagination-item-active {
+    border-color: #1890ff;
+  }
+  .ant-pagination-item-active a {
+    color: #1890ff;
+  }
+  .ant-checkbox-inner {
+    background: transparent;
+    border-color: #555;
+  }
+`;
+
 export const AIResume = ({ onOpenSettings }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [selectedTasks, setSelectedTasks] = useState([]);
@@ -196,10 +228,10 @@ export const AIResume = ({ onOpenSettings }) => {
   };
 
   const renderStatus = (status, record) => {
-    if (status === -2) return <Tag icon={getIcon('delete')} color="error">Failed</Tag>;
-    if (status === -1) return <Tag color="default">—</Tag>;
-    if (status === 0) return <Tag icon={getIcon('clock')} color="default">Waiting</Tag>;
-    if (status === 1) return <Tag icon={getIcon('sync')} color="processing">Processing</Tag>;
+    if (status === -2) return <Tooltip title="Failed"><Tag icon={getIcon('delete')} color="error" /></Tooltip>;
+    if (status === -1) return <Tooltip title="—"><Tag color="default" /></Tooltip>;
+    if (status === 0) return <Tooltip title="Waiting"><Tag icon={getIcon('clock')} color="default" /></Tooltip>;
+    if (status === 1) return <Tooltip title="Processing"><Tag icon={getIcon('sync')} color="processing" /></Tooltip>;
     if (status === 2) {
       return (
         <Space size={8}>
@@ -325,15 +357,15 @@ export const AIResume = ({ onOpenSettings }) => {
             message="No API key configured"
             description={
               <span>
-                Add your key in Settings to enable resume generation.{' '}
-                <a onClick={onOpenSettings} style={{ fontWeight: 500 }}>
+                Add your key in Settings to enable resume generation.{' '}<br/>
+                <a onClick={onOpenSettings} style={{ fontWeight: 500, color: '#1890ff' }}>
                   Open Settings →
                 </a>
               </span>
             }
           />
         )}
-        <Table
+        <DarkTable
           rowSelection={{ type: 'checkbox', ...rowSelection }}
           columns={columns}
           dataSource={tasks}

@@ -39,6 +39,15 @@ const MessageCard = styled.div`
   padding: 10px;
   background: #333;
   border-radius: 6px;
+
+  .ant-select:not(.ant-select-disabled) .ant-select-selector {
+    background: #424242;
+    color: #e6e6e6;
+    border-color: #555;
+  }
+  .ant-select-arrow {
+    color: #888;
+  }
 `;
 
 const MessageTopRow = styled.div`
@@ -174,9 +183,9 @@ export const PromptStudioPane: React.FC<Props> = ({ activeId }) => {
             onChange={(e) => handleContentChange(i, e.target.value)}
             autoSize={{ minRows: 2, maxRows: 10 }}
             style={{
-              background: '#2a2a2a',
+              background: '#424242',
               color: '#e0e0e0',
-              border: '1px solid #4a4a4a',
+              border: '1px solid #555',
               fontSize: 12,
               fontFamily: 'monospace',
               resize: 'none',
