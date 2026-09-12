@@ -3,6 +3,7 @@ import {
   Table, Button, message, Tag, Space, Spin,
   Checkbox, Tooltip, Dropdown, Menu, Alert, Popconfirm,
 } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTasks, useJobs } from '../../stores/jobs.store';
 import shallow from 'zustand/shallow';
 import {
@@ -88,6 +89,7 @@ export const AIResume = ({ onOpenSettings }) => {
   );
 
   const preferResume = usePreferData((state) => state.getResume(), shallow);
+  const setBaseResume = usePreferData((state) => state.set);
 
   const resetBasics = useIntro((state) => state.reset);
   const resetSkills = useSkills((state) => state.reset);
@@ -199,6 +201,11 @@ export const AIResume = ({ onOpenSettings }) => {
       }
     }
     setModalOpen(false);
+  };
+
+  const handleSetCurrentAsBase = () => {
+    setBaseResume(resume);
+    messageApi.open({ type: 'success', content: 'Base Resume updated.' });
   };
 
   const handleGenerate = () => {
@@ -373,12 +380,27 @@ export const AIResume = ({ onOpenSettings }) => {
           pagination={{ pageSize: 10, size: 'small' }}
         />
         <Footer>
-          <Checkbox onChange={(e) => setIsPrefer(e.target.checked)} checked={isPrefer} style={{ color: '#ccc' }}>
-            Use Preferred Resume
-          </Checkbox>
-          <Button type="primary" onClick={handleGenerate} disabled={missingApiKey || hasActiveTasks}>
-            Generate Selected
-          </Button>
+          <Space>
+            <Checkbox onChange={(e) => setIsPrefer(e.target.checked)} checked={isPrefer} style={{ color: '#ccc' }}>
+              Use Base Resume as AI input
+            </Checkbox>
+            <Tooltip title="When checked, AI generates resumes starting from your Base Resume. Uncheck to use the resume currently on screen instead.">
+              <QuestionCircleOutlined style={{ color: '#aaa', cursor: 'help' }} />
+            </Tooltip>
+          </Space>
+          <Space>
+            <Popconfirm
+              title="Save the resume currently on screen as your Base Resume? This will replace the existing Base Resume."
+              onConfirm={handleSetCurrentAsBase}
+              okText="Confirm"
+              cancelText="Cancel"
+            >
+              <Button size="small">Set Current as Base</Button>
+            </Popconfirm>
+            <Button type="primary" onClick={handleGenerate} disabled={missingApiKey || hasActiveTasks}>
+              Generate Selected
+            </Button>
+          </Space>
         </Footer>
         <JobModal
           open={modalOpen}
