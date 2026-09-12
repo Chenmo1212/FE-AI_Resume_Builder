@@ -138,10 +138,9 @@ export const AIResume = ({ onOpenSettings }) => {
   };
 
   const openEditModal = (record) => {
-    const jobIndex = jobs.findIndex((j) => j.id === record.jobId);
     setModalMode('edit');
     setEditingJob({
-      index: jobIndex,
+      jobId: record.jobId,
       title: record.title,
       company: record.company,
       link: record.link,
@@ -156,11 +155,13 @@ export const AIResume = ({ onOpenSettings }) => {
       await fetchTasks();
       messageApi.open({ type: 'success', content: 'Job added.' });
     } else {
-      const { index } = editingJob;
-      if (values.title !== undefined) updateJob(index, 'title', values.title);
-      if (values.company !== undefined) updateJob(index, 'company', values.company);
-      if (values.link !== undefined) updateJob(index, 'link', values.link);
-      if (values.description !== undefined) updateJob(index, 'description', values.description);
+      const index = jobs.findIndex((job) => job.id === editingJob.jobId);
+      if (index !== -1) {
+        if (values.title !== undefined) updateJob(index, 'title', values.title);
+        if (values.company !== undefined) updateJob(index, 'company', values.company);
+        if (values.link !== undefined) updateJob(index, 'link', values.link);
+        if (values.description !== undefined) updateJob(index, 'description', values.description);
+      }
       setTimeout(() => fetchTasks(), 3500);
       messageApi.open({ type: 'success', content: 'Job updated.' });
     }

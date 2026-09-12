@@ -98,7 +98,7 @@ export const useJobs = create(
           set(
             produce((state) => {
               state.jobs = state.jobs.filter((_, ind) => ind !== index);
-              useTasks.getState().purge(index);
+              useTasks.getState().purge(delJobId);
               state.loading = false;
             })
           );
@@ -248,10 +248,10 @@ export const useTasks = create(
           })
         ),
 
-      purge: (index) => {
+      purge: (jobId) => {
         set(
           produce((state) => {
-            state.tasks = state.tasks.filter((_, ind) => ind !== index);
+            state.tasks = state.tasks.filter((task) => task.jobId !== jobId && task.job_id !== jobId);
           })
         );
       },
