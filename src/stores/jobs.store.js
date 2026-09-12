@@ -1,6 +1,5 @@
 import create from 'zustand';
 import {debounce} from 'lodash';
-import {persist} from 'zustand/middleware';
 import produce from 'immer';
 import {
   addTasks,
@@ -25,12 +24,11 @@ const debouncedUpdateJob = debounce(async (index) => {
 }, 3000);
 
 export const useJobs = create(
-  persist(
-    (set) => ({
-      jobs: JOBS_DATA,
-      loading: true,
+  (set) => ({
+    jobs: JOBS_DATA,
+    loading: true,
 
-      fetch: async () => {
+    fetch: async () => {
         useJobs.getState().updateLoading(true);
         try {
           const rawJobs = await db.jobs.where('is_delete').equals(0).toArray();
@@ -109,16 +107,12 @@ export const useJobs = create(
         }
       },
 
-      updateLoading: (bool) => {
-        set(produce((state) => {
-          state.loading = bool;
-        }));
-      }
-    }),
-    {
-      name: 'sprb-jobs',
+    updateLoading: (bool) => {
+      set(produce((state) => {
+        state.loading = bool;
+      }));
     }
-  )
+  })
 );
 
 const underscoreToCamel = (obj) => {
@@ -139,12 +133,11 @@ const underscoreToCamel = (obj) => {
 }
 
 export const useTasks = create(
-  persist(
-    (set) => ({
-      tasks: TASK_DATA,
-      loading: false,
+  (set) => ({
+    tasks: TASK_DATA,
+    loading: false,
 
-      fetch: async () => {
+    fetch: async () => {
         useTasks.getState().updateLoading(true);
         try {
           const rawTasks = await db.tasks.toArray();
@@ -263,25 +256,20 @@ export const useTasks = create(
         );
       },
 
-      updateLoading: (bool) => {
-        set(produce((state) => {
-          state.loading = bool;
-        }));
-      },
+    updateLoading: (bool) => {
+      set(produce((state) => {
+        state.loading = bool;
+      }));
+    },
 
-      cancel: async (taskId) => {
-        try {
-          await cancelTask(taskId);
-          await db.tasks.update(taskId, { status: -1 });
-          await useTasks.getState().fetch();
-        } catch (err) {
-          console.error('Failed to cancel task:', err);
-        }
-      },
-    }),
-    {
-      name: 'sprb-tasks',
-      partialize: (state) => ({ tasks: state.tasks }),
-    }
-  )
+    cancel: async (taskId) => {
+      try {
+        await cancelTask(taskId);
+        await db.tasks.update(taskId, { status: -1 });
+        await useTasks.getState().fetch();
+      } catch (err) {
+        console.error('Failed to cancel task:', err);
+      }
+    },
+  })
 );
