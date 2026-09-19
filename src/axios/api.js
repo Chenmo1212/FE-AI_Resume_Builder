@@ -25,7 +25,7 @@ export function getTasks(data) {
 }
 
 export function checkTasksStatus(data) {
-  return api.post('/tasks/results', JSON.stringify(data));
+  return api.post('/tasks/results', JSON.stringify(data), { silent: true });
 }
 
 export function addTask(data) {
@@ -46,6 +46,10 @@ export function addTasks(data) {
 
 export function getPromptTemplates() {
   return api.get('/prompt-templates');
+}
+
+export function checkHealth() {
+  return api.get('/health', { silent: true });
 }
 
 export function updatePromptTemplate(id, messages) {

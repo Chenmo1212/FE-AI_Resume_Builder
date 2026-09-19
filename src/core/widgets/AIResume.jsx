@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Table, Button, message, Tag, Space, Spin,
   Tooltip, Dropdown, Menu, Alert, Popconfirm,
@@ -12,7 +12,7 @@ import {
   useActivities, useAwards, useEducation, useIntro,
   usePreferData, useProjects, useSkills, useVolunteer, useWork,
 } from '../../stores/data.store';
-import { updateTask } from '../../axios/api';
+import { updateTask, checkHealth } from '../../axios/api';
 import { getIcon } from '../../styles/icons';
 import { useAIStore } from '../../stores/ai.store';
 import { JobModal } from './JobModal';
@@ -133,6 +133,20 @@ export const AIResume = ({ onOpenSettings }) => {
   const [modalMode, setModalMode] = useState('add');
   const [editingJob, setEditingJob] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [backendDown, setBackendDown] = useState(false);
+  const [healthChecking, setHealthChecking] = useState(false);
+
+  const runHealthCheck = useCallback(async () => {
+    setHealthChecking(true);
+    try {
+      await checkHealth();
+      setBackendDown(false);
+    } catch {
+      setBackendDown(true);
+    } finally {
+      setHealthChecking(false);
+    }
+  }, []);
 
   const apiKey = useAIStore((state) => state.apiKey);
   const aiStoreHydrated = useAIStore((state) => state._hydrated);
@@ -173,14 +187,24 @@ export const AIResume = ({ onOpenSettings }) => {
   const resume = { basics, skills, work, education, projects, activities, volunteer, awards };
 
   useEffect(() => {
+    runHealthCheck();
     fetchTasks();
-    const intervalId = setInterval(() => {
+    let isPolling = false;
+    const intervalId = setInterval(async () => {
+      if (isPolling) return; // Prevent overlapping polls if a request is slow/pending
       const { tasks } = useTasks.getState();
       const hasPending = tasks.some((t) => t.status === 0 || t.status === 1);
-      if (hasPending) fetchTasks();
+      if (hasPending) {
+        isPolling = true;
+        try {
+          await fetchTasks();
+        } finally {
+          isPolling = false;
+        }
+      }
     }, 5000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [runHealthCheck]);
 
   const displayResume = (record) => {
     if (!record.resume?.basics) {
@@ -270,15 +294,16 @@ export const AIResume = ({ onOpenSettings }) => {
     messageApi.open({ type: 'success', content: 'Base Resume updated.' });
   };
 
-  const handleGenerate = async () => {
-    if (!selectedTasks.length) {
+  const handleGenerate = async (tasksToRun = null) => {
+    const targetTasks = Array.isArray(tasksToRun) ? tasksToRun : selectedTasks;
+    if (!targetTasks.length) {
       messageApi.open({ type: 'error', content: 'Please select at least one job.' });
       return;
     }
     setIsSubmitting(true);
     try {
       await createTask({
-        task_list: selectedTasks,
+        task_list: targetTasks,
         resume: isPrefer ? preferResume : resume,
         ai_config: getAIConfig(),
       });
@@ -286,7 +311,7 @@ export const AIResume = ({ onOpenSettings }) => {
       setSelectedRowKeys([]);
       setSelectedTasks([]);
     } catch (err) {
-      messageApi.open({ type: 'error', content: 'Failed to generate tasks.' });
+      console.error('Failed to submit task:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -303,8 +328,25 @@ export const AIResume = ({ onOpenSettings }) => {
     }),
   };
 
+  const handleRetry = (record) => {
+    handleGenerate([record]);
+  };
+
   const renderStatus = (status, record) => {
-    if (status === -2) return <Tooltip title={record.error || 'Failed'}><Tag icon={getIcon('delete')} color="error" /></Tooltip>;
+    if (status === -2) {
+      return (
+        <Space size={8}>
+          <Tooltip title={record.error ? `Failed: ${record.error}` : 'Failed'}>
+            <Tag icon={getIcon('delete')} color="error" />
+          </Tooltip>
+          <Tooltip title="Retry task">
+            <a onClick={() => handleRetry(record)} aria-label="Retry task">
+              {getIcon('sync')}
+            </a>
+          </Tooltip>
+        </Space>
+      );
+    }
     if (status === -1) return <Tooltip title="Not started"><Tag color="default" /></Tooltip>;
     if (status === 0) return <Tooltip title="Waiting"><Tag icon={getIcon('clock')} color="default" /></Tooltip>;
     if (status === 1) return <Tooltip title="Processing"><Tag icon={getIcon('sync')} color="processing" /></Tooltip>;
@@ -410,6 +452,7 @@ export const AIResume = ({ onOpenSettings }) => {
   const hasActiveTasks = selectedTasks.some((r) => r.status === 0 || r.status === 1);
 
   const getGenerateDisabledReason = () => {
+    if (backendDown) return 'Backend service is unreachable.';
     if (missingApiKey) return 'Please configure your API key in Settings first.';
     if (!selectedTasks.length) return 'Select at least one job from the table.';
     if (hasActiveTasks) return 'Selected jobs include tasks currently being processed.';
@@ -452,6 +495,22 @@ export const AIResume = ({ onOpenSettings }) => {
             </Button>
           </div>
         </PanelHeader>
+        {backendDown && (
+          <Alert
+            type="error"
+            showIcon
+            style={darkAlertStyle}
+            message={<span style={{ color: '#e6a0a0' }}>Backend service is unreachable</span>}
+            description={
+              <span style={{ color: '#bf8080' }}>
+                The AI Resume feature requires the backend to be running.{' '}
+                <a onClick={runHealthCheck} style={{ fontWeight: 500, color: '#1890ff' }}>
+                  {healthChecking ? 'Checking…' : 'Retry →'}
+                </a>
+              </span>
+            }
+          />
+        )}
         {missingApiKey && (
           <Alert
             type="warning"

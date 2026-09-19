@@ -46,14 +46,15 @@ export const usePromptTemplatesStore = create<PromptTemplatesStore>((set, get) =
       );
       set(produce((state: PromptTemplatesStore) => {
         state.templates = merged;
-        state.loading = false;
         merged.forEach((t) => {
           if (!state.editingMessages[t.id]) {
             state.editingMessages[t.id] = t.messages.map((m) => ({ ...m }));
           }
         });
       }));
-    } catch {
+    } catch (err) {
+      console.error('Failed to fetch prompt templates:', err);
+    } finally {
       set(produce((state: PromptTemplatesStore) => { state.loading = false; }));
     }
   },
@@ -78,14 +79,15 @@ export const usePromptTemplatesStore = create<PromptTemplatesStore>((set, get) =
         version: newVersion,
       });
       set(produce((state: PromptTemplatesStore) => {
-        state.saving[id] = false;
         const tpl = state.templates.find((t) => t.id === id);
         if (tpl) {
           tpl.version = newVersion;
           tpl.messages = messages.map((m) => ({ ...m }));
         }
       }));
-    } catch {
+    } catch (err) {
+      console.error('Failed to save prompt template:', err);
+    } finally {
       set(produce((state: PromptTemplatesStore) => { state.saving[id] = false; }));
     }
   },

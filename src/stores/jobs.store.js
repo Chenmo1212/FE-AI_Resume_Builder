@@ -45,7 +45,8 @@ export const useJobs = create(
             })
           );
         } catch (err) {
-          console.log(err);
+          console.error('Failed to fetch jobs from local database:', err);
+        } finally {
           useJobs.getState().updateLoading(false);
         }
       },
@@ -78,7 +79,8 @@ export const useJobs = create(
             })
           );
         } catch (err) {
-          console.error(err);
+          console.error('Failed to add job to local database:', err);
+        } finally {
           useJobs.getState().updateLoading(false);
         }
       },
@@ -107,7 +109,9 @@ export const useJobs = create(
             })
           );
         } catch (err) {
-          console.log(err);
+          console.error('Failed to purge job:', err);
+        } finally {
+          useJobs.getState().updateLoading(false);
         }
       },
 
@@ -135,6 +139,26 @@ const underscoreToCamel = (obj) => {
   }
   return camelCaseObj;
 }
+
+/**
+ * Enrich a raw Dexie task record with its related job fields and camelCase keys.
+ * Used by both fetch() and the create() error-rollback path to avoid duplication.
+ */
+const enrichTask = async (task) => {
+  const job = task.job_id ? await db.jobs.get(task.job_id) : null;
+  const resume = (task.status === 2 && task.new_resume_id)
+    ? await db.resumes.get(task.new_resume_id) ?? {}
+    : undefined;
+  return {
+    ...underscoreToCamel(task),
+    key: task.id,
+    title: job ? job.title : '',
+    company: job ? job.company : '',
+    link: job ? job.link : '',
+    description: job ? job.description : '',
+    resume,
+  };
+};
 
 export const useTasks = create(
   (set) => ({
@@ -201,33 +225,27 @@ export const useTasks = create(
                 }
               });
             } catch (err) {
-              console.log('Failed to sync task status from backend:', err);
+              console.warn('Backend unavailable during task sync:', err);
+              // If backend is unreachable, mark waiting tasks (status 0) as -1 (not started)
+              // so they don't get stuck indefinitely and prevent endless polling
+              const waitingTasks = rawTasks.filter((t) => t.status === 0);
+              if (waitingTasks.length) {
+                await Promise.all(
+                  waitingTasks.map((t) => db.tasks.update(t.id, { status: -1 }))
+                );
+                waitingTasks.forEach((t) => { t.status = -1; });
+              }
             }
           }
 
-          const enriched = await Promise.all(
-            rawTasks.map(async (task) => {
-              const job = task.job_id ? await db.jobs.get(task.job_id) : null;
-              const resume = (task.status === 2 && task.new_resume_id)
-                ? await db.resumes.get(task.new_resume_id) ?? {}
-                : undefined;
-              return {
-                ...underscoreToCamel(task),
-                key: task.id,
-                title: job ? job.title : '',
-                company: job ? job.company : '',
-                link: job ? job.link : '',
-                description: job ? job.description : '',
-                resume,
-              };
-            })
-          );
+          const enriched = await Promise.all(rawTasks.map(enrichTask));
           set(produce((state) => {
             state.tasks = enriched;
             state.loading = false;
           }));
         } catch (err) {
-          console.log(err);
+          console.error('Failed to fetch tasks:', err);
+        } finally {
           useTasks.getState().updateLoading(false);
         }
       },
@@ -242,14 +260,14 @@ export const useTasks = create(
           };
           await db.tasks.put(newTask);
         } catch (err) {
-          console.error(err);
+          console.error('Failed to add task to local database:', err);
         }
       },
 
       create: async (data) => {
         useTasks.getState().updateLoading(true);
         try {
-          // Upsert all tasks in Dexie with status = 0
+          // Upsert all tasks in Dexie with status = 0 (Waiting)
           if (data.task_list && data.task_list.length) {
             await Promise.all(
               data.task_list.map((task) =>
@@ -258,17 +276,35 @@ export const useTasks = create(
             );
           }
 
-          // POST to backend to run the LLM pipeline
+          // POST to backend to run the LLM pipeline — must happen before fetch()
+          // so the backend already knows these task IDs when checkTasksStatus is called.
+          // Fetching before this call causes the backend to treat new task IDs as "lost"
+          // and reset them to status -1 immediately.
           await addTasks({
             resume: data.resume,
             task_list: data.task_list,
             ai_config: data.ai_config,
           });
 
-          useTasks.getState().updateLoading(false);
           await useTasks.getState().fetch();
         } catch (err) {
-          console.log(err);
+          console.error('Failed to create tasks:', err);
+          // Rollback status to -1 (Not started) so tasks aren't stuck in Waiting
+          if (data.task_list && data.task_list.length) {
+            await Promise.all(
+              data.task_list.map((task) =>
+                db.tasks.update(task.id, { status: -1 })
+              )
+            );
+            // Refresh in-memory list without re-triggering backend polling
+            const rawTasks = await db.tasks.toArray();
+            const enriched = await Promise.all(rawTasks.map(enrichTask));
+            set(produce((state) => {
+              state.tasks = enriched;
+            }));
+          }
+          throw err;
+        } finally {
           useTasks.getState().updateLoading(false);
         }
       },
