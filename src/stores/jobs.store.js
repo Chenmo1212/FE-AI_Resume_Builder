@@ -180,6 +180,18 @@ export const useTasks = create(
               );
               // Merge updated statuses into rawTasks before building enriched list
               const updatedMap = Object.fromEntries(results.map((r) => [r.id, r]));
+              // Tasks not returned by backend at all — data is gone, reset to -1
+              const returnedIds = new Set(results.map((r) => r.id));
+              const lostIds = pendingIds.filter((id) => !returnedIds.has(id));
+              if (lostIds.length) {
+                await Promise.all(
+                  lostIds.map((id) => db.tasks.update(id, { status: -1, new_resume_id: null }))
+                );
+                lostIds.forEach((id) => {
+                  const t = rawTasks.find((r) => r.id === id);
+                  if (t) { t.status = -1; t.new_resume_id = null; }
+                });
+              }
               rawTasks.forEach((t) => {
                 if (updatedMap[t.id]) {
                   t.status = updatedMap[t.id].status;
