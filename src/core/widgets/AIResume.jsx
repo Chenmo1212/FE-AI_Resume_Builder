@@ -126,6 +126,7 @@ export const AIResume = ({ onOpenSettings }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [editingJob, setEditingJob] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const apiKey = useAIStore((state) => state.apiKey);
   const getAIConfig = useAIStore((state) => state.getConfig);
@@ -261,19 +262,26 @@ export const AIResume = ({ onOpenSettings }) => {
     messageApi.open({ type: 'success', content: 'Base Resume updated.' });
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!selectedTasks.length) {
       messageApi.open({ type: 'error', content: 'Please select at least one job.' });
       return;
     }
-    createTask({
-      task_list: selectedTasks,
-      resume: isPrefer ? preferResume : resume,
-      ai_config: getAIConfig(),
-    });
-    messageApi.open({ type: 'success', content: 'Task submitted successfully!' });
-    setSelectedRowKeys([]);
-    setSelectedTasks([]);
+    setIsSubmitting(true);
+    try {
+      await createTask({
+        task_list: selectedTasks,
+        resume: isPrefer ? preferResume : resume,
+        ai_config: getAIConfig(),
+      });
+      messageApi.open({ type: 'success', content: 'Task submitted successfully!' });
+      setSelectedRowKeys([]);
+      setSelectedTasks([]);
+    } catch (err) {
+      messageApi.open({ type: 'error', content: 'Failed to generate tasks.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const rowSelection = {
@@ -393,6 +401,16 @@ export const AIResume = ({ onOpenSettings }) => {
   const missingApiKey = !apiKey;
   const hasActiveTasks = selectedTasks.some((r) => r.status === 0 || r.status === 1);
 
+  const getGenerateDisabledReason = () => {
+    if (missingApiKey) return 'Please configure your API key in Settings first.';
+    if (!selectedTasks.length) return 'Select at least one job from the table.';
+    if (hasActiveTasks) return 'Selected jobs include tasks currently being processed.';
+    return '';
+  };
+
+  const generateDisabledReason = getGenerateDisabledReason();
+  const isGenerateDisabled = Boolean(generateDisabledReason) || isSubmitting;
+
   return (
     <Spin spinning={tasksLoading} tip="Loading...">
       <Container>
@@ -449,9 +467,21 @@ export const AIResume = ({ onOpenSettings }) => {
           size="small"
           pagination={{ pageSize: 10, size: 'small' }}
         />
-        <Button type="primary" size="small" onClick={handleGenerate} disabled={missingApiKey || hasActiveTasks}>
-          Generate Selected
-        </Button>
+        <Tooltip title={isGenerateDisabled && !isSubmitting ? generateDisabledReason : ''}>
+          <span>
+            <Button
+              type="primary"
+              size="small"
+              onClick={handleGenerate}
+              loading={isSubmitting}
+              disabled={isGenerateDisabled}
+            >
+              {selectedTasks.length > 0
+                ? `Generate Selected (${selectedTasks.length})`
+                : 'Generate Selected'}
+            </Button>
+          </span>
+        </Tooltip>
         <Divider />
         <ConfigSection>
           <ConfigTopic>Configure</ConfigTopic>
