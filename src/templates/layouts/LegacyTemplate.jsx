@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { BaseTemplate } from './BaseTemplate';
 import { Intro } from '../components/intro/Intro';
 import { Description } from '../components/description/Description';
-import { RatedPill } from '../components/skills/RatedPills';
 import { UnratedTabs } from '../components/skills/UnratedTabs';
 import { Exp } from '../components/exp/Exp';
 import { Projects } from '../components/projects/Projects';
@@ -47,7 +46,7 @@ export default function LegacyTemplate() {
   // Column configuration
   const columnConfig = {
     left: ['intro', 'experience', 'projects', 'achievements', 'involvements'],
-    right: ['summary', 'skills', 'practices', 'tools', 'education', 'referral']
+    right: ['summary', 'skills', 'practices', 'education', 'referral']
   };
   
   // Custom components
@@ -65,16 +64,14 @@ export default function LegacyTemplate() {
     renderProjects: (projects) => <Projects projects={projects} />,
     renderSkills: (items) => <UnratedTabs items={items} />,
     renderPractices: (items) => <UnratedTabs items={items} />,
-    renderTools: (items) => <UnratedTabs items={items} />,
     renderAchievements: (description) => <Description description={description} />,
     renderInvolvements: (description) => <Description description={description} />,
     renderReferral: (description) => <Description description={description} />,
-    renderExpertSkills: (items) => <RatedPill items={items} />,
   };
   
   // Custom container renderer for grid layout
   const renderContainer = (sections, components, baseTemplate) => {
-    const { clickHandler, getIcon, labels, intro, technical } = baseTemplate;
+    const { clickHandler, getIcon, labels, intro } = baseTemplate;
     
     // Filter sections by column
     const leftSections = sections.filter(section => 
@@ -108,17 +105,6 @@ export default function LegacyTemplate() {
               <div onClick={(e) => clickHandler(e, labels[3])}>
                 <LegacyHeader Icon={getIcon('identity')} title={labels[3]} />
                 {components.renderSummary(intro.summary)}
-              </div>
-              <LineSeparator />
-            </>
-          )}
-
-          {/* Technical skills */}
-          {technical.length > 0 && (
-            <>
-              <div onClick={(e) => clickHandler(e, labels[5])}>
-                <LegacyHeader Icon={getIcon('expert')} title={labels[5]} />
-                {components.renderSkills(technical)}
               </div>
               <LineSeparator />
             </>

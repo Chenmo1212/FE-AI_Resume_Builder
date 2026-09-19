@@ -59,7 +59,7 @@ export default function ClassicTemplate() {
   
   // Custom container renderer for this template
   const renderContainer = (sections, components, baseTemplate) => {
-    const { intro, practices } = baseTemplate;
+    const { intro, nonTechnical } = baseTemplate;
     
     return (
       <ResumeContainer>
@@ -74,8 +74,8 @@ export default function ClassicTemplate() {
               <SectionTitle>{section.title}</SectionTitle>
               <div onClick={(e) => baseTemplate.clickHandler(e, section.navKey)}>
                 {section.component({ ...components })}
-                {section.id === 'skills' && practices.length > 0 &&
-                  components.renderPractices(practices)
+                {section.id === 'skills' && nonTechnical.length > 0 &&
+                  components.renderPractices(nonTechnical)
                 }
               </div>
             </div>

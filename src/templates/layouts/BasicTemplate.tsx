@@ -11,13 +11,13 @@ import {
 import { Intro } from 'src/templates/components/intro/Intro';
 import { Description } from 'src/templates/components/description/Description';
 import { Projects } from 'src/templates/components/projects/Projects';
-import { RatedBars } from 'src/templates/components/skills/RatedBars';
 import { UnratedTabs } from 'src/templates/components/skills/UnratedTabs';
 import { Exp } from 'src/templates/components/exp/Exp';
 import { EduSection } from 'src/templates/components/education/EduSection';
 import {
   useIntro,
   useWork,
+  useSkills,
   useActivities,
   useEducation,
   useLabels,
@@ -69,7 +69,10 @@ export default function ProfessionalTemplate() {
     (state: any) => [state.involvements, state.achievements],
     shallow
   );
-  // skills not used in this template
+  const [technical, nonTechnical] = useSkills(
+    (state: any) => [state.technical, state.nonTechnical],
+    shallow
+  );
   const labels = useLabels((state: any) => state.labels);
   let leftSections = [
     {
@@ -96,9 +99,14 @@ export default function ProfessionalTemplate() {
       component: <Description description={intro.objective} />,
     },
     {
-      title: labels[5],
-      icon: labelsIcon[5],
-      component: <RatedBars items={[...languages, ...frameworks]} />,
+      title: labels[6],
+      icon: labelsIcon[6],
+      component: <UnratedTabs items={technical} />,
+    },
+    {
+      title: labels[7],
+      icon: labelsIcon[7],
+      component: <UnratedTabs items={nonTechnical} />,
     },
     {
       title: labels[9],
@@ -122,14 +130,14 @@ export default function ProfessionalTemplate() {
         component: <Description photo={intro.image} description={intro.summary} />,
       },
       {
-        title: labels[4],
-        icon: labelsIcon[4],
-        component: <Description description={intro.objective} />,
+        title: labels[6],
+        icon: labelsIcon[6],
+        component: <UnratedTabs items={technical} />,
       },
       {
-        title: labels[5],
-        icon: labelsIcon[5],
-        component: <RatedBars items={[...languages, ...frameworks]} />,
+        title: labels[7],
+        icon: labelsIcon[7],
+        component: <UnratedTabs items={nonTechnical} />,
       },
       {
         title: labels[2],
