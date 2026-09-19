@@ -59,6 +59,25 @@ const Footer = styled.div`
   border-top: 1px solid #333;
 `;
 
+const DarkAlert = styled(Alert)`
+  && {
+    background: rgba(255, 193, 7, 0.08);
+    border-color: rgba(255, 193, 7, 0.3);
+    .ant-alert-message {
+      color: #e6c87a;
+    }
+    .ant-alert-description {
+      color: #bba96a;
+    }
+    .ant-alert-icon {
+      color: #e6c87a;
+    }
+    a {
+      color: #1890ff;
+    }
+  }
+`;
+
 const DarkTable = styled(Table)`
   && {
     .ant-table,
@@ -445,7 +464,7 @@ export const AIResume = ({ onOpenSettings }) => {
           </div>
         </PanelHeader>
         {missingApiKey && (
-          <Alert
+          <DarkAlert
             type="warning"
             showIcon
             style={{ marginBottom: 12 }}
