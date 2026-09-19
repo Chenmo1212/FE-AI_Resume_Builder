@@ -15,7 +15,6 @@ const ResumeContainer = styled(FlexCol)`
   row-gap: 10px;
   color: ${(props) => props.theme.fontColor};
   background-color: ${(props) => props.theme.backgroundColor};
-  font-size: 0.65rem;
 
   @media print {
     border: none;
@@ -23,7 +22,7 @@ const ResumeContainer = styled(FlexCol)`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 1rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
   border-bottom: 1px solid #000;
 `;

@@ -20,7 +20,7 @@ const SectionHolder = styled.div`
     color: ${(props) => props.theme.primaryColor};
 
     svg {
-      font-size: 0.8rem;
+      font-size: var(--fs-md);
     }
   }
 `;
@@ -45,7 +45,7 @@ const SectionIntroHolder = styled(SectionHolder)`
     position: absolute;
     top: -12px;
     right: 10px;
-    font-size: 18px;
+    font-size: var(--fs-lg);
     column-gap: 5px;
 
     svg {

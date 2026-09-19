@@ -12,24 +12,24 @@ const Education = styled.div`
 `;
 
 const Institution = styled.div`
-    font-size: 0.6rem;
+    font-size: var(--fs-base);
 `;
 
 const Specialization = styled.div`
     font-weight: 700;
-    font-size: 0.7rem;
+    font-size: var(--fs-sm);
 `;
 
 const Highlights = styled.div`
-    font-size: 0.65rem;
+    font-size: var(--fs-base);
 `;
 
 const Topic = styled.div`
-    font-size: 0.65rem;
+    font-size: var(--fs-base);
 `;
 
 const Year = styled.div`
-    min-width: 3.8rem;
+    min-width: 3.8em;
 `;
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);

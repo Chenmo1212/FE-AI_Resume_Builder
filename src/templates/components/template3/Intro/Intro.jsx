@@ -24,14 +24,13 @@ const IntroContainer = styled.div`
     }
 
     &__info {
-      line-height: 24px;
       &__name {
-        font-size: 18px;
+        font-size: var(--fs-lg);
         font-weight: 700;
         color: ${(props) => Color(props.theme.primaryColor).toString()};
       }
       &__title {
-        font-size: 14px;
+        font-size: var(--fs-md);
         color: ${(props) => Color(props.theme.primaryColor).alpha(0.75).toString()};
         font-weight: 600;
       }
@@ -41,7 +40,7 @@ const IntroContainer = styled.div`
           &:first-of-type {
             margin-right: 10px;
           }
-          font-size: 10px;
+          font-size: var(--fs-base);
           span {
             font-weight: 700;
           }

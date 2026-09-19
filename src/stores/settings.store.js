@@ -20,6 +20,20 @@ export const useZoom = create((set) => ({
   },
 }));
 
+export const useFontSize = create((set) => ({
+  scale: 1,
+
+  increase: () =>
+    set((state) => ({
+      scale: Math.min(+(state.scale + 0.05).toFixed(2), 1.3),
+    })),
+
+  decrease: () =>
+    set((state) => ({
+      scale: Math.max(+(state.scale - 0.05).toFixed(2), 0.8),
+    })),
+}));
+
 export const useLeftDrawer = create((set) => ({
   activeTab: -1,
 

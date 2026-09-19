@@ -16,7 +16,6 @@ const FlexTimeline = styled(Timeline)`
   ul {
     padding-left: 16px;
     margin-bottom: 0;
-    font-size: 0.8rem;
   }
 `;
 
@@ -31,19 +30,19 @@ const TimelineItem = styled(FlexTimeline.Item)`
 `;
 
 const CompanyName = styled.div`
-  font-size: 0.8rem;
+  font-size: var(--fs-md);
   font-weight: 600;
 `;
 
 const CompanyRole = styled.div`
   font-weight: 500;
-  font-size: 0.7rem;
+  font-size: var(--fs-sm);
   line-height: inherit;
 `;
 
 const CompanyExp = styled.div`
   font-style: italic;
-  font-size: 0.7rem;
+  font-size: var(--fs-sm);
 `;
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);

@@ -27,8 +27,12 @@ a {
 
 ul,
 li {
-  font-size: 0.65rem;
   margin: 0;
+}
+
+.resume ul,
+.resume li {
+  font-size: var(--fs-base);
 }
 
 p {

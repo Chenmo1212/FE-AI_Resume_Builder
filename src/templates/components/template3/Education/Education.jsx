@@ -8,14 +8,14 @@ const EducationContainer = styled.section`
     margin-bottom: 10px;
   }
 
-  line-height: 20px;
+  line-height: 1.25em;
 
   .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     &__course {
-      font-size: 12px;
+      font-size: var(--fs-sm);
       font-weight: 600;
     }
   }

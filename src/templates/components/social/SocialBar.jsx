@@ -11,11 +11,11 @@ const SocialDiv = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  font-size: 0.7rem;
+  font-size: var(--fs-sm);
 
   svg {
-    height: 1rem;
-    width: 1rem;
+    height: 1em;
+    width: 1em;
     vertical-align: top;
   }
 

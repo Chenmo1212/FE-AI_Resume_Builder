@@ -5,13 +5,13 @@ import { getIcon } from '../../../styles/icons';
 import MarkdownIt from 'markdown-it';
 
 const ProjectName = styled.div`
-  font-size: 0.8rem;
+  font-size: var(--fs-md);
   font-weight: 500;
 `;
 
 const ProjectLink = styled.div`
   font-style: italic;
-  font-size: 0.7rem;
+  font-size: var(--fs-sm);
 `;
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);

@@ -39,7 +39,7 @@ const GridColumn = styled.div`
 const EmployeName = styled.div`
   margin: 0;
   color: ${(props) => props.theme.primaryColor};
-  font-size: 1.5rem;
+  font-size: var(--fs-xl);
 `;
 
 export default function LegacyTemplate() {

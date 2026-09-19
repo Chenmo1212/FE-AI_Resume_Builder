@@ -62,6 +62,7 @@ import {
   FaPaperPlane,
 } from 'react-icons/fa';
 import { IoGitBranch, IoReload } from 'react-icons/io5';
+import { RiFontSize, RiFontSize2 } from 'react-icons/ri';
 import { GoVerified } from 'react-icons/go';
 import { GrDrag } from 'react-icons/gr';
 
@@ -121,6 +122,8 @@ const icons = new Map([
   ['awards', <FaAward />],
   ['zoomin', <MdZoomIn />],
   ['zoomout', <MdZoomOut />],
+  ['fontsize-increase', <RiFontSize />],
+  ['fontsize-decrease', <RiFontSize2 />],
   ['save', <MdSave />],
   ['upload', <MdCloudUpload />],
   ['reset', <IoReload />],

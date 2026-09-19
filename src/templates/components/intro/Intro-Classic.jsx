@@ -4,7 +4,7 @@ import { FlexCol, FlexVC, FlexHC } from '../../../styles/styles';
 import { getIcon } from '../../../styles/icons';
 
 const Name = styled.h1`
-  font-size: 1.8rem;
+  font-size: var(--fs-2xl);
   margin: 0;
   font-weight: bold;
 `;

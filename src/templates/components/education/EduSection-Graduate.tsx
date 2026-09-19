@@ -12,20 +12,20 @@ const Education = styled.div`
 
 const Institution = styled.div`
   font-weight: 500;
-  font-size: 0.8rem;
+  font-size: var(--fs-md);
 `;
 
 const Specialization = styled.div`
   font-weight: 400;
-  font-size: 0.7rem;
+  font-size: var(--fs-sm);
 `;
 
 const Dissertation = styled.div`
-  font-size: 0.65rem;
+  font-size: var(--fs-base);
 `;
 
 const Courses = styled.div`
-  font-size: 0.65rem;
+  font-size: var(--fs-base);
 `;
 
 export function EduSection({ education }: any) {
@@ -45,8 +45,8 @@ export function EduSection({ education }: any) {
         <em>{data.score}</em>
       </Flex>
 
-      <Dissertation>{data.dissertation && <b>Dissertation:</b>} {data.dissertation}</Dissertation>
-      <Courses>{data.courses && <b>Main Modules:</b>} {data.courses.join(', ')}</Courses>
+      {data.dissertation ? <Dissertation><b>Dissertation:</b> {data.dissertation}</Dissertation> : null}
+      {data.courses?.length ? <Courses><b>Main Modules:</b> {data.courses.join(', ')}</Courses> : null}
     </Education>
   ));
 }

@@ -8,7 +8,7 @@ const Role = styled.h3`
   color: ${(props) => Color(props.theme.primaryColor).alpha(0.75).toString()};
   margin-bottom: 0;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: var(--fs-md);
 `;
 
 const Contact = ({ icon, value }) => (

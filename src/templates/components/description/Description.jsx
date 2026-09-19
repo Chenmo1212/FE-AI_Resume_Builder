@@ -17,7 +17,7 @@ const RoundedImage = styled.img`
 const MarkdownHolder = styled.div`
   ul {
     margin: 0;
-    padding-left: 1rem;
+    padding-left: 1em;
   }
 `;
 

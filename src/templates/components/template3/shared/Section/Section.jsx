@@ -21,7 +21,7 @@ const SectionContainer = styled.section(({ style }) => [
         margin: 0;
         color: ${(props) => props.theme.primaryColor};
         font-weight: 700;
-        font-size: 10px;
+        font-size: var(--fs-base);
         margin-right: 10px;
       }
 

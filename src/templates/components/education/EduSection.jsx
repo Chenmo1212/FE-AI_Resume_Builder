@@ -10,37 +10,36 @@ const Education = styled.div`
           padding-bottom: 10px;
           margin-bottom: 10px;
         `}
-        gap: 1rem;
+        gap: 1em;
     }
 `;
 
 const Institution = styled.div`
     font-weight: 700;
-    font-size: 0.7rem;
+    font-size: var(--fs-sm);
 `;
 
 const Specialization = styled.div`
     font-weight: 400;
-    font-size: 0.7rem;
+    font-size: var(--fs-sm);
 `;
 
 const Highlights = styled.div`
-    font-size: 0.65rem;
+    font-size: var(--fs-base);
 `;
 
 const Topic = styled.div`
-    font-size: 0.65rem;
+    font-size: var(--fs-base);
 `;
 
 const Year = styled.div`
-    min-width: 3.8rem;
+    min-width: 3.8em;
 `;
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 export function EduSection({ education, config, noBorder = false }) {
   if (!education) return null;
-  console.log("====== config", config);
   return (
     <FlexCol rGap="0.3rem">
       {education.map((data) => (
