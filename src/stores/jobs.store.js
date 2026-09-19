@@ -148,16 +148,31 @@ export const useTasks = create(
 
           // For any tasks still in-progress, fetch their latest status from the
           // backend once (no polling) so reopening the panel always shows fresh data.
+          // Check which status=2 tasks are missing their resume in IndexedDB
+          const doneWithResumeId = rawTasks.filter((t) => t.status === 2 && t.new_resume_id);
+          const missingResumeIds = (
+            await Promise.all(
+              doneWithResumeId.map(async (t) => {
+                const r = await db.resumes.get(t.new_resume_id);
+                return r ? null : t.id;
+              })
+            )
+          ).filter(Boolean);
+
           const pendingIds = rawTasks
             .filter((t) => t.status === 0 || t.status === 1 || (t.status === 2 && !t.new_resume_id))
-            .map((t) => t.id);
+            .map((t) => t.id)
+            .concat(missingResumeIds);
           if (pendingIds.length) {
             try {
               const pollRes = await checkTasksStatus({ task_ids: pendingIds });
               const results = (pollRes.data.tasks || []).filter(Boolean);
               await Promise.all(
                 results.map(async (result) => {
-                  await db.tasks.update(result.id, { status: result.status });
+                  await db.tasks.update(result.id, {
+                    status: result.status,
+                    ...(result.new_resume_id ? { new_resume_id: result.new_resume_id } : {}),
+                  });
                   if (result.status === 2 && result.new_resume_id && result.resume) {
                     await db.resumes.put({ id: result.new_resume_id, ...result.resume, update_time: Date.now() });
                   }

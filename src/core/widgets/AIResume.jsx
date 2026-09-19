@@ -184,7 +184,8 @@ export const AIResume = ({ onOpenSettings }) => {
 
   const displayResume = (record) => {
     if (!record.resume?.basics) {
-      messageApi.open({ type: 'warning', content: 'Resume not ready yet, please wait.' });
+      messageApi.open({ type: 'warning', content: 'Resume data not found locally. Trying to reload…' });
+      fetchTasks();
       return;
     }
     const r = { ...record.resume };
