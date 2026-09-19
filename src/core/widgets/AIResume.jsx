@@ -304,7 +304,7 @@ export const AIResume = ({ onOpenSettings }) => {
   };
 
   const renderStatus = (status, record) => {
-    if (status === -2) return <Tooltip title="Failed"><Tag icon={getIcon('delete')} color="error" /></Tooltip>;
+    if (status === -2) return <Tooltip title={record.error || 'Failed'}><Tag icon={getIcon('delete')} color="error" /></Tooltip>;
     if (status === -1) return <Tooltip title="Not started"><Tag color="default" /></Tooltip>;
     if (status === 0) return <Tooltip title="Waiting"><Tag icon={getIcon('clock')} color="default" /></Tooltip>;
     if (status === 1) return <Tooltip title="Processing"><Tag icon={getIcon('sync')} color="processing" /></Tooltip>;

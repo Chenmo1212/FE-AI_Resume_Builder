@@ -172,6 +172,7 @@ export const useTasks = create(
                   await db.tasks.update(result.id, {
                     status: result.status,
                     ...(result.new_resume_id ? { new_resume_id: result.new_resume_id } : {}),
+                    ...(result.error ? { error: result.error } : {}),
                   });
                   if (result.status === 2 && result.new_resume_id && result.resume) {
                     await db.resumes.put({ id: result.new_resume_id, ...result.resume, update_time: Date.now() });
@@ -196,6 +197,7 @@ export const useTasks = create(
                 if (updatedMap[t.id]) {
                   t.status = updatedMap[t.id].status;
                   if (updatedMap[t.id].new_resume_id) t.new_resume_id = updatedMap[t.id].new_resume_id;
+                  if (updatedMap[t.id].error) t.error = updatedMap[t.id].error;
                 }
               });
             } catch (err) {
