@@ -59,24 +59,11 @@ const Footer = styled.div`
   border-top: 1px solid #333;
 `;
 
-const DarkAlert = styled(Alert)`
-  && {
-    background: rgba(255, 193, 7, 0.08);
-    border-color: rgba(255, 193, 7, 0.3);
-    .ant-alert-message {
-      color: #e6c87a;
-    }
-    .ant-alert-description {
-      color: #bba96a;
-    }
-    .ant-alert-icon {
-      color: #e6c87a;
-    }
-    a {
-      color: #1890ff;
-    }
-  }
-`;
+const darkAlertStyle = {
+  background: 'rgba(255, 193, 7, 0.08)',
+  border: '1px solid rgba(255, 193, 7, 0.3)',
+  marginBottom: 12,
+};
 
 const DarkTable = styled(Table)`
   && {
@@ -464,13 +451,13 @@ export const AIResume = ({ onOpenSettings }) => {
           </div>
         </PanelHeader>
         {missingApiKey && (
-          <DarkAlert
+          <Alert
             type="warning"
             showIcon
-            style={{ marginBottom: 12 }}
-            message="No API key configured"
+            style={darkAlertStyle}
+            message={<span style={{ color: '#e6c87a' }}>No API key configured</span>}
             description={
-              <span>
+              <span style={{ color: '#bba96a' }}>
                 Add your key in Settings to enable resume generation.{' '}<br/>
                 <a onClick={onOpenSettings} style={{ fontWeight: 500, color: '#1890ff' }}>
                   Open Settings →
