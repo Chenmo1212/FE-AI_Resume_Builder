@@ -135,6 +135,7 @@ export const AIResume = ({ onOpenSettings }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const apiKey = useAIStore((state) => state.apiKey);
+  const aiStoreHydrated = useAIStore((state) => state._hydrated);
   const getAIConfig = useAIStore((state) => state.getConfig);
 
   const [tasks, tasksLoading] = useTasks((state) => [state.tasks, state.loading]);
@@ -404,7 +405,7 @@ export const AIResume = ({ onOpenSettings }) => {
     },
   ];
 
-  const missingApiKey = !apiKey;
+  const missingApiKey = aiStoreHydrated && !apiKey;
   const hasActiveTasks = selectedTasks.some((r) => r.status === 0 || r.status === 1);
 
   const getGenerateDisabledReason = () => {

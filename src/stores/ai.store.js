@@ -13,6 +13,7 @@ export const useAIStore = create(
       provider: 'openai',
       apiKey: '',
       baseUrl: '',
+      _hydrated: false,
 
       setModel: (model) =>
         set(produce((state) => { state.model = model; })),
@@ -43,6 +44,11 @@ export const useAIStore = create(
         return { model, temperature, sections, provider, apiKey, baseUrl };
       },
     }),
-    { name: 'sprb-ai-config' }
+    {
+      name: 'sprb-ai-config',
+      onRehydrateStorage: () => (state) => {
+        if (state) state._hydrated = true;
+      },
+    }
   )
 );
