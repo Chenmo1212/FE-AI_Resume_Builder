@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import styled from 'styled-components';
+import CustomImage from '../core/utils/imageUtils';
 
 const Section = styled.section`
   padding: 80px 5%;
@@ -38,7 +39,7 @@ const Grid = styled.div`
   }
 
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 `;
 
@@ -46,7 +47,7 @@ const Card = styled.div`
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 28px 24px 24px;
+  padding: 16px 16px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -58,31 +59,12 @@ const Card = styled.div`
   }
 `;
 
-const TemplatePreview = styled.div`
-  height: 80px;
-  background: var(--bg);
+const PreviewWrapper = styled.div`
   border-radius: 6px;
-  border: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 12px;
-  gap: 5px;
   overflow: hidden;
-`;
-
-const PreviewNameBar = styled.div`
-  height: 6px;
-  background: ${(p) => p.color || 'var(--ink)'};
-  border-radius: 3px;
-  width: 55%;
-`;
-
-const PreviewLineBar = styled.div`
-  height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  width: ${(p) => p.width || '80%'};
+  border: 1px solid var(--border);
+  background: var(--bg);
+  line-height: 0;
 `;
 
 const TemplateName = styled.h3`
@@ -121,23 +103,28 @@ const UseLink = styled.a`
 const templates = [
   {
     name: 'Classic',
+    image: '/images/classic.png',
     desc: 'Clean two-column layout. Works for any industry, any level.',
-    accentColor: '#0F1117',
   },
   {
     name: 'Professional',
+    image: '/images/professional.png',
     desc: 'Modern single-column with bold section headers. ATS-friendly.',
-    accentColor: '#2563EB',
   },
   {
     name: 'Graduate',
+    image: '/images/graduate.png',
     desc: 'Highlights education and projects — ideal for recent grads.',
-    accentColor: '#7C3AED',
   },
   {
-    name: 'Modern',
-    desc: 'Sidebar layout with skills and contact info grouped neatly.',
-    accentColor: '#059669',
+    name: 'Legacy',
+    image: '/images/legacy.png',
+    desc: 'Traditional layout with a timeless structure. Great for senior roles.',
+  },
+  {
+    name: 'One Column',
+    image: '/images/onecolumn.png',
+    desc: 'Minimal single-column format. Clean, readable, distraction-free.',
   },
 ];
 
@@ -149,13 +136,15 @@ const TemplatesSection = () => {
       <Grid>
         {templates.map((t) => (
           <Card key={t.name}>
-            <TemplatePreview aria-hidden="true">
-              <PreviewNameBar color={t.accentColor} />
-              <PreviewLineBar width="35%" />
-              <PreviewLineBar width="80%" />
-              <PreviewLineBar width="65%" />
-              <PreviewLineBar width="45%" />
-            </TemplatePreview>
+            <PreviewWrapper>
+              <CustomImage
+                src={t.image}
+                alt={`${t.name} resume template preview`}
+                width="300px"
+                height="420px"
+                layout="responsive"
+              />
+            </PreviewWrapper>
             <TemplateName>{t.name}</TemplateName>
             <TemplateDesc>{t.desc}</TemplateDesc>
             <Link href="/editor" passHref>
