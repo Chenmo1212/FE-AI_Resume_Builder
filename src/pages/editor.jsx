@@ -12,11 +12,21 @@ const Editor = () => {
   const setTemplate = useTemplates((state) => state.setTemplate);
 
   useEffect(() => {
+    if (!router.isReady) return;
     const index = parseInt(router.query.template, 10);
     if (!isNaN(index) && index >= 0 && index < templates.length) {
+      // URL has a valid template param — apply it to the store
       setTemplate(index);
+    } else {
+      // No template param — write the current store index into the URL
+      const currentIndex = useTemplates.getState().index;
+      router.replace(
+        { query: { ...router.query, template: currentIndex } },
+        undefined,
+        { shallow: true }
+      );
     }
-  }, [router.query.template, setTemplate]);
+  }, [router.isReady, router.query.template]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <FlexHC>

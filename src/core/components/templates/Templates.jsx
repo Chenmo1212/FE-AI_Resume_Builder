@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useRouter } from 'next/router';
 import { templates, useTemplates, templatesSrc, templatesName } from '../../../stores/templates.store';
 
 const TemplateWrapper = styled.div`
@@ -78,9 +79,15 @@ const TemplateThumbnail = styled.label`
 `;
 
 export function Templates() {
+  const router = useRouter();
   const templateIndex = useTemplates((state) => state.index);
   const setTemplate = useTemplates((state) => state.setTemplate);
   const [imageLoadStatus, setImageLoadStatus] = useState({});
+
+  const handleSelectTemplate = (ind) => {
+    setTemplate(ind);
+    router.replace({ query: { ...router.query, template: ind } }, undefined, { shallow: true });
+  };
 
   // Initialize all images as 'loading' when component mounts
   React.useEffect(() => {
@@ -112,7 +119,7 @@ export function Templates() {
           {imageLoadStatus[ind] === 'error' ? (
             <PlaceholderContainer
               className={templateIndex === ind ? 'selected' : ''}
-              onClick={() => setTemplate(ind)}
+              onClick={() => handleSelectTemplate(ind)}
             >
               {templatesName[ind]} Template
             </PlaceholderContainer>
@@ -136,7 +143,7 @@ export function Templates() {
               src={templatesSrc[ind]}
               alt={templatesName[ind]}
               className={templateIndex === ind ? 'selected' : ''}
-              onClick={() => setTemplate(ind)}
+              onClick={() => handleSelectTemplate(ind)}
               onError={() => handleImageError(ind)}
               onLoad={() => handleImageLoad(ind)}
             />
