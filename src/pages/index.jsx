@@ -1,33 +1,31 @@
-import styled from 'styled-components';
 import Head from 'next/head';
 import { Hero } from '../home/hero';
 import Features from '../home/features';
 import NavBar from '../home/navbar';
-
-const Main = styled.main`
-  padding: 10px 5% 0;
-  margin: auto;
-  max-width: 1200px;
-
-  & > div {
-    margin-bottom: 25px;
-  }
-`;
+import TemplatesSection from '../home/templates-section';
+import ClosingCTA from '../home/closing-cta';
+import Footer from '../home/footer';
 
 const Home = () => {
   return (
     <>
       <Head>
-        <title>Resume Builder</title>
-        <meta name="description" content="Single Page Resume Builder for everyone" />
+        <title>Resume Builder — AI-powered, free, no signup</title>
+        <meta
+          name="description"
+          content="Build a professional resume in minutes with AI-assisted writing, professional templates, and one-click PDF export. Free, open source, no account needed."
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Main>
-        <NavBar />
+      <NavBar />
+      <main>
         <Hero />
         <Features />
-      </Main>
+        <TemplatesSection />
+        <ClosingCTA />
+      </main>
+      <Footer />
     </>
   );
 };

@@ -1,9 +1,25 @@
 @import 'antd/dist/antd.css';
 
+:root {
+  --bg: #F8F9FC;
+  --surface: #FFFFFF;
+  --ink: #0F1117;
+  --muted: #6B7280;
+  --accent: #2563EB;
+  --accent-dark: #1D4ED8;
+  --accent-dim: #EFF6FF;
+  --border: #E5E7EB;
+  --font-display: 'DM Sans', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 0.65rem;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
 }
 
 a {

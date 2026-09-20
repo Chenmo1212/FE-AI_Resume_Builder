@@ -1,59 +1,96 @@
-
 import Link from 'next/link';
 import styled from 'styled-components';
 import { getIcon } from '../styles/icons';
 import CustomImage from '../core/utils/imageUtils';
 
 const Nav = styled.nav`
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+`;
+
+const NavInner = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-  position: absolute;
-  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 5%;
+  height: 60px;
+  font-family: var(--font-body);
+`;
+
+const LogoLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+`;
+
+const RightItems = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+`;
+
+const NavLink = styled.a`
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 0.15s ease;
+  display: none;
+
+  &:hover {
+    color: var(--ink);
+  }
 
   @media (min-width: 768px) {
-    position: static;
-    width: 100%;
+    display: block;
   }
 `;
 
-const RightItemsContainer = styled.div`
+const GitHubLink = styled.a`
   display: flex;
   align-items: center;
-  column-gap: 2rem;
+  color: var(--ink);
+  font-size: 1.5rem;
+  transition: color 0.15s ease;
 
-  .nav-item {
-    border-bottom: 1px solid #6c63ff;
-  }
-
-  .icon {
-    font-size: 2.5rem;
+  &:hover {
+    color: var(--accent);
   }
 `;
 
 const NavBar = () => {
   return (
     <Nav>
-      <Link href="/">
-        <a>
-          <CustomImage src="/logo.png" alt="logo" height="50px" width="50px" />
-        </a>
-      </Link>
-      <RightItemsContainer>
-        <a className="nav-item show-web">Templates</a>
-        <a className="nav-item show-web">Recommendations</a>
-        <a className="nav-item show-web">About</a>
-        <a
-          href="https://github.com/sadanandpai/resume-builder"
-          className="icon"
-          target="_new"
-          title="Source code"
-        >
-          {getIcon('github')}
-        </a>
-      </RightItemsContainer>
+      <NavInner>
+        <Link href="/" passHref>
+          <LogoLink>
+            <CustomImage src="/logo.png" alt="logo" height="32px" width="32px" />
+            Resume Builder
+          </LogoLink>
+        </Link>
+        <RightItems>
+          <NavLink href="#features">Features</NavLink>
+          <NavLink href="#templates">Templates</NavLink>
+          <GitHubLink
+            href="https://github.com/sadanandpai/resume-builder"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="View source on GitHub"
+          >
+            {getIcon('github')}
+          </GitHubLink>
+        </RightItems>
+      </NavInner>
     </Nav>
   );
 };
