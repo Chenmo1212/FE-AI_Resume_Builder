@@ -16,7 +16,6 @@ import { updateTask, checkHealth } from '../../axios/api';
 import { getIcon } from '../../styles/icons';
 import { useAIStore } from '../../stores/ai.store';
 import { JobModal } from './JobModal';
-import { Container } from '@mui/material';
 import { Heading } from '../components/editor/Editor';
 import styled from 'styled-components';
 
@@ -66,6 +65,9 @@ const darkAlertStyle = {
 };
 
 const DarkTable = styled(Table)`
+  &&, && .ant-table-wrapper {
+    background: transparent !important;
+  }
   && {
     .ant-table,
     .ant-table-container,
@@ -464,7 +466,7 @@ export const AIResume = ({ onOpenSettings }) => {
 
   return (
     <Spin spinning={tasksLoading} tip="Loading...">
-      <Container>
+      <div>
         {contextHolder}
         <PanelHeader>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -495,38 +497,40 @@ export const AIResume = ({ onOpenSettings }) => {
             </Button>
           </div>
         </PanelHeader>
-        {backendDown && (
-          <Alert
-            type="error"
-            showIcon
-            style={darkAlertStyle}
-            message={<span style={{ color: '#e6a0a0' }}>Backend service is unreachable</span>}
-            description={
-              <span style={{ color: '#bf8080' }}>
-                The AI Resume feature requires the backend to be running.{' '}
-                <a onClick={runHealthCheck} style={{ fontWeight: 500, color: '#1890ff' }}>
-                  {healthChecking ? 'Checking…' : 'Retry →'}
-                </a>
-              </span>
-            }
-          />
-        )}
-        {missingApiKey && (
-          <Alert
-            type="warning"
-            showIcon
-            style={darkAlertStyle}
-            message={<span style={{ color: '#e6c87a' }}>No API key configured</span>}
-            description={
-              <span style={{ color: '#bba96a' }}>
-                Add your key in Settings to enable resume generation.{' '}<br/>
-                <a onClick={onOpenSettings} style={{ fontWeight: 500, color: '#1890ff' }}>
-                  Open Settings →
-                </a>
-              </span>
-            }
-          />
-        )}
+        <div style={{ overflow: 'hidden' }}>
+          {backendDown && (
+            <Alert
+              type="error"
+              showIcon
+              style={darkAlertStyle}
+              message={<span style={{ color: '#e6a0a0' }}>Backend service is unreachable</span>}
+              description={
+                <span style={{ color: '#bf8080' }}>
+                  The AI Resume feature requires the backend to be running.{' '}
+                  <a onClick={runHealthCheck} style={{ fontWeight: 500, color: '#1890ff' }}>
+                    {healthChecking ? 'Checking…' : 'Retry →'}
+                  </a>
+                </span>
+              }
+            />
+          )}
+          {missingApiKey && (
+            <Alert
+              type="warning"
+              showIcon
+              style={darkAlertStyle}
+              message={<span style={{ color: '#e6c87a' }}>No API key configured</span>}
+              description={
+                <span style={{ color: '#bba96a' }}>
+                  Add your key in Settings to enable resume generation.{' '}<br/>
+                  <a onClick={onOpenSettings} style={{ fontWeight: 500, color: '#1890ff' }}>
+                    Open Settings →
+                  </a>
+                </span>
+              }
+            />
+          )}
+        </div>
         <DarkTable
           rowSelection={{ type: 'checkbox', ...rowSelection }}
           columns={columns}
@@ -569,7 +573,7 @@ export const AIResume = ({ onOpenSettings }) => {
           onSave={handleModalSave}
           onCancel={() => setModalOpen(false)}
         />
-      </Container>
+      </div>
     </Spin>
   );
 };
