@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import styled from 'styled-components';
-import { getIcon } from '../styles/icons';
 import CustomImage from '../core/utils/imageUtils';
 
 const Nav = styled.nav`
@@ -56,18 +55,6 @@ const NavLink = styled.a`
   }
 `;
 
-const GitHubLink = styled.a`
-  display: flex;
-  align-items: center;
-  color: var(--ink);
-  font-size: 1.5rem;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: var(--accent);
-  }
-`;
-
 const NavBar = () => {
   return (
     <Nav>
@@ -81,14 +68,6 @@ const NavBar = () => {
         <RightItems>
           <NavLink href="#features">Features</NavLink>
           <NavLink href="#templates">Templates</NavLink>
-          <GitHubLink
-            href="https://github.com/sadanandpai/resume-builder"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="View source on GitHub"
-          >
-            {getIcon('github')}
-          </GitHubLink>
         </RightItems>
       </NavInner>
     </Nav>
