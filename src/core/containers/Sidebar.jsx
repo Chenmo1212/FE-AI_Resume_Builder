@@ -58,7 +58,7 @@ const fadeOut = keyframes`
 const FontSizeToast = styled.div`
   position: fixed;
   bottom: 28px;
-  right: 28px;
+  right: 80px;
   background: rgba(30, 30, 30, 0.82);
   color: #fff;
   font-size: 13px;
