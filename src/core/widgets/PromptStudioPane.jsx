@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Select, Spin, Input, Tag } from 'antd';
 import styled from 'styled-components';
 import { usePromptTemplatesStore } from '../../stores/promptTemplates.store';
-import type { PromptMessage, PromptTemplate } from '../../stores/promptTemplates.store';
 
 const { TextArea } = Input;
 
@@ -95,11 +94,7 @@ const ROLE_OPTIONS = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-interface Props {
-  activeId: string;
-}
-
-export const PromptStudioPane: React.FC<Props> = ({ activeId }) => {
+export const PromptStudioPane = ({ activeId }) => {
   const {
     templates,
     editingMessages,
@@ -109,8 +104,8 @@ export const PromptStudioPane: React.FC<Props> = ({ activeId }) => {
     isDirty,
   } = usePromptTemplatesStore();
 
-  const activeTemplate: PromptTemplate | undefined = templates.find((t) => t.id === activeId);
-  const messages: PromptMessage[] = editingMessages[activeId] || [];
+  const activeTemplate = templates.find((t) => t.id === activeId);
+  const messages = editingMessages[activeId] || [];
   const dirty = isDirty(activeId);
   const isSaving = !!saving[activeId];
 
@@ -122,17 +117,17 @@ export const PromptStudioPane: React.FC<Props> = ({ activeId }) => {
     );
   }
 
-  const handleRoleChange = (index: number, role: PromptMessage['role']) => {
+  const handleRoleChange = (index, role) => {
     const next = messages.map((m, i) => (i === index ? { ...m, role } : m));
     setEditingMessages(activeId, next);
   };
 
-  const handleContentChange = (index: number, content: string) => {
+  const handleContentChange = (index, content) => {
     const next = messages.map((m, i) => (i === index ? { ...m, content } : m));
     setEditingMessages(activeId, next);
   };
 
-  const handleDeleteMessage = (index: number) => {
+  const handleDeleteMessage = (index) => {
     if (messages.length <= 1) return;
     const next = messages.filter((_, i) => i !== index);
     setEditingMessages(activeId, next);
@@ -165,7 +160,7 @@ export const PromptStudioPane: React.FC<Props> = ({ activeId }) => {
           <MessageTopRow>
             <Select
               value={msg.role}
-              onChange={(val: PromptMessage['role']) => handleRoleChange(i, val)}
+              onChange={(val) => handleRoleChange(i, val)}
               options={ROLE_OPTIONS}
               size="small"
               style={{ width: 100 }}

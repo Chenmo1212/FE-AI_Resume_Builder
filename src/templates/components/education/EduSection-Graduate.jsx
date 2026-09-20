@@ -28,10 +28,10 @@ const Courses = styled.div`
   font-size: var(--fs-base);
 `;
 
-export function EduSection({ education }: any) {
+export function EduSection({ education }) {
   if (!education) return null;
 
-  return education.map((data: any) => (
+  return education.map((data) => (
     <Education key={data.studyType}>
       <Flex jc="space-between">
         <Institution>{data.institution}</Institution>

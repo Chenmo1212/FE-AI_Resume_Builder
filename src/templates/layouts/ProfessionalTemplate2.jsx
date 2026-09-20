@@ -1,4 +1,3 @@
-// @ts-nocheck — JSX components imported from .jsx files have no TS types; pre-existing issue
 import React from 'react';
 import shallow from 'zustand/shallow';
 import styled from 'styled-components';
@@ -11,6 +10,7 @@ import {
 import { Intro } from 'src/templates/components/intro/Intro';
 import { Description } from 'src/templates/components/description/Description';
 import { Projects } from 'src/templates/components/projects/Projects';
+import { RatedBars } from 'src/templates/components/skills/RatedBars';
 import { UnratedTabs } from 'src/templates/components/skills/UnratedTabs';
 import { Exp } from 'src/templates/components/exp/Exp';
 import { EduSection } from 'src/templates/components/education/EduSection';
@@ -21,6 +21,7 @@ import {
   useActivities,
   useEducation,
   useLabels,
+  useProjects,
 } from 'src/stores/data.store';
 
 const ResumeContainer = styled(Flex)`
@@ -49,32 +50,34 @@ const RightSection = styled(FlexCol)`
 `;
 
 const labelsIcon = [
-  'Expérience',
-  'clé',
-  'Certificat',
-  'identité',
-  'carrière',
+  'work',
+  'key',
+  'certificate',
+  'identity',
+  'career',
   'expert',
-  'compétence',
+  'skill',
   'branch',
   'tool',
-  'éducation',
+  'education',
 ];
 
 export default function ProfessionalTemplate() {
-  const intro = useIntro((state: any) => state.intro);
-  const education = useEducation((state: any) => state.education);
-  const experience = useWork((state: any) => state);
+  const intro = useIntro((state) => state.intro);
+  const education = useEducation((state) => state.education);
+  const experience = useWork((state) => state);
+  const projects = useProjects((state) => state);
   const [involvements, achievements] = useActivities(
-    (state: any) => [state.involvements, state.achievements],
+    (state) => [state.involvements, state.achievements],
     shallow
   );
   const [technical, nonTechnical] = useSkills(
-    (state: any) => [state.technical, state.nonTechnical],
+    (state) => [state.technical, state.nonTechnical],
     shallow
   );
-  const labels = useLabels((state: any) => state.labels);
-  let leftSections = [
+  const labels = useLabels((state) => state.labels);
+
+  const leftSections = [
     {
       title: labels[0],
       icon: labelsIcon[0],
@@ -82,21 +85,21 @@ export default function ProfessionalTemplate() {
       styles: { flexGrow: 1 },
     },
     {
+      title: labels[1],
+      icon: labelsIcon[1],
+      component: <Projects projects={projects.projects} />,
+    },
+    {
       title: labels[2],
       icon: labelsIcon[2],
       component: <Description description={achievements} />,
     },
   ];
-  let rightSections = [
+  const rightSections = [
     {
       title: labels[3],
       icon: labelsIcon[3],
       component: <Description photo={intro.image} description={intro.summary} />,
-    },
-    {
-      title: labels[4],
-      icon: labelsIcon[4],
-      component: <Description description={intro.objective} />,
     },
     {
       title: labels[6],
@@ -114,48 +117,11 @@ export default function ProfessionalTemplate() {
       component: <EduSection education={education} />,
     },
   ];
-  if (experience.companies.length >= 5) {
-    leftSections = [
-      {
-        title: labels[0],
-        icon: labelsIcon[0],
-        component: <Exp companies={experience.companies} />,
-        styles: { flexGrow: 1 },
-      },
-    ];
-    rightSections = [
-      {
-        title: labels[3],
-        icon: labelsIcon[3],
-        component: <Description photo={intro.image} description={intro.summary} />,
-      },
-      {
-        title: labels[6],
-        icon: labelsIcon[6],
-        component: <UnratedTabs items={technical} />,
-      },
-      {
-        title: labels[7],
-        icon: labelsIcon[7],
-        component: <UnratedTabs items={nonTechnical} />,
-      },
-      {
-        title: labels[2],
-        icon: labelsIcon[2],
-        component: <Description description={achievements} />,
-      },
-      {
-        title: labels[9],
-        icon: labelsIcon[9],
-        component: <EduSection education={education} />,
-      },
-    ];
-  }
 
   return (
     <ResumeContainer>
       <LeftSection>
-        <ModernHeaderIntro displaySocial={false} title={intro.name} profiles={intro.profiles}>
+        <ModernHeaderIntro title={intro.name} profiles={intro.profiles}>
           <Intro intro={intro} labels={labels} />
         </ModernHeaderIntro>
 

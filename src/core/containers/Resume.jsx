@@ -19,6 +19,10 @@ const ResumeContainer = styled.div`
         return 6;
     }}mm;
 
+    /* Disable ligatures to prevent garbled text in PDF extraction by ATS systems */
+    font-feature-settings: "liga" 0, "calt" 0;
+    -webkit-font-feature-settings: "liga" 0, "calt" 0;
+
     /* Font size tokens — all template components reference these directly */
     --fs-base:   ${({ $fontScale }) => $fontScale * 10.4}px;  /* 0.65rem equivalent */
     --fs-sm:     ${({ $fontScale }) => $fontScale * 11.2}px;  /* 0.7rem  */
