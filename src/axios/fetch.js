@@ -2,7 +2,7 @@ import axios from 'axios';
 import { message } from 'antd';
 
 export const api = axios.create({
-  baseURL: 'http://127.0.0.1:5001',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://ai-resume-builder-api.fly.dev',
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
