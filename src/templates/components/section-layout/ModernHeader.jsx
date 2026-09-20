@@ -7,13 +7,17 @@ import { getIcon } from '../../../styles/icons';
 const SectionHolder = styled.div`
   border: 1px solid ${(props) => Color(props.theme.fontColor).alpha(0.25).toString()};
   border-radius: 5px;
-  padding: 15px 10px 10px 10px;
+  padding: 10px 10px 10px 10px;
   position: relative;
 
   .header {
-    position: absolute;
-    top: -10px;
-    left: 8px;
+    /* Keep element in normal DOM flow (ATS reads title before body),
+       but use negative margin-top to pull it up over the border visually. */
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: -20px;
+    margin-bottom: 6px;
     background: ${(props) => props.theme.backgroundColor};
     padding: 0 5px;
     font-weight: bold;
@@ -26,11 +30,13 @@ const SectionHolder = styled.div`
 `;
 
 const SectionIntroHolder = styled(SectionHolder)`
-  padding-top: 20px;
+  padding-top: 0px;
 
   .header {
-    top: -20px;
-    left: 0;
+    display: inline-block;
+    width: fit-content;
+    margin-top: -20px;
+    margin-bottom: 6px;
     margin-left: 5px;
     padding: 0 5px;
     background: ${(props) => props.theme.backgroundColor};
@@ -58,6 +64,7 @@ const SectionIntroHolder = styled(SectionHolder)`
 export function ModernHeader({ styles, title, icon, children }) {
   return (
     <SectionHolder style={styles}>
+      {/* Header is first in DOM so ATS reads the section title before its content */}
       <FlexHVC className="header" cGap="5px">
         {icon}
         <div className="header__title">{title}</div>
@@ -76,9 +83,10 @@ export function ModernHeaderIntro({
 }) {
   return (
     <SectionIntroHolder style={styles}>
-      <FlexHVC className="header">
+      {/* Name heading is first in DOM — ATS reads name before job title / contact */}
+      <div className="header">
         <h1 className="header__title">{title}</h1>
-      </FlexHVC>
+      </div>
       {displaySocial ? (
         <Flex className="social-icons">
           {profiles
