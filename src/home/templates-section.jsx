@@ -100,31 +100,38 @@ const UseLink = styled.a`
   }
 `;
 
+// index values match the order in templates.store.js:
+// 0=Professional, 1=Legacy, 2=Graduate, 3=OneColumn, 4=Classic
 const templates = [
-  {
-    name: 'Classic',
-    image: '/images/classic.png',
-    desc: 'Clean two-column layout. Works for any industry, any level.',
-  },
   {
     name: 'Professional',
     image: '/images/professional.png',
     desc: 'Modern single-column with bold section headers. ATS-friendly.',
-  },
-  {
-    name: 'Graduate',
-    image: '/images/graduate.png',
-    desc: 'Highlights education and projects — ideal for recent grads.',
+    index: 0,
   },
   {
     name: 'Legacy',
     image: '/images/legacy.png',
     desc: 'Traditional layout with a timeless structure. Great for senior roles.',
+    index: 1,
+  },
+  {
+    name: 'Graduate',
+    image: '/images/graduate.png',
+    desc: 'Highlights education and projects — ideal for recent grads.',
+    index: 2,
   },
   {
     name: 'One Column',
     image: '/images/onecolumn.png',
     desc: 'Minimal single-column format. Clean, readable, distraction-free.',
+    index: 3,
+  },
+  {
+    name: 'Classic',
+    image: '/images/classic.png',
+    desc: 'Clean two-column layout. Works for any industry, any level.',
+    index: 4,
   },
 ];
 
@@ -147,7 +154,7 @@ const TemplatesSection = () => {
             </PreviewWrapper>
             <TemplateName>{t.name}</TemplateName>
             <TemplateDesc>{t.desc}</TemplateDesc>
-            <Link href="/editor" passHref>
+            <Link href={`/editor?template=${t.index}`} passHref>
               <UseLink>Use this template →</UseLink>
             </Link>
           </Card>
